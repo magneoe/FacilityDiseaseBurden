@@ -1,0 +1,14 @@
+
+<h5>Select Organisation units:</h5>
+
+<div [class.loader]="isLoading"></div>
+<div *ngFor = "let lvl of levels">
+    <select (change)= 'loadLevel($event.target.value, lvl)' [disabled]="isLoading">
+      <option [value]="default">Choose level {{lvl}}</option>
+      <option *ngFor = 'let org of findSelectedOrgUnitsAtLevel(lvl) | orderByDisplayNamePipe' [value]="org.id">
+          {{org.displayName}}</option>
+    </select>
+</div>
+<button type="button" (click)="selectOrgUnit()">Select current org.unit</button>
+<br/>
+{{message}}
