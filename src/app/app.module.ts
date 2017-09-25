@@ -11,6 +11,7 @@ import {LoginComponent} from "./login/login.component";
 import { ReactiveFormsModule } from '@angular/forms';
 import {AuthorizationService} from "./login/login.service";
 import {OrderByDisplayNamePipe} from "./orgLoader/organizationLoader.pipe";
+import {DatePickerComponent} from "./datePicker/datePicker.component";
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent},
@@ -21,7 +22,7 @@ const appRoutes: Routes = [
 
 @NgModule({
   imports:      [ BrowserModule, HttpModule, RouterModule.forRoot(appRoutes), FormsModule, ReactiveFormsModule ],
-  declarations: [ AppComponent, OrganizationLoaderComponent, PageNotFoundComponent, LoginComponent, OrderByDisplayNamePipe],
+  declarations: [ AppComponent, OrganizationLoaderComponent, PageNotFoundComponent, LoginComponent, OrderByDisplayNamePipe, DatePickerComponent],
   bootstrap:    [ AppComponent ],
   providers: [AuthorizationService]
 })

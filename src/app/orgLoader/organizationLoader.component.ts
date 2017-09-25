@@ -1,8 +1,8 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {OrganizationUnitLoaderService} from './organizationUnitLoader.service';
 import {OrganizationUnit} from "./OrganizationUnit";
 import {OrderByDisplayNamePipe} from "./organizationLoader.pipe";
-
+import {DatePickerComponent} from "../datePicker/datePicker.component";
 
 @Component({
   selector: 'facilityBurden-app',
@@ -15,9 +15,12 @@ export class OrganizationLoaderComponent {
   organizationUnits: OrganizationUnit[];
   private query:string;
   private levels: number[] = [1];
-  private selectedOrgUnit:OrganizationUnit;
   private message:string = "";
   isLoading:boolean = false;
+  private selectedOrgUnit: OrganizationUnit;
+
+  @ViewChild(DatePickerComponent) datePicker : DatePickerComponent;
+
 
   constructor(private _orgLoaderService: OrganizationUnitLoaderService) { }
 
@@ -30,39 +33,41 @@ export class OrganizationLoaderComponent {
   }
 
   loadLevel(ancestorId : string, lvl : number) : void {
-    if(ancestorId == "default" || ancestorId == null)
-      return;
     this.isLoading = true;
+    this.selectedOrgUnit = this.findSelectedOrgUnit(ancestorId);
+    this.setLevel(this.selectedOrgUnit, lvl);
 
-    var selectedOrgUnit = this.findSelectedOrgUnit(ancestorId);
-    this.selectedOrgUnit = selectedOrgUnit;
-    this.setLevel(selectedOrgUnit, lvl);
-
-
-    this.query = 'api/organisationUnits?filter=id:eq:' + ancestorId +'&fields=children[id,displayName,level]&paging=0';
-    this._orgLoaderService.getOrgUnits(this.query, JSON.parse(sessionStorage.getItem("user")))
-      .subscribe((units:any) => {
-        selectedOrgUnit.children = units.organisationUnits[0].children;
-        if(selectedOrgUnit.children.length > 0)
-          this.levels.push(this.levels.length+1);
-      });
-
+    if(this.selectedOrgUnit != null) {
+      this.query = 'api/organisationUnits?filter=id:eq:' + ancestorId + '&fields=children[id,displayName,level]&paging=0';
+      this._orgLoaderService.getOrgUnits(this.query, JSON.parse(sessionStorage.getItem("user")))
+        .subscribe((units: any) => {
+          this.selectedOrgUnit.children = units.organisationUnits[0].children;
+          if (this.selectedOrgUnit.children.length > 0)
+            this.levels.push(this.levels.length + 1);
+        });
+    }
+    else if(lvl > 1) {
+      this.selectedOrgUnit = this.findSelectOrgUnit(lvl-1);
+    }
     this.message = "";
     this.isLoading = false;
   }
 
   findSelectedOrgUnit(ancestorId: string) : OrganizationUnit {
+
     var orgUnitsAtGivenLevel = this.organizationUnits;
-    var org : OrganizationUnit;
+    var org : OrganizationUnit = null;
+    if(ancestorId.startsWith("Choose"))
+      return org;
+
     do {
-      if((org = orgUnitsAtGivenLevel.find(org => org.id === ancestorId)) != null)
-      {
-          return org;
+      if((org = orgUnitsAtGivenLevel.find(org => org.id === ancestorId)) != null) {
+        return org;
       }
     }while ((orgUnitsAtGivenLevel = orgUnitsAtGivenLevel.find(org => org.selected === true).children) != null);
   }
 
-  findSelectedOrgUnitsAtLevel(level: number) : OrganizationUnit[] {
+  findChildrenOfSelectedOrgUnit(level: number) : OrganizationUnit[] {
     var orgUnitsAtGivenLevel = this.organizationUnits;
 
     for(var i = 0; i < this.levels.length; i++){
@@ -74,17 +79,31 @@ export class OrganizationLoaderComponent {
   }
 
   setLevel(selectedOrgUnit : OrganizationUnit, level : number) : void {
-    var orgUnitsAtLevel = this.findSelectedOrgUnitsAtLevel(level);
+    var orgUnitsAtLevel = this.findChildrenOfSelectedOrgUnit(level);
 
     orgUnitsAtLevel.map(org => org.selected = false);
     orgUnitsAtLevel.map(org => org.children = []);
-    selectedOrgUnit.selected = true;
+    if(selectedOrgUnit != null)
+      selectedOrgUnit.selected = true;
 
     if(this.levels.length > level)
       this.levels = this.levels.slice(0, level);
   }
+  findSelectOrgUnit(lvl:number): OrganizationUnit {
 
-  selectOrgUnit():void {
-    this.message = 'Selected orgOrg name: ' + this.selectedOrgUnit.displayName;
+    var orgUnitsAtGivenLevel = this.organizationUnits;
+
+    for(var i = 0; i < this.levels.length; i++){
+      if(i+1 == lvl){
+        return orgUnitsAtGivenLevel.find(org => org.selected === true);
+      }
+      orgUnitsAtGivenLevel = orgUnitsAtGivenLevel.find(org => org.selected === true).children;
+    }
+  }
+
+  select(event:any):void {
+    this.message = 'Selected orgOrg name: ' + (this.selectedOrgUnit != null ? this.selectedOrgUnit.displayName : "No orgUnit selected") + ", " +
+      "Date range: from" + this.datePicker.getStartDate() + ' to: ' + this.datePicker.getEndDate();
+
   }
 }

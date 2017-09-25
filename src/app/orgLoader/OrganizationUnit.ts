@@ -4,5 +4,5 @@ export interface OrganizationUnit {
   displayName: string,
   children: OrganizationUnit[],
   selected: boolean,
-  level: number
+  level: number,
 }
