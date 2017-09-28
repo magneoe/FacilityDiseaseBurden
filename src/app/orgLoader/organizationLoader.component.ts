@@ -15,8 +15,9 @@ export class OrganizationLoaderComponent {
   organizationUnits: OrganizationUnit[];
   private query:string;
   private levels: number[] = [1];
-  private message:string = "";
+  message:string = '';
   isLoading:boolean = false;
+  isValid:boolean = false;
   private selectedOrgUnit: OrganizationUnit;
 
   @ViewChild(DatePickerComponent) datePicker : DatePickerComponent;
@@ -49,7 +50,7 @@ export class OrganizationLoaderComponent {
     else if(lvl > 1) {
       this.selectedOrgUnit = this.findSelectOrgUnit(lvl-1);
     }
-    this.message = "";
+    //this.message = "";
     this.isLoading = false;
   }
 
@@ -101,9 +102,44 @@ export class OrganizationLoaderComponent {
     }
   }
 
-  select(event:any):void {
-    this.message = 'Selected orgOrg name: ' + (this.selectedOrgUnit != null ? this.selectedOrgUnit.displayName : "No orgUnit selected") + ", " +
-      "Date range: from" + this.datePicker.getStartDate() + ' to: ' + this.datePicker.getEndDate();
 
+
+  select(event:any):void {
+    this.message = '';
+    //Happy day scenario
+    if(this.getIsValid() && this.datePicker.getIsValid()) {
+      this.message = 'Selected orgOrg name: ' + this.selectedOrgUnit.displayName + ", " +
+        "Date range: from" + this.datePicker.getStartDate().toLocaleDateString('en-GB') + ' to: ' + this.datePicker.getEndDate().toLocaleDateString('en-GB');
+      console.log('Message:', this.message);
+    }
+    //Bad things happened
+    if(!this.getIsValid()) {
+      console.log('Message org not set:', this.message);
+      return;
+    }
+    if(!this.datePicker.getIsValid()){
+      this.message += this.datePicker.getDatePickerMessage() + '<br/>';
+      console.log('Message datapicker not valid:', this.datePicker.getDatePickerMessage());
+      console.log('Start date:', this.datePicker.getStartDate());
+      return;
+    }
+    console.log('Message final output:', this.message);
+  }
+
+
+  /*
+   * Validation form helper methods
+   */
+  validate(): void {
+    if(this.selectedOrgUnit == null) {
+      this.message = "Error: OrgUnit not set";
+      this.isValid = false;
+      return;
+    }
+    this.isValid = true;
+  }
+  getIsValid():boolean {
+    this.validate();
+    return this.isValid;
   }
 }

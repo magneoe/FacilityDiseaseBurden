@@ -18,7 +18,7 @@
     <datePicker></datePicker>
   </p>
 
-  <p>{{message}}</p>
-  <button type="submit" [disabled]="!datePicker.getIsValid() || selectedOrgUnit == null">OK</button>
+  <p class="errorMessage">{{message}}</p>
+  <button type="submit">OK</button>
 
 </form>
