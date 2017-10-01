@@ -2,7 +2,7 @@
 
 <div [class.loader]="isLoading"></div>
 
-<form (ngSubmit)="select($event)">
+<div>
   <div *ngFor="let lvl of levels">
 
     <select (change)='loadLevel($event.target.value, lvl)' [disabled]="isLoading" >
@@ -12,13 +12,4 @@
       </option>
     </select>
   </div>
-
-  <br/>
-  <p>
-    <datePicker></datePicker>
-  </p>
-
-  <p class="errorMessage">{{message}}</p>
-  <button type="submit">OK</button>
-
-</form>
+</div>

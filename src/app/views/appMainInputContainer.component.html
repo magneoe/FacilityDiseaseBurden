@@ -1,0 +1,7 @@
+
+
+<organisationPicker (validationUpdateEvent)="handleValidationUpdateEvent($event)"></organisationPicker>
+<datePicker (validationUpdateEvent)="handleValidationUpdateEvent($event)"></datePicker>
+
+<div [class]="errorMessage" *ngFor="let errorMessage of errorMessages">{{errorMessage}}</div>
+<button type="button" [disabled]="!formIsValid" (click)="select()">OK</button>
