@@ -1,14 +1,12 @@
-import {Component} from '@angular/core';
 
+
+import {Component} from "@angular/core";
 
 @Component({
   selector: 'facilityBurden-app',
-  templateUrl: 'app/app.component.html',
+  templateUrl: 'app/app.component.html'
 })
-
-export class AppComponent  {
+export class AppComponent {
   appTitle: string = 'Facility Disease Burden app';
-
-
 
 }

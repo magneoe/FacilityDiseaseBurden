@@ -1,0 +1,5 @@
+<h5>Pick time intervall</h5>
+<form>
+  <input type="date" id="startDate" name="startDate" [(ngModel)]="startDate" (ngModelChange)="notifyValueChange($event)"/>
+  <input type="date" id="endDate" name="endDate" [(ngModel)]="endDate" (ngModelChange)="notifyValueChange($event)"/>
+</form>
