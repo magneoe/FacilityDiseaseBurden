@@ -1,7 +1,6 @@
 import {Component} from "@angular/core";
 import { Router }  from '@angular/router';
 import {CustomValidationService} from "../../services/customValidation.service";
-import {ValidationComponent} from "../ValidationComponent";
 import {User} from "../../models/User";
 import {AuthorizationService} from "../../services/login.service";
 
@@ -12,23 +11,29 @@ import {AuthorizationService} from "../../services/login.service";
   providers: [CustomValidationService]
 })
 
-export class LoginComponent extends ValidationComponent{
+/*
+ * Temporary login component - runs basic authentication for now - will be set up with tokens eventually
+ */
+export class LoginComponent {
   model = new User('', '', '');
   errorMessages:Array<string> = [];
 
-  constructor(public _authorizationService: AuthorizationService, private _customValidationService: CustomValidationService,
-              private _router: Router){
-    super()}
+  constructor(public _authorizationService: AuthorizationService,
+              private _router: Router){  }
 
 
   login():void {
     console.log("Logged in:", this.model);
-    this.errorMessages = this._customValidationService.validateComponents([this]);
+    this.errorMessages = this.isValid();
     if(this.errorMessages.length > 0)
       return;
     this._authorizationService.login(this.model);
   }
 
+
+    /*
+     * Validation method
+     */
     isValid():Array<string> {
       let errors = new Array();
       let connectionLink = this.model.getConnectionLink();

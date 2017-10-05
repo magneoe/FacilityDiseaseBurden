@@ -1,0 +1,6 @@
+<!-- Programs -->
+<h5>Programs: </h5>
+
+<li *ngFor="let prog of programs">
+  <input type="checkbox" [value]="prog.id" (change)="notifyValueChange($event)"> {{prog.displayName}}
+</li>

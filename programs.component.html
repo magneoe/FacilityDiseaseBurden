@@ -1,9 +1,0 @@
-<!-- Programs -->
-
-<div *ngIf='programs; else elseBlock'>
-    <form #checkedForm="ngForm" *ngFor='let prog of programs'>
-        <input type="checkbox" value={{prog}}> {{prog.displayName}}
-    </form>
-</div>
-<br>
-<button type="button" (click)="showPrograms()">Show programs for org.unit</button>

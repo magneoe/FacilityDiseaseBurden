@@ -12,6 +12,9 @@ import {AppMainInputContainerComponent} from "./components/forms/appMainInputCon
 import {OrganizationLoaderComponent} from "./components/forms/organizationLoader.component";
 import {DatePickerComponent} from "./components/forms/datePicker.component";
 import {OrderByDisplayNamePipe} from "./pipes/organizationLoader.pipe";
+import {ProgramsComponent} from "./components/forms/programs.component";
+import {ProgramsService} from "./services/programs.service";
+import {CustomValidationService} from "./services/customValidation.service";
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent},
@@ -23,8 +26,8 @@ const appRoutes: Routes = [
 @NgModule({
   imports:      [ BrowserModule, HttpModule, RouterModule.forRoot(appRoutes), FormsModule, ReactiveFormsModule ],
   declarations: [ AppComponent, OrganizationLoaderComponent, PageNotFoundComponent, LoginComponent,
-    OrderByDisplayNamePipe, DatePickerComponent, AppMainInputContainerComponent],
+    OrderByDisplayNamePipe, DatePickerComponent, AppMainInputContainerComponent, ProgramsComponent],
   bootstrap:    [ AppComponent ],
-  providers: [AuthorizationService]
+  providers: [AuthorizationService, ProgramsService, CustomValidationService]
 })
 export class AppModule { }

@@ -1,23 +1,43 @@
-import {Component, EventEmitter, Output} from "@angular/core";
-import {ValidationComponent} from "../ValidationComponent";
+import {Component} from "@angular/core";
+import {CustomValidationService} from "../../services/customValidation.service";
+import {ValidationMessage} from "../../models/ValidationMessage";
 
 @Component({
   selector: 'datePicker',
-  templateUrl: 'app/views/datePicker.component.html'
+  templateUrl: 'app/views/datePicker.component.html',
 })
 
-export class DatePickerComponent extends ValidationComponent{
+/*
+ * This component represents a datepicking form.
+ */
+export class DatePickerComponent{
 
+  private readonly senderId:string = "datePicker";
   startDate: string;
   endDate: string;
 
-  @Output() validationUpdateEvent = new EventEmitter();
+  constructor(private _customValidationService: CustomValidationService){}
 
-  notifyValueChange(event:any):void {
-      this.validationUpdateEvent.emit('Message here');
+  ngOnInit(){
+    this.notifyValueChange(null);
   }
 
-  isValid():Array<string> {
+  /*
+   * Upon any event in the view (picking dates) this methods is called
+   */
+  notifyValueChange(event:any):void {
+
+    let validationMessage = new ValidationMessage();
+    validationMessage.senderId = this.senderId;
+    validationMessage.errorMessage = this.getErrors().toString();
+    validationMessage.formIsValid = (this.getErrors().length > 0 ? false : true);
+
+    this._customValidationService.sendMessage(validationMessage);
+  }
+  /*
+   * A local validation method - composing the errors
+   */
+  getErrors():Array<string> {
    let errors = new Array();
 
    if(this.startDate == null || this.startDate === undefined)

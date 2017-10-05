@@ -5,28 +5,35 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/catch';
 import {Injectable} from '@angular/core';
+import {HttpWrapperService} from "./HttpWrapper.service";
 
+/*
+ * This service supports the organisation loader component -
+ * A lot of the supporting methods from the component are placed here,
+ * to increase reuse. Also, this service is stateless.
+ */
 @Injectable()
-export class OrganizationUnitLoaderService {
-  private options = new RequestOptions({
-    method: 'GET',
-    headers: new Headers()
-  });
+export class OrganizationUnitLoaderService extends HttpWrapperService<OrganizationUnit> {
 
-
-  constructor(private _http: Http) {}
-
-  getOrgUnits(query: string, user: any): Observable<OrganizationUnit[]> {
-    this.options.headers.append('Authorization', 'Basic ' + btoa(user.username + ':' + user.password));
-
-    return this._http.get(user.connectionLink + '/' + query, this.options).map((response: Response) => <OrganizationUnit[]> response.json()).
-    do(data => console.log(JSON.stringify(data))).catch(this.handleError);
+  constructor(_http: Http) {
+    super(_http, JSON.parse(sessionStorage.getItem("user")));
   }
 
-  private handleError(error: Response) {
+
+ getOrgUnits(query:string){
+   return this.get(query).do(data => console.log(JSON.stringify(data))).catch(this.handleError);
+ }
+  /*
+    * Implements the HttpWrapper methods
+    */
+ getAsArray(res: Response):OrganizationUnit[]{
+   return <OrganizationUnit[]> res.json();
+ }
+ handleError(error: Response) {
     console.error(error);
     return Observable.throw(error.json().error());
   }
+
 
   findSelectedOrgUnit(ancestorId: string, organisationUnits: OrganizationUnit[]) : OrganizationUnit {
 

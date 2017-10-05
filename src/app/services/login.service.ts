@@ -10,6 +10,7 @@ import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from "
 export class AuthorizationService implements CanActivate {
   authorizationMessage: string = "";
 
+
   private options = new RequestOptions({
     method: 'GET',
     headers: new Headers()

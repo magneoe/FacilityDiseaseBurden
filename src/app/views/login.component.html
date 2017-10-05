@@ -12,7 +12,7 @@
   <br/>
 <button type="submit" [disabled]="!userForm.form.valid">Login</button>
 </form>
-<div [class]="errorMessage" *ngFor="let errorMessage of errorMessages">
+<div class="errorMessageStyle" *ngFor="let errorMessage of errorMessages">
 {{errorMessage}}
 </div>
 {{_authorizationService.authorizationMessage}}

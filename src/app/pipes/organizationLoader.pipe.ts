@@ -5,7 +5,9 @@ import {Pipe, PipeTransform} from '@angular/core';
 @Pipe({
   name: 'orderByDisplayNamePipe'
 })
-
+/*
+ * Orders organisation units by displayName
+ */
 export class OrderByDisplayNamePipe implements PipeTransform{
 
   transform(array: Array<string>, args: string): Array<string> {
