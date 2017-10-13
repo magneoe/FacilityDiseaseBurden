@@ -1,14 +1,16 @@
-import {Component, Input, OnChanges} from '@angular/core';
+import {Component, Input, OnChanges, Output} from '@angular/core';
 
 import {ProgramsService} from '../../services/programs.service';
 import {Programs} from "../../models/Programs";
 import {OrganizationUnit} from "../../models/OrganizationUnit";
 import {CustomValidationService} from "../../services/customValidation.service";
 import {ValidationMessage} from "../../models/ValidationMessage";
+import {MapInputDataService} from "../../services/mapInputData.service";
+import {MapInputData} from "../../models/MapInputData";
 
 @Component({
   selector: 'programPicker',
-  templateUrl: 'app/views/programs.component.html',
+  templateUrl: '../../views/programs.component.html',
   providers: [ProgramsService]
 })
 
@@ -22,7 +24,8 @@ export class ProgramsComponent implements OnChanges{
   private query: string;
   private readonly senderId:string = "programPicker";
 
-  constructor(private _progService: ProgramsService, private _customValidationService: CustomValidationService) { }
+  constructor(private _progService: ProgramsService, private _customValidationService: CustomValidationService,
+              private _mapInputDataService:MapInputDataService) { }
 
   /*
    * Upon changes in the input (organisationUnit), then reload the programs
@@ -38,6 +41,7 @@ export class ProgramsComponent implements OnChanges{
    * Loads the programs thats connected to a given org.unit
    */
   showPrograms(orgUnit: OrganizationUnit): void {
+
     if (orgUnit == null) {
       this.programs = [];
       return;
@@ -47,6 +51,7 @@ export class ProgramsComponent implements OnChanges{
     this._progService.loadPrograms(this.query)
       .subscribe((units: any) => {
         this.programs = units.organisationUnits[0].programs;
+        this.notifyValueChange(null);
       });
   }
 
@@ -63,6 +68,9 @@ export class ProgramsComponent implements OnChanges{
     validationMessage.formIsValid = (this.getErrors().length > 0 ? false : true);
 
     this._customValidationService.sendMessage(validationMessage);
+
+    let mapInputData = new MapInputData(this.getSelectedPrograms(), null, null, null);
+    this._mapInputDataService.sendMessage(mapInputData);
   }
   /*
    * Composes error messages
@@ -75,5 +83,18 @@ export class ProgramsComponent implements OnChanges{
     }
     errors.push("No programs selected");
     return errors;
+  }
+
+  /*
+   * Helper method
+   */
+
+  private getSelectedPrograms():Programs[]{
+    let selectedProgs = new Array<Programs>();
+    this.programs.forEach(prog => {
+      if(prog.isSelected)
+        selectedProgs.push(prog);
+    });
+    return selectedProgs;
   }
 }

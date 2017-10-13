@@ -7,7 +7,7 @@ import {AuthorizationService} from "../../services/login.service";
 
 @Component({
   selector: 'login',
-  templateUrl: 'app/views/login.component.html',
+  templateUrl: '../../views/login.component.html',
   providers: [CustomValidationService]
 })
 

@@ -3,4 +3,5 @@ export class ValidationMessage {
   errorMessage: string;
   severity: string;
   formIsValid: boolean;
+
 }

@@ -1,15 +1,17 @@
-import {Component} from '@angular/core';
+import {Component, Output} from '@angular/core';
 import {OrganizationUnitLoaderService} from "../../services/organizationUnitLoader.service";
 import {OrderByDisplayNamePipe} from "../../pipes/organizationLoader.pipe";
 import {OrganizationUnit} from "../../models/OrganizationUnit";
 import {ProgramsComponent} from "./programs.component";
 import {ValidationMessage} from "../../models/ValidationMessage";
 import {CustomValidationService} from "../../services/customValidation.service";
+import {MapInputDataService} from "../../services/mapInputData.service";
+import {MapInputData} from "../../models/MapInputData";
 
 
 @Component({
   selector: 'organisationPicker',
-  templateUrl: 'app/views/organizationLoader.component.html',
+  templateUrl: '../../views/organizationLoader.component.html',
   providers: [OrganizationUnitLoaderService, OrderByDisplayNamePipe, ProgramsComponent]
 })
 
@@ -27,7 +29,8 @@ export class OrganizationLoaderComponent {
   private readonly senderId:string = "organisationPicker";
 
   constructor(private _orgLoaderService: OrganizationUnitLoaderService,
-              private _customValidationService:CustomValidationService) { }
+              private _customValidationService:CustomValidationService,
+              private _mapInputDataService:MapInputDataService) { }
 
   /*
    * When ever at change in the picking of organisation units - revalidate the form and notice the master component.
@@ -39,6 +42,9 @@ export class OrganizationLoaderComponent {
     validationMessage.formIsValid = (this.getErrors().length > 0 ? false : true);
 
     this._customValidationService.sendMessage(validationMessage);
+
+    let mapInputData = new MapInputData(null, this.selectedOrgUnit, null, null);
+    this._mapInputDataService.sendMessage(mapInputData);
   }
   /*
    * Loading the root level in the hiarcky
@@ -64,7 +70,7 @@ export class OrganizationLoaderComponent {
 
     //Loading children of the ancestor - if there is one or if its been loaded previously.
     if(this.selectedOrgUnit != null) {
-      this.query = 'api/organisationUnits?filter=id:eq:' + ancestorId + '&fields=children[id,displayName,level]&paging=0';
+      this.query = 'api/organisationUnits?filter=id:eq:' + ancestorId + '&fields=children[id,displayName,level,coordinates]&paging=0';
       this._orgLoaderService.getOrgUnits(this.query)
         .subscribe((units: any) => {
         //Loads the children of the ancestor

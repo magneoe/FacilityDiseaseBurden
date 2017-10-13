@@ -1,4 +1,4 @@
-import {Headers, Http, RequestOptions, Response} from '@angular/http';
+import {Http, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import {OrganizationUnit} from '../models/OrganizationUnit';
 import 'rxjs/add/operator/map';

@@ -1,10 +1,12 @@
-import {Component} from "@angular/core";
+import {Component, Output} from "@angular/core";
 import {CustomValidationService} from "../../services/customValidation.service";
 import {ValidationMessage} from "../../models/ValidationMessage";
+import {MapInputDataService} from "../../services/mapInputData.service";
+import {MapInputData} from "../../models/MapInputData";
 
 @Component({
   selector: 'datePicker',
-  templateUrl: 'app/views/datePicker.component.html',
+  templateUrl: '../../views/datePicker.component.html',
 })
 
 /*
@@ -16,7 +18,8 @@ export class DatePickerComponent{
   startDate: string;
   endDate: string;
 
-  constructor(private _customValidationService: CustomValidationService){}
+  constructor(private _customValidationService: CustomValidationService,
+              private _mapInputDataService:MapInputDataService){}
 
   ngOnInit(){
     this.notifyValueChange(null);
@@ -33,6 +36,9 @@ export class DatePickerComponent{
     validationMessage.formIsValid = (this.getErrors().length > 0 ? false : true);
 
     this._customValidationService.sendMessage(validationMessage);
+
+    let mapInputData = new MapInputData(null, null, this.startDate, this.endDate);
+    this._mapInputDataService.sendMessage(mapInputData);
   }
   /*
    * A local validation method - composing the errors
