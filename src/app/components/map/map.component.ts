@@ -29,12 +29,13 @@ export class MapComponent {
   ngOnInit(){
     this.map = this._mapService.initMap(L, 'leafletMapId');
   }
-  updateMap(){
-    this._mapService.clearMap(L, this.map);
-    for(let i = 0; i < this.mapInputData.getSelectedPrograms().length; i++)
-      this._mapService.loadEntities(this.mapInputData, L, this.map, i);
-  }
+  updateMap() {
 
+    this._mapService.clearMap(L);
+    let controls = L.control.layers().addTo(this.map);
+    for (let i = 0; i < this.mapInputData.getSelectedPrograms().length; i++)
+      this._mapService.loadEntities(this.mapInputData, L, this.map, i, controls);
+  }
   /*
    * Receives all map input data and store them in mapInputData variable
    */

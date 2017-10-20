@@ -7,15 +7,17 @@ import {Observable} from 'rxjs/Observable';
 import {Http} from '@angular/http';
 import {OrganizationUnit} from "../models/OrganizationUnit";
 import {GeoJSONUtil} from "../utils/GeoJSON.util";
-import * as url from "url";
+import {Programs} from "../models/Programs";
+import {ColorHandlerUtil} from "../utils/colorHandler.util";
 
 @Injectable()
 export class MapService extends HttpWrapperService<TrackedEntityInstanceModel> {
 
-  private layers:any[] = [];
+  private mapData:Map<string, any[]>;
 
   constructor(_http: Http) {
     super(_http, JSON.parse(sessionStorage.getItem("user")));
+    this.mapData = new Map<string, any[]>();
   }
 
 
@@ -30,7 +32,7 @@ export class MapService extends HttpWrapperService<TrackedEntityInstanceModel> {
 
     return map;
   }
-  public loadEntities(mapInputData: MapInputData, L: any, map: any, layerNumber:number) {
+  public loadEntities(mapInputData: MapInputData, L: any, map: any, layerNumber:number, controls:any) {
       let orgUnitId = mapInputData.getSelectedOrgUnit().id;
       let programId = mapInputData.getSelectedPrograms()[layerNumber].id;
       let startDate = mapInputData.getStartDate();
@@ -45,52 +47,116 @@ export class MapService extends HttpWrapperService<TrackedEntityInstanceModel> {
         units.trackedEntityInstances.forEach(unit => {
           trackedEntities.push(new TrackedEntityInstanceModel(unit.attributes, unit.lastUpdated));
         });
-        this.addEntitiesToMap(trackedEntities, L, map);
-        this.addOrgUnitToMap(mapInputData.getSelectedOrgUnit(), L, map);
+        let color = ColorHandlerUtil.getNextAvailableColor();
+        let overlayLayers = this.addDataToMap(mapInputData.getSelectedOrgUnit(), this.getEntities(trackedEntities, L, color),
+          this.getPolyLines(trackedEntities, L, mapInputData.getSelectedOrgUnit(), color), L, map);
+
+        this.addControlMapOverlay(mapInputData.getSelectedOrgUnit(),
+          mapInputData.getSelectedPrograms()[layerNumber], overlayLayers, controls);
       });
   }
 
-  private addEntitiesToMap(trackedEntities: TrackedEntityInstanceModel[], L:any, map:any){
-    let newLayer = L.geoJSON().addTo(map);
+  private getEntities(trackedEntities: TrackedEntityInstanceModel[], L:any, color:string){
+    var icon = ColorHandlerUtil.getMarker(color, L);
+    let newLayer = L.geoJSON(null, {pointToLayer: function (feature, latlng) {
+      return L.marker(latlng, {icon: icon});
+    }});
     trackedEntities.forEach(entity => {
-      let geoJSON = GeoJSONUtil.exportToGeo(entity.getCoords());
+      let geoJSON = GeoJSONUtil.exportPointToGeo(entity.getCoords());
       console.log('Geo JSON:', geoJSON);
       if(geoJSON != null)
         newLayer.addData(geoJSON);
     });
-    this.layers.push(newLayer);
+    return newLayer;
   }
-  private addOrgUnitToMap(orgUnit: OrganizationUnit, L:any, map:any){
-
-
+  private getPolyLines(trackedEntities: TrackedEntityInstanceModel[], L:any, orgUnit:OrganizationUnit, color:string){
+    let newLayer = L.geoJSON(null, {
+      style: {
+        "color": color,
+      }
+    });
+    trackedEntities.forEach(entity => {
+      let geoJSON = GeoJSONUtil.exportPolyLineToGeo([entity.getCoords(), orgUnit.coordinates]);
+      console.log('Geo JSON from polyLines:', geoJSON);
+      if(geoJSON != null)
+        newLayer.addData(geoJSON);
+    });
+    return newLayer;
+  }
+  private getOrgUnit(orgUnit: OrganizationUnit, L:any, map:any){
     var LeafIcon = L.Icon.extend({
-      shadowUrl: '../../assets/img/leaf-shadow.png',
+      shadowUrl: '../../assets/img/facility-shadow.png',
       iconSize:     [38, 95], // size of the icon
       shadowSize:   [50, 64], // size of the shadow
       iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
       shadowAnchor: [4, 62],  // the same for the shadow
       popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
     });
-    var greenIcon = new LeafIcon({iconUrl: '../../assets/img/leaf-green.png'});
+    var greenIcon = new LeafIcon({iconUrl: '../../assets/img/facility.png'});
     let layer = L.geoJSON(null, {pointToLayer: function (feature, latlng) {
       return L.marker(latlng, {icon: greenIcon});
-    }}).addTo(map);
+    }});
 
-    let geoJSON = GeoJSONUtil.exportToGeo(orgUnit.coordinates);
+    let geoJSON = GeoJSONUtil.exportPointToGeo(orgUnit.coordinates);
     if(geoJSON != null) {
       console.log('Pushing layer', geoJSON);
       layer.addData(geoJSON);
-      this.layers.push(layer);
     }
-
+    return layer;
     //L.marker([51.5, -0.09], {icon: greenIcon}).addTo(map).bindPopup("I am a green leaf.");
   }
 
-  clearMap(L:any, map:any){
-    this.layers.forEach(layer => {
-      layer.removeFrom(map);
+  private addDataToMap(selectedOrgUnit:OrganizationUnit, entityLayer:any, polyLineLayer:any, L:any, map:any):Map<string, any>{
+    let overlayLayers = new Map<string, any>();
+
+    let layerGroup = L.layerGroup().addTo(map);
+    layerGroup.addLayer(entityLayer);
+    layerGroup.addLayer(polyLineLayer);
+
+    if(this.mapData.has(selectedOrgUnit.id)){
+        this.mapData.get(selectedOrgUnit.id).push(layerGroup);
+    }
+    else {
+      let orgUnitLayer = L.geoJSON().addTo(map);
+      orgUnitLayer = this.getOrgUnit(selectedOrgUnit, L, map);
+      overlayLayers.set(selectedOrgUnit.id, orgUnitLayer);
+      this.mapData.set(selectedOrgUnit.id, [layerGroup]);
+    }
+    overlayLayers.set("layerGroup", layerGroup);
+    return overlayLayers;
+  }
+  private addControlMapOverlay(selectedOrgUnit:OrganizationUnit, selectedProgram:Programs,
+                               layerGroup:Map<string, any>, controls:any){
+    let iterator = layerGroup.keys();
+    layerGroup.forEach(item => {
+      let title = "";
+      let key = iterator.next().value;
+      if(selectedOrgUnit.id == key){
+        title = selectedOrgUnit.displayName;
+        controls.addOverlay(layerGroup.get(key), title);
+      }
+      else {
+        title = selectedOrgUnit.displayName + ", " + selectedProgram.displayName;
+        /*
+        layerGroup.get(key).eachLayer(layer => {
+          controls.addOverlay(layer, title);
+        });
+        */
+        controls.addOverlay(layerGroup.get(key), title);
+      }
+      console.log("Adding controls:", layerGroup);
     });
-    this.layers = [];
+  }
+  clearMap(L:any){
+    this.mapData.forEach(item => {
+      for(let i = 0; i < item.length; i++){
+        let layerGroup = item[i];
+        L.control.removeLayer(layerGroup);
+        layerGroup.clearLayers();
+      }
+    });
+    ColorHandlerUtil.reset();
+    this.mapData = new Map<string, any>();
   }
 
   getTrackedEntityInstances(query: string): Observable<TrackedEntityInstanceModel[]> {
