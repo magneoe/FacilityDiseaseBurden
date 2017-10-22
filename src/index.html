@@ -13,16 +13,11 @@
   <%= webpackConfig.htmlElements.headTags %>
   <% } %>
 
-
   <%= htmlWebpackPlugin.files.webpackManifest %>
-
   <% if (htmlWebpackPlugin.options.metadata.isDevServer && htmlWebpackPlugin.options.metadata.HMR !== true) { %>
   <!-- Webpack Dev Server reload -->
   <script src="/webpack-dev-server.js"></script>
   <% } %>
-  <!--<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
-        integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
-        crossorigin=""/>-->
  <link rel="stylesheet" href="styles/leaflet.css"/>
   <script type="text/javascript" src="leaflet.js"></script>
   <!-- CSS will be injected by webpack here -->

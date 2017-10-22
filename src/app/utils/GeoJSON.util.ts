@@ -1,18 +1,19 @@
+
 export class GeoJSONUtil {
 
-  public static exportPointToGeo(coordinates:string): any {
-
+  public static exportPointToGeo(coordinates:string, popupContent:string): any {
     let lat = this.getLat(coordinates);
     let lng = this.getLng(coordinates);
     console.log('Lat:', lat);
     console.log('Lon:', lng);
+
     if (lat == null || lat == undefined || lng == null || lng == undefined)
       return null;
     else {
       let geoJSONFeature = {
         "type": "Feature",
         "properties": {
-          "popupContent": "test"
+          "popupContent": popupContent
         },
         "geometry": {
           "type": "Point",
@@ -41,7 +42,6 @@ export class GeoJSONUtil {
       return geoJSONFeature;
     }
   }
-
   private static getLat(coordinates:string):string{
     if(coordinates == null || coordinates == undefined)
       return null;

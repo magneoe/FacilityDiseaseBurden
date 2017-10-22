@@ -1,4 +1,4 @@
-export class TrackedEntityInstanceModel {
+export class TrackedEntity {
 
   private values:Map<string,any>;
 
@@ -13,40 +13,25 @@ export class TrackedEntityInstanceModel {
     return this.lastUpdated;
   }
 
-
   private setAttributes(attributes:any[]){
     attributes.forEach(row => {
       this.values.set(row.displayName, row);
     });
   }
-/*
-  public exportToGeoJSON(coords:string):any {
-    var lat = coords.split(',',2)[0];
-    var lon = coords.split(',',2)[1];
-
-    if(lat == null || lat == undefined || lon == null || lon == undefined)
-      return null;
-    else {
-      let geoJSONFeature = {
-        "type": "Feature",
-        "properties": {
-          "popupContent": ""
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [lat, lon]
-        }
-      };
-      return geoJSONFeature;
-    }
-  }*/
 
   public toString(): string {
-    let output = "";
+    let output = new Array<string>();
     this.values.forEach(value => {
-      output += value.displayName + ": " + value.value + "\n";
+      output.push("<strong>" + value.displayName.charAt(0).toUpperCase() + value.displayName.slice(1) +  "</strong>: " + value.value);
     });
-    return output;
+    output = output.sort(function (a:string, b:string){
+      if(a < b)
+        return -1;
+      if(a > b)
+        return 1;
+      return 0;
+    });
+    return output.join("<br/>");
   }
 
   public getCoords():string {

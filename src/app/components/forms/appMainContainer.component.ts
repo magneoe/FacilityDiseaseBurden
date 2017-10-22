@@ -58,8 +58,6 @@ export class AppMainContainerComponent implements OnDestroy {
    * The submitting
    */
   select(): void {
-    //"Date range: from" + this.datePicker.getStartDate().toLocaleDateString('en-GB') + ' to: ' + this.datePicker.getEndDate().toLocaleDateString('en-GB');
-    console.log('Select pushed!');
     this.mapComponent.updateMap();
   }
 
