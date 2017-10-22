@@ -7,7 +7,7 @@ import {Http, Response} from '@angular/http';
 import {OrganizationUnit} from "../models/OrganizationUnit";
 import {GeoJSONUtil} from "../utils/GeoJSON.util";
 import {Programs} from "../models/Programs";
-import {ColorHandlerUtil} from "../utils/colorHandler.util";
+import {MapObjectFactory, MapObjectType} from "../utils/MapObjectFactory.util";
 import {TrackedEntity} from "../models/TrackedEntity.model";
 
 @Injectable()
@@ -58,7 +58,7 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
           trackedEntities.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
         });
         //Get next available color
-        let color = ColorHandlerUtil.getNextAvailableColor();
+        let color = MapObjectFactory.getNextAvailableColor();
 
         //Adds all the data to map and returns the overlays to pass to the map control.
         let overlayLayers = this.addDataToMap(mapInputData.getSelectedOrgUnit(), this.getEntities(trackedEntities, L, color),
@@ -78,7 +78,7 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
         layerGroup.clearLayers();
       }
     });
-    ColorHandlerUtil.reset();
+    MapObjectFactory.reset();
     mapData.clear();
   }
   // Loads the tracked entity instances from the server
@@ -88,9 +88,9 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
 
   //Makes markers based on the entities with a given color and returns them as a layer reference
   private getEntities(trackedEntities: TrackedEntity[], L:any, color:string){
-    var icon = ColorHandlerUtil.getMarker(color, L);
+    var entityIcon = MapObjectFactory.getMapObject(MapObjectType.ENTITY, color, L).getIcon();
     let newLayer = L.geoJSON(null, {pointToLayer: function (feature, latlng) {
-      return L.marker(latlng, {icon: icon});
+      return L.marker(latlng, {icon: entityIcon});
     }}).bindPopup(function (layer){
       return layer.feature.properties.popupContent;
     });
@@ -118,18 +118,10 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
     });
     return newLayer;
   }
-  private getOrgUnit(orgUnit: OrganizationUnit, L:any, map:any){
-    var LeafIcon = L.Icon.extend({
-      shadowUrl: '../../assets/img/facility-shadow.png',
-      iconSize:     [38, 95], // size of the icon
-      shadowSize:   [50, 64], // size of the shadow
-      iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
-      shadowAnchor: [4, 62],  // the same for the shadow
-      popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
-    });
-    var greenIcon = new LeafIcon({iconUrl: '../../assets/img/facility.png'});
+  private getOrgUnitLayer(orgUnit: OrganizationUnit, L:any, map:any){
+    var facilityIcon = MapObjectFactory.getMapObject(MapObjectType.FACILITY, null, L).getIcon();
     let layer = L.geoJSON(null, {pointToLayer: function (feature, latlng) {
-      return L.marker(latlng, {icon: greenIcon});
+      return L.marker(latlng, {icon: facilityIcon});
     }}).bindPopup(function (layer){
       return layer.feature.properties.popupContent;
     }).addTo(map);
@@ -153,7 +145,7 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
         mapData.get(selectedOrgUnit.id).push(layerGroup);
     }
     else {
-      let orgUnitLayer = this.getOrgUnit(selectedOrgUnit, L, map);
+      let orgUnitLayer = this.getOrgUnitLayer(selectedOrgUnit, L, map);
       overlayLayers.set(selectedOrgUnit.id, orgUnitLayer);
       mapData.set(selectedOrgUnit.id, [layerGroup, orgUnitLayer]);
     }
