@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 
 import {Observable} from 'rxjs/Observable';
-import {OrganizationUnit} from "../models/OrganizationUnit";
-import {Programs} from "../models/Programs";
+import {OrganizationUnit} from "../models/OrganizationUnit.model";
+import {Programs} from "../models/Program.model.";
 import {HttpWrapperService} from "./HttpWrapper.service";
 
 /*

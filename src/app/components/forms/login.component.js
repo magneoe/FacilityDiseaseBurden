@@ -12,9 +12,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@angular/core");
 const router_1 = require("@angular/router");
 const customValidation_service_1 = require("../../services/customValidation.service");
-const User_1 = require("../../models/User");
+const User_1 = require("../../models/User.model");
 const login_service_1 = require("../../services/login.service");
-let LoginComponent = 
+let LoginComponent =
 /*
  * Temporary login component - runs basic authentication for now - will be set up with tokens eventually
  */

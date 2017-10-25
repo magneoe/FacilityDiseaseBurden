@@ -1,8 +1,8 @@
 import {Component, Output} from "@angular/core";
 import {CustomValidationService} from "../../services/customValidation.service";
-import {ValidationMessage} from "../../models/ValidationMessage";
+import {ValidationMessage} from "../../models/ValidationMessage.model";
 import {MapInputDataService} from "../../services/mapInputData.service";
-import {MapInputData} from "../../models/MapInputData";
+import {MapInputData} from "../../models/MapInputData.model";
 
 @Component({
   selector: 'datePicker',
@@ -37,7 +37,7 @@ export class DatePickerComponent{
 
     this._customValidationService.sendMessage(validationMessage);
 
-    let mapInputData = new MapInputData(null, null, this.startDate, this.endDate);
+    let mapInputData = new MapInputData(null, null, this.startDate, this.endDate, null);
     this._mapInputDataService.sendMessage(mapInputData);
   }
   /*

@@ -11,12 +11,15 @@ import { LoginComponent } from './components/forms/login.component';
 import { OrganizationLoaderComponent } from './components/forms/organizationLoader.component';
 import { DatePickerComponent } from './components/forms/datePicker.component';
 import { OrderByDisplayNamePipe } from './pipes/organizationLoader.pipe';
-import { ProgramsComponent } from './components/forms/programs.component';
+import { ProgramsComponent } from './components/forms/program/program.component';
 import { ProgramsService } from './services/programs.service';
 import { CustomValidationService } from './services/customValidation.service';
 import { AppMainContainerComponent } from './components/forms/appMainContainer.component';
 import { MapComponent } from './components/map/map.component';
 import { MapInputDataService } from './services/mapInputData.service';
+import {ProgramFilterComponent} from "./components/forms/program/programFilter.component";
+import {ProgramFilterAttributeComponent} from "./components/forms/program/programFilterAttribute.component";
+import {TrackedEntityLoaderServiceService} from "./services/TrackedEntityLoaderService.service";
 
 
 const appRoutes: Routes = [
@@ -32,8 +35,9 @@ const appRoutes: Routes = [
     FormsModule, ReactiveFormsModule ],
   declarations: [ AppComponent, OrganizationLoaderComponent, PageNotFoundComponent, LoginComponent,
     OrderByDisplayNamePipe, DatePickerComponent,
-    AppMainContainerComponent, ProgramsComponent, MapComponent ],
+    AppMainContainerComponent, ProgramsComponent, MapComponent, ProgramFilterComponent, ProgramFilterAttributeComponent ],
   bootstrap:    [ AppComponent ],
-  providers: [AuthorizationService, ProgramsService, CustomValidationService, MapInputDataService ]
+  providers: [AuthorizationService, ProgramsService, CustomValidationService, MapInputDataService, TrackedEntityLoaderServiceService ],
+  entryComponents: [ProgramFilterComponent, ProgramFilterAttributeComponent]
 })
 export class AppModule { }

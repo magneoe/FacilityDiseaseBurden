@@ -1,5 +1,5 @@
 
-import {Programs} from "./Programs";
+import {Programs} from "./Program.model.";
 
 export interface OrganizationUnit {
 

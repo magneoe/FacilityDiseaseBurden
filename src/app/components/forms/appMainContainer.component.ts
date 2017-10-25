@@ -1,7 +1,7 @@
 import {Component, OnDestroy, ViewChild} from '@angular/core';
 import {CustomValidationService} from '../../services/customValidation.service';
 import {Subscription} from 'rxjs/Subscription';
-import {ValidationMessage} from '../../models/ValidationMessage';
+import {ValidationMessage} from '../../models/ValidationMessage.model';
 import {MapComponent} from "../map/map.component";
 
 

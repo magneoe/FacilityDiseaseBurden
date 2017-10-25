@@ -2,31 +2,24 @@
 /* This file is for setting global styles  */
 @import 'variables';
 
-nav {
-  margin-top: 16px;
-}
 
-nav a {
-  background-color: $nav-button-color;
-  color: white;
-  padding: 8px 16px;
-  margin: 8px;
-  vertical-align: middle;
-  line-height: 1.25;
-  text-align: center;
-  text-decoration: none;
-  border-radius: 4px;
-}
 h1 {
   color: #369;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 250%;
 }
 
-.button {
-  text-decoration: underline;
-  text-decoration-color: aqua;
-  cursor: pointer;
+header {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background-color: #215e8c;
+  box-shadow: 0 0 3px 0 #222;
+  height: 56px;
+  z-index: -1000;
+  display:block;
 }
+
+
 
 

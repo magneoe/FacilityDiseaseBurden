@@ -1,28 +1,17 @@
 
 import {Injectable} from '@angular/core';
-import {MapInputData} from '../models/MapInputData';
-import {HttpWrapperService} from './HttpWrapper.service';
-import {Observable} from 'rxjs/Observable';
-import {Http, Response} from '@angular/http';
-import {OrganizationUnit} from "../models/OrganizationUnit";
+import {OrganizationUnit} from "../models/OrganizationUnit.model";
 import {GeoJSONUtil} from "../utils/GeoJSON.util";
-import {Programs} from "../models/Programs";
+import {Programs} from "../models/Program.model.";
 import {MapObjectFactory, MapObjectType} from "../utils/MapObjectFactory.util";
 import {TrackedEntity} from "../models/TrackedEntity.model";
+import {FilterQuery} from "../models/FilterQuery.model";
+import {TrackedEntityLoaderServiceService} from "./TrackedEntityLoaderService.service";
 
 @Injectable()
-export class MapService extends HttpWrapperService<TrackedEntity> {
+export class MapService {
 
-  /*
-   * Each entry corresponds to a orgUnit and its related layergroups,
-   * one layerGroup for each program.
-   */
-
-
-  constructor(_http: Http) {
-    super(_http, JSON.parse(sessionStorage.getItem("user")));
-  }
-
+  constructor(private _trackedEntityLoaderService:TrackedEntityLoaderServiceService) {}
   /*
    * Initates the map and returns the reference to it
    */
@@ -34,7 +23,6 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
       id: 'mapbox.dark',
       accessToken: process.env.MAPBOX_ACCESS_TOKEN
     }).addTo(map);
-
     return map;
   }
 
@@ -42,31 +30,41 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
    * Loads one layer group to show on map - each layergroup will contain entities, polylines and a org.Unit
    * if it does not exist.
    */
-  public loadLayerGroup(mapInputData: MapInputData, L: any, map: any, layerNumber:number, controls:any, mapData:Map<string, any[]>) {
-      let orgUnitId = mapInputData.getSelectedOrgUnit().id;
-      let programId = mapInputData.getSelectedPrograms()[layerNumber].id;
-      let startDate = mapInputData.getStartDate();
-      let endDate = mapInputData.getEndDate();
+  public loadLayerGroup(selOrgUnit:OrganizationUnit, selProg:Programs, selStartDate:string, selEndDate:string, filterQueries:Map<string, FilterQuery[]>,
+                        controls:any, mapData:Map<string, any[]>, L: any, map: any) {
+      let orgUnitId = selOrgUnit.id;
+      let programId = selProg.id;
+      let filterQueryString = '';
 
-     this.getTrackedEntityInstances('api/trackedEntityInstances?ou=' + orgUnitId + '&' +
-      'program=' + programId + '&programStartDate=' + startDate + '&programEndDate=' + endDate + '&' +
-      'paging=0&fields=[attributes,lastUpdated]')
+      if(filterQueries != null && filterQueries.get(programId) !== undefined) {
+        let programQueries = filterQueries.get(programId);
+        for(let i = 0; i <programQueries.length; i++) {
+          if(i === 0)
+            filterQueryString += '&filter=';
+          filterQueryString += programQueries[i].convertToFormattedQuery();
+        }
+      }
+
+     this._trackedEntityLoaderService.getTrackedEntityInstances('api/trackedEntityInstances?ou=' + orgUnitId + '&' +
+      'program=' + programId + '&programStartDate=' + selStartDate + '&programEndDate=' + selEndDate + '&' +
+      'paging=0&fields=[attributes,lastUpdated]' + filterQueryString)
       .subscribe((units: any) => {
         console.log('TrackedEntityInstances:', units);
-        let trackedEntities = [];
-        units.trackedEntityInstances.forEach(unit => {
+        let trackedEntities:TrackedEntity[] = [];
+        console.log('TESTING:', trackedEntities);
+        units.trackedEntityInstances.forEach((unit:TrackedEntity) => {
           trackedEntities.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
         });
+
         //Get next available color
-        let color = MapObjectFactory.getNextAvailableColor();
+        let color = MapObjectFactory.getNextAvailableColor(programId);
 
         //Adds all the data to map and returns the overlays to pass to the map control.
-        let overlayLayers = this.addDataToMap(mapInputData.getSelectedOrgUnit(), this.getEntities(trackedEntities, L, color),
-          this.getPolyLines(trackedEntities, L, mapInputData.getSelectedOrgUnit(), color), L, map, mapData);
+        let overlayLayers = this.addDataToMap(selOrgUnit, this.getEntities(trackedEntities, L, color),
+          this.getPolyLines(trackedEntities, L, selOrgUnit, color), L, map, mapData);
 
         //Sets up the map overlay
-        this.addControlMapOverlay(mapInputData.getSelectedOrgUnit(),
-          mapInputData.getSelectedPrograms()[layerNumber], overlayLayers, controls, color);
+        this.addControlMapOverlay(selOrgUnit, selProg, overlayLayers, controls, color);
       });
   }
 
@@ -81,10 +79,7 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
     MapObjectFactory.reset();
     mapData.clear();
   }
-  // Loads the tracked entity instances from the server
-  protected getTrackedEntityInstances(query: string): Observable<TrackedEntity[]> {
-    return this.get(query).do((data) => console.log(JSON.stringify(data))).catch(this.handleError);
-  }
+
 
   //Makes markers based on the entities with a given color and returns them as a layer reference
   private getEntities(trackedEntities: TrackedEntity[], L:any, color:string){
@@ -95,7 +90,7 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
       return layer.feature.properties.popupContent;
     });
 
-    trackedEntities.forEach(entity => {
+    trackedEntities.forEach((entity:TrackedEntity) => {
       let geoJSON = GeoJSONUtil.exportPointToGeo(entity.getCoords(), entity.toString());
       console.log('Geo JSON:', geoJSON);
       if(geoJSON != null)
@@ -173,17 +168,5 @@ export class MapService extends HttpWrapperService<TrackedEntity> {
       }
       console.log("Adding controls:", layerGroup);
     });
-  }
-
-
-  /*
-   * Implements the HttpWrapper service methods
-   */
-  getAsArray(res: Response): TrackedEntity[] {
-    return <TrackedEntity[]> res.json();
-  }
-  handleError(error: Response) {
-    console.error(error);
-    return Observable.throw(error.json().error());
   }
 }

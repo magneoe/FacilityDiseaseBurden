@@ -1,6 +1,6 @@
 import {Http, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
-import {OrganizationUnit} from '../models/OrganizationUnit';
+import {OrganizationUnit} from '../models/OrganizationUnit.model';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/catch';
@@ -37,8 +37,8 @@ export class OrganizationUnitLoaderService extends HttpWrapperService<Organizati
 
   findSelectedOrgUnit(ancestorId: string, organisationUnits: OrganizationUnit[]) : OrganizationUnit {
 
-    var orgUnitsAtGivenLevel = organisationUnits;
-    var org : OrganizationUnit = null;
+    let orgUnitsAtGivenLevel = organisationUnits;
+    let org : OrganizationUnit = null;
     if(ancestorId.startsWith("Choose"))
       return org;
     do {
@@ -49,9 +49,9 @@ export class OrganizationUnitLoaderService extends HttpWrapperService<Organizati
   }
 
   findChildrenOfSelectedOrgUnit(level: number, numberOfLevels: number, organisationUnits: OrganizationUnit[]) : OrganizationUnit[] {
-    var orgUnitsAtGivenLevel = organisationUnits;
+    let orgUnitsAtGivenLevel = organisationUnits;
 
-    for(var i = 0; i < numberOfLevels; i++){
+    for(let i = 0; i < numberOfLevels; i++){
       if(i+1 == level){
         return orgUnitsAtGivenLevel;
       }
@@ -59,7 +59,7 @@ export class OrganizationUnitLoaderService extends HttpWrapperService<Organizati
     }
   }
   setLevel(selectedOrgUnit : OrganizationUnit, level : number, levels: number[], organisationUnits: OrganizationUnit[]) : number[] {
-    var orgUnitsAtLevel = this.findChildrenOfSelectedOrgUnit(level, levels.length, organisationUnits);
+    let orgUnitsAtLevel = this.findChildrenOfSelectedOrgUnit(level, levels.length, organisationUnits);
 
     orgUnitsAtLevel.map(org => org.selected = false);
     orgUnitsAtLevel.map(org => org.children = []);
@@ -73,9 +73,9 @@ export class OrganizationUnitLoaderService extends HttpWrapperService<Organizati
 
   findSelectOrgUnit(lvl:number, numberOfLevels:number, organisationUnits:OrganizationUnit[]): OrganizationUnit {
 
-    var orgUnitsAtGivenLevel = organisationUnits;
+    let orgUnitsAtGivenLevel = organisationUnits;
 
-    for(var i = 0; i < numberOfLevels; i++){
+    for(let i = 0; i < numberOfLevels; i++){
       if(i+1 == lvl){
         return orgUnitsAtGivenLevel.find(org => org.selected === true);
       }

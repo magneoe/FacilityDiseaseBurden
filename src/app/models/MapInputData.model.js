@@ -33,4 +33,4 @@ class MapInputData {
     }
 }
 exports.MapInputData = MapInputData;
-//# sourceMappingURL=MapInputData.js.map
+//# sourceMappingURL=MapInputData.model.js.mapjs.map

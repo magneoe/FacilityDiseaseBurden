@@ -10,12 +10,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@angular/core");
-const programs_service_1 = require("../../services/programs.service");
-const customValidation_service_1 = require("../../services/customValidation.service");
-const ValidationMessage_1 = require("../../models/ValidationMessage");
-const mapInputData_service_1 = require("../../services/mapInputData.service");
-const MapInputData_1 = require("../../models/MapInputData");
-let ProgramsComponent = 
+const programs_service_1 = require("../../../services/programs.service");
+const customValidation_service_1 = require("../../../services/customValidation.service");
+const ValidationMessage_1 = require("../../../models/ValidationMessage.model");
+const mapInputData_service_1 = require("../../../services/mapInputData.service");
+const MapInputData_1 = require("../../../models/MapInputData.model");
+let ProgramsComponent =
 /*
  * This component represent DHIS2 programs loaded into checkboxes in the view.
  *
@@ -96,7 +96,7 @@ __decorate([
 ProgramsComponent = __decorate([
     core_1.Component({
         selector: 'programPicker',
-        templateUrl: '../../views/programs.component.html',
+        templateUrl: '../../../views/program/program.component.html',
         providers: [programs_service_1.ProgramsService]
     })
     /*
@@ -108,4 +108,4 @@ ProgramsComponent = __decorate([
         mapInputData_service_1.MapInputDataService])
 ], ProgramsComponent);
 exports.ProgramsComponent = ProgramsComponent;
-//# sourceMappingURL=programs.component.js.map
+//# sourceMappingURL=program.component.jsmap

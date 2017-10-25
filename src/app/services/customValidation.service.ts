@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Observable} from "rxjs/Observable";
-import {ValidationMessage} from "../models/ValidationMessage";
+import {ValidationMessage} from "../models/ValidationMessage.model";
 import {Subject} from "rxjs/Subject";
 
 

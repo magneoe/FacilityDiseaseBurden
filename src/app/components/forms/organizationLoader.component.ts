@@ -1,12 +1,12 @@
 import {Component, Output} from '@angular/core';
 import {OrganizationUnitLoaderService} from "../../services/organizationUnitLoader.service";
 import {OrderByDisplayNamePipe} from "../../pipes/organizationLoader.pipe";
-import {OrganizationUnit} from "../../models/OrganizationUnit";
-import {ProgramsComponent} from "./programs.component";
-import {ValidationMessage} from "../../models/ValidationMessage";
+import {OrganizationUnit} from "../../models/OrganizationUnit.model";
+import {ProgramsComponent} from "./program/program.component";
+import {ValidationMessage} from "../../models/ValidationMessage.model";
 import {CustomValidationService} from "../../services/customValidation.service";
 import {MapInputDataService} from "../../services/mapInputData.service";
-import {MapInputData} from "../../models/MapInputData";
+import {MapInputData} from "../../models/MapInputData.model";
 
 
 @Component({
@@ -43,7 +43,7 @@ export class OrganizationLoaderComponent {
 
     this._customValidationService.sendMessage(validationMessage);
 
-    let mapInputData = new MapInputData(null, this.selectedOrgUnit, null, null);
+    let mapInputData = new MapInputData(null, this.selectedOrgUnit, null, null, null);
     this._mapInputDataService.sendMessage(mapInputData);
   }
   /*

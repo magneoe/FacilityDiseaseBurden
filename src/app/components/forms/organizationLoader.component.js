@@ -12,12 +12,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@angular/core");
 const organizationUnitLoader_service_1 = require("../../services/organizationUnitLoader.service");
 const organizationLoader_pipe_1 = require("../../pipes/organizationLoader.pipe");
-const programs_component_1 = require("./programs.component");
-const ValidationMessage_1 = require("../../models/ValidationMessage");
+const programs_component_1 = require("./program/program.component");
+const ValidationMessage_1 = require("../../models/ValidationMessage.model");
 const customValidation_service_1 = require("../../services/customValidation.service");
 const mapInputData_service_1 = require("../../services/mapInputData.service");
-const MapInputData_1 = require("../../models/MapInputData");
-let OrganizationLoaderComponent = 
+const MapInputData_1 = require("../../models/MapInputData.model");
+let OrganizationLoaderComponent =
 /*
  * This component represent the loading of organisation units from the hiarcky
  * manifested in a multi level drop down list in the view.
