@@ -1,17 +1,16 @@
-
 import {Injectable} from '@angular/core';
-import {OrganizationUnit} from "../models/OrganizationUnit.model";
-import {GeoJSONUtil} from "../utils/GeoJSON.util";
-import {Programs} from "../models/Program.model.";
-import {MapObjectFactory, MapObjectType} from "../utils/MapObjectFactory.util";
-import {TrackedEntity} from "../models/TrackedEntity.model";
-import {FilterQuery} from "../models/FilterQuery.model";
-import {TrackedEntityLoaderServiceService} from "./TrackedEntityLoaderService.service";
+import {OrganizationUnit} from "../../models/OrganizationUnit.model";
+import {GeoJSONUtil} from "../../utils/GeoJSON.util";
+import {Program} from "../../models/Program.model";
+import {MapObjectFactory} from "../../utils/MapObjectFactory.util";
+import {TrackedEntity} from "../../models/TrackedEntity.model";
+import {Logger} from "angular2-logger/core";
+import {MapObjectType} from "../../enums/MapObjectType.enum";
 
 @Injectable()
 export class MapService {
 
-  constructor(private _trackedEntityLoaderService:TrackedEntityLoaderServiceService) {}
+  constructor(private _logger:Logger) {}
   /*
    * Initates the map and returns the reference to it
    */
@@ -30,31 +29,12 @@ export class MapService {
    * Loads one layer group to show on map - each layergroup will contain entities, polylines and a org.Unit
    * if it does not exist.
    */
-  public loadLayerGroup(selOrgUnit:OrganizationUnit, selProg:Programs, selStartDate:string, selEndDate:string, filterQueries:Map<string, FilterQuery[]>,
+  public loadLayerGroup(selOrgUnit:OrganizationUnit, selProg:Program, trackedEntities:TrackedEntity[],
                         controls:any, mapData:Map<string, any[]>, L: any, map: any) {
-      let orgUnitId = selOrgUnit.id;
       let programId = selProg.id;
-      let filterQueryString = '';
-
-      if(filterQueries != null && filterQueries.get(programId) !== undefined) {
-        let programQueries = filterQueries.get(programId);
-        for(let i = 0; i <programQueries.length; i++) {
-          if(i === 0)
-            filterQueryString += '&filter=';
-          filterQueryString += programQueries[i].convertToFormattedQuery();
-        }
-      }
-
-     this._trackedEntityLoaderService.getTrackedEntityInstances('api/trackedEntityInstances?ou=' + orgUnitId + '&' +
-      'program=' + programId + '&programStartDate=' + selStartDate + '&programEndDate=' + selEndDate + '&' +
-      'paging=0&fields=[attributes,lastUpdated]' + filterQueryString)
-      .subscribe((units: any) => {
-        console.log('TrackedEntityInstances:', units);
-        let trackedEntities:TrackedEntity[] = [];
-        console.log('TESTING:', trackedEntities);
-        units.trackedEntityInstances.forEach((unit:TrackedEntity) => {
-          trackedEntities.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
-        });
+      this._logger.log("Selected OrgUnit in loadLayerGroup:", selOrgUnit);
+      this._logger.log("SelProg in loadLayerGroup:", selProg);
+      this._logger.log("TrackedEntities in loadLayerGroup:", trackedEntities);
 
         //Get next available color
         let color = MapObjectFactory.getNextAvailableColor(programId);
@@ -65,7 +45,7 @@ export class MapService {
 
         //Sets up the map overlay
         this.addControlMapOverlay(selOrgUnit, selProg, overlayLayers, controls, color);
-      });
+      //});
   }
 
   public clearMap(controls:any, mapData:Map<string, any[]>){
@@ -147,7 +127,7 @@ export class MapService {
     overlayLayers.set("layerGroup", layerGroup);
     return overlayLayers;
   }
-  private addControlMapOverlay(selectedOrgUnit:OrganizationUnit, selectedProgram:Programs,
+  private addControlMapOverlay(selectedOrgUnit:OrganizationUnit, selectedProgram:Program,
                                layerGroup:Map<string, any>, controls:any, color:string){
     let iterator = layerGroup.keys();
     layerGroup.forEach(item => {

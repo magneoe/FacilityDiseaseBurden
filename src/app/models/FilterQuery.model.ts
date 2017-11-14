@@ -1,4 +1,7 @@
 
+import {FilterOperation} from "../enums/FilterOperation.enum";
+import {OperatorType} from "../enums/OperatorType.enum";
+
 export class FilterQuery {
   constructor(private property:string, private operator:OperatorType,
               private value:string, private filterOperation:FilterOperation){}
@@ -48,13 +51,6 @@ export class FilterQuery {
   }
 }
 
-export enum OperatorType {
-  GREATER_THAN,
-  LESS_THAN,
-  EQUALS,
-  LIKE
-}
 
-export enum FilterOperation {
-  ADD, REMOVE
-}
+
+

@@ -7,4 +7,6 @@ import { Component } from '@angular/core';
 export class AppComponent {
   protected appTitle: string = 'Facility Disease Burden app';
 
+  constructor(){
+  }
 }

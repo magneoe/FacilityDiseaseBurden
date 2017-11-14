@@ -1,6 +1,6 @@
 import {Http, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
-import {OrganizationUnit} from '../models/OrganizationUnit.model';
+import {OrganizationUnit} from '../../models/OrganizationUnit.model';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/catch';

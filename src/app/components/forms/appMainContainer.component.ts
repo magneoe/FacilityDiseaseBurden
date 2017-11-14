@@ -3,11 +3,14 @@ import {CustomValidationService} from '../../services/customValidation.service';
 import {Subscription} from 'rxjs/Subscription';
 import {ValidationMessage} from '../../models/ValidationMessage.model';
 import {MapComponent} from "../map/map.component";
+import {TemporalDimensionComponent} from "../temporal/TemporalDimension.component";
+import {CommonResourceDispatcherService} from "../../services/dataInput/CommonResourceDispatcher.service";
 
 
 @Component({
   selector: 'app',
   templateUrl: '../../views/appMainContainer.component.html',
+  providers: [CommonResourceDispatcherService]
 })
 
 /*
@@ -20,8 +23,10 @@ export class AppMainContainerComponent implements OnDestroy {
   protected errorMessages: Map<string, ValidationMessage> = new Map();
   private subscription: Subscription;
   @ViewChild(MapComponent) mapComponent: MapComponent;
+  @ViewChild(TemporalDimensionComponent) temporalComponent: TemporalDimensionComponent;
 
-  constructor(private _customValidationService: CustomValidationService) {
+  constructor(private _customValidationService: CustomValidationService,
+              private _commonResourceDispatcher:CommonResourceDispatcherService) {
 
     // Subscribes to the Validation message service used by the child components for sending validation messages.
     this.subscription = this._customValidationService.getErrorMessage().subscribe(validationMessage => {
@@ -58,7 +63,7 @@ export class AppMainContainerComponent implements OnDestroy {
    * The submitting
    */
   select(): void {
-    this.mapComponent.updateMap();
+    this._commonResourceDispatcher.handleUpdate(this.mapComponent, this.temporalComponent);
   }
 
   ngOnDestroy(){

@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {Http, Response} from '@angular/http';
 
 import {Observable} from 'rxjs/Observable';
-import {OrganizationUnit} from "../models/OrganizationUnit.model";
-import {Programs} from "../models/Program.model.";
+import {OrganizationUnit} from "../../models/OrganizationUnit.model";
+import {Program} from "../../models/Program.model";
 import {HttpWrapperService} from "./HttpWrapper.service";
 
 /*
@@ -33,7 +33,7 @@ export class ProgramsService extends HttpWrapperService<OrganizationUnit>{
   }
 
 
-  setSelectedProgram(event:any, programs:Programs[]): Programs[] {
+  setSelectedProgram(event:any, programs:Program[]): Program[] {
     if(event == null || event === undefined)
       return programs;
 

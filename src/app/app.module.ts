@@ -8,18 +8,21 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AuthorizationService } from './services/login.service';
 import { LoginComponent } from './components/forms/login.component';
-import { OrganizationLoaderComponent } from './components/forms/organizationLoader.component';
-import { DatePickerComponent } from './components/forms/datePicker.component';
+import { OrganizationLoaderComponent } from './components/forms/org/organizationLoader.component';
+import { DatePickerComponent } from './components/forms/date/datePicker.component';
 import { OrderByDisplayNamePipe } from './pipes/organizationLoader.pipe';
 import { ProgramsComponent } from './components/forms/program/program.component';
-import { ProgramsService } from './services/programs.service';
+import { ProgramsService } from './services/dataLoading/programs.service';
 import { CustomValidationService } from './services/customValidation.service';
 import { AppMainContainerComponent } from './components/forms/appMainContainer.component';
 import { MapComponent } from './components/map/map.component';
-import { MapInputDataService } from './services/mapInputData.service';
+import { MapInputDataService } from './services/dataInput/mapInputData.service';
 import {ProgramFilterComponent} from "./components/forms/program/programFilter.component";
 import {ProgramFilterAttributeComponent} from "./components/forms/program/programFilterAttribute.component";
-import {TrackedEntityLoaderServiceService} from "./services/TrackedEntityLoaderService.service";
+import {TrackedEntityLoaderService} from "./services/dataLoading/TrackedEntityLoaderService.service";
+import {LOG_LOGGER_PROVIDERS} from "angular2-logger/core";
+import {TemporalDimensionComponent} from "./components/temporal/TemporalDimension.component";
+import {OrganizationUnitLoaderService} from "./services/dataLoading/organizationUnitLoader.service";
 
 
 const appRoutes: Routes = [
@@ -35,9 +38,9 @@ const appRoutes: Routes = [
     FormsModule, ReactiveFormsModule ],
   declarations: [ AppComponent, OrganizationLoaderComponent, PageNotFoundComponent, LoginComponent,
     OrderByDisplayNamePipe, DatePickerComponent,
-    AppMainContainerComponent, ProgramsComponent, MapComponent, ProgramFilterComponent, ProgramFilterAttributeComponent ],
+    AppMainContainerComponent, ProgramsComponent, MapComponent, ProgramFilterComponent, ProgramFilterAttributeComponent, TemporalDimensionComponent ],
   bootstrap:    [ AppComponent ],
-  providers: [AuthorizationService, ProgramsService, CustomValidationService, MapInputDataService, TrackedEntityLoaderServiceService ],
+  providers: [AuthorizationService, ProgramsService, CustomValidationService, MapInputDataService, TrackedEntityLoaderService, OrganizationUnitLoaderService, LOG_LOGGER_PROVIDERS],
   entryComponents: [ProgramFilterComponent, ProgramFilterAttributeComponent]
 })
 export class AppModule { }

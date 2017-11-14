@@ -12,8 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@angular/core");
 const customValidation_service_1 = require("../../services/customValidation.service");
 const ValidationMessage_1 = require("../../models/ValidationMessage.model");
-const mapInputData_service_1 = require("../../services/mapInputData.service");
-const MapInputData_1 = require("../../models/MapInputData.model");
+const mapInputData_service_1 = require("../../services/dataInput/mapInputData.service");
+const MapInputData_1 = require("../../models/InputDataObject.model");
 let DatePickerComponent =
 /*
  * This component represents a datepicking form.
@@ -57,7 +57,7 @@ class DatePickerComponent {
 DatePickerComponent = __decorate([
     core_1.Component({
         selector: 'datePicker',
-        templateUrl: '../../views/datePicker.component.html',
+        templateUrl: '../../../views/datePicker.component.html',
     })
     /*
      * This component represents a datepicking form.

@@ -1,17 +1,19 @@
-import {Component, Output} from '@angular/core';
-import {OrganizationUnitLoaderService} from "../../services/organizationUnitLoader.service";
-import {OrderByDisplayNamePipe} from "../../pipes/organizationLoader.pipe";
-import {OrganizationUnit} from "../../models/OrganizationUnit.model";
-import {ProgramsComponent} from "./program/program.component";
-import {ValidationMessage} from "../../models/ValidationMessage.model";
-import {CustomValidationService} from "../../services/customValidation.service";
-import {MapInputDataService} from "../../services/mapInputData.service";
-import {MapInputData} from "../../models/MapInputData.model";
+import {Component} from '@angular/core';
+import {OrganizationUnitLoaderService} from "../../../services/dataLoading/organizationUnitLoader.service";
+import {OrderByDisplayNamePipe} from "../../../pipes/organizationLoader.pipe";
+import {OrganizationUnit} from "../../../models/OrganizationUnit.model";
+import {ProgramsComponent} from "../program/program.component";
+import {ValidationMessage} from "../../../models/ValidationMessage.model";
+import {CustomValidationService} from "../../../services/customValidation.service";
+import {MapInputDataService} from "../../../services/dataInput/mapInputData.service";
+import {InputDataMessage} from "../../../models/InputDataMessage.model";
+import {InputDataContent} from "../../../enums/InputDataContent.enum";
+
 
 
 @Component({
   selector: 'organisationPicker',
-  templateUrl: '../../views/organizationLoader.component.html',
+  templateUrl: '../../../views/organizationLoader.component.html',
   providers: [OrganizationUnitLoaderService, OrderByDisplayNamePipe, ProgramsComponent]
 })
 
@@ -43,8 +45,8 @@ export class OrganizationLoaderComponent {
 
     this._customValidationService.sendMessage(validationMessage);
 
-    let mapInputData = new MapInputData(null, this.selectedOrgUnit, null, null, null);
-    this._mapInputDataService.sendMessage(mapInputData);
+    let inputDataMessage = new InputDataMessage(null, InputDataContent.ORG_UNIT, this.selectedOrgUnit);
+    this._mapInputDataService.sendInputDataMessage(inputDataMessage);
   }
   /*
    * Loading the root level in the hiarcky

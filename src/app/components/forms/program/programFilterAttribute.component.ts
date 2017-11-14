@@ -2,10 +2,13 @@
 
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {TrackedEntityAttribute} from "../../../models/TrackedEntityAttribute.model";
-import {MapInputData} from "../../../models/MapInputData.model";
-import {MapInputDataService} from "../../../services/mapInputData.service";
-import {FilterOperation, FilterQuery, OperatorType} from "../../../models/FilterQuery.model";
-import {Programs} from "../../../models/Program.model.";
+import {MapInputDataService} from "../../../services/dataInput/mapInputData.service";
+import {FilterQuery} from "../../../models/FilterQuery.model";
+import {Program} from "../../../models/Program.model";
+import {InputDataMessage} from "../../../models/InputDataMessage.model";
+import {FilterOperation} from "../../../enums/FilterOperation.enum";
+import {OperatorType} from "../../../enums/OperatorType.enum";
+import {InputDataContent} from "../../../enums/InputDataContent.enum";
 
 @Component({
   selector: 'programFilterAttribute',
@@ -18,7 +21,7 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
   entityAttributes: TrackedEntityAttribute[];
   selectedAttribute:TrackedEntityAttribute = null;
 
-  selectedProgram: Programs;
+  selectedProgram: Program;
   formModel:any;
   private lastCommitedFilters:FilterQuery[] = [];
 
@@ -31,7 +34,7 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
       this.lastCommitedFilters.forEach((filter:FilterQuery) => {
         filter.setFilterOperation(FilterOperation.REMOVE);
       });
-      this.sendMapDataMessage(this.lastCommitedFilters);
+      this.sendInputDataMessage(this.lastCommitedFilters);
     }
   }
   removeObject(){
@@ -61,7 +64,7 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
       console.log('Formatted:', filterQueries[1].convertToFormattedQuery());
     }
     this.lastCommitedFilters = filterQueries;
-    this.sendMapDataMessage(filterQueries);
+    this.sendInputDataMessage(filterQueries);
   }
   selectAttribute(selectedAttributeId){
     if(selectedAttributeId === "null")
@@ -85,7 +88,7 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
       return true;
     });
   }
-  setSelectedProgram(selectedProgram:Programs){
+  setSelectedProgram(selectedProgram:Program){
     this.selectedProgram = selectedProgram;
   }
 
@@ -97,9 +100,11 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
       toNumberRange:0
     };
   }
-  private sendMapDataMessage(filterQueries:FilterQuery[]){
+  private sendInputDataMessage(filterQueries:FilterQuery[]){
     let filterQueriesMap:Map<string, FilterQuery[]> = new Map<string, FilterQuery[]>();
     filterQueriesMap.set(this.selectedProgram.id ,filterQueries);
-    this._mapInputDataService.sendMessage(new MapInputData(null, null, null, null, filterQueriesMap));
+
+    let inputDataMessage = new InputDataMessage(null, InputDataContent.FILTER_QUERY_MAP, filterQueriesMap);
+    this._mapInputDataService.sendInputDataMessage(inputDataMessage);
   }
 }

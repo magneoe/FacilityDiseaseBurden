@@ -1,9 +1,9 @@
 
 import {Component, ComponentFactoryResolver, OnInit, ViewChild, ViewContainerRef} from "@angular/core";
-import {Programs} from "../../../models/Program.model.";
+import {Program} from "../../../models/Program.model";
 import {ProgramFilterAttributeComponent} from "./programFilterAttribute.component";
 import {OrganizationUnit} from "../../../models/OrganizationUnit.model";
-import {TrackedEntityLoaderServiceService} from "../../../services/TrackedEntityLoaderService.service";
+import {TrackedEntityLoaderService} from "../../../services/dataLoading/TrackedEntityLoaderService.service";
 import {TrackedEntityAttribute} from "../../../models/TrackedEntityAttribute.model";
 
 @Component({
@@ -12,13 +12,13 @@ import {TrackedEntityAttribute} from "../../../models/TrackedEntityAttribute.mod
 })
 export class ProgramFilterComponent implements OnInit {
   _ref:any;
-  program:Programs;
+  program:Program;
   selectedOrgUnit:OrganizationUnit;
 
   @ViewChild('filterAttributes', {read: ViewContainerRef}) container: ViewContainerRef;
 
   constructor(private _cfr: ComponentFactoryResolver,
-              private _trackedEntityLoaderServiceService:TrackedEntityLoaderServiceService){}
+              private _trackedEntityLoaderServiceService:TrackedEntityLoaderService){}
 
   ngOnInit(){}
 

@@ -10,13 +10,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@angular/core");
-const organizationUnitLoader_service_1 = require("../../services/organizationUnitLoader.service");
+const organizationUnitLoader_service_1 = require("../../services/dataLoading/organizationUnitLoader.service");
 const organizationLoader_pipe_1 = require("../../pipes/organizationLoader.pipe");
 const programs_component_1 = require("./program/program.component");
 const ValidationMessage_1 = require("../../models/ValidationMessage.model");
 const customValidation_service_1 = require("../../services/customValidation.service");
-const mapInputData_service_1 = require("../../services/mapInputData.service");
-const MapInputData_1 = require("../../models/MapInputData.model");
+const mapInputData_service_1 = require("../../services/dataInput/mapInputData.service");
+const MapInputData_1 = require("../../models/InputDataObject.model");
 let OrganizationLoaderComponent =
 /*
  * This component represent the loading of organisation units from the hiarcky
@@ -105,7 +105,7 @@ class OrganizationLoaderComponent {
 OrganizationLoaderComponent = __decorate([
     core_1.Component({
         selector: 'organisationPicker',
-        templateUrl: '../../views/organizationLoader.component.html',
+        templateUrl: '../../../views/organizationLoader.component.html',
         providers: [organizationUnitLoader_service_1.OrganizationUnitLoaderService, organizationLoader_pipe_1.OrderByDisplayNamePipe, programs_component_1.ProgramsComponent]
     })
     /*

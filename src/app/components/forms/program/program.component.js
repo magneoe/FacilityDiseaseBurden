@@ -10,11 +10,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@angular/core");
-const programs_service_1 = require("../../../services/programs.service");
+const programs_service_1 = require("../../../services/dataLoading/programs.service");
 const customValidation_service_1 = require("../../../services/customValidation.service");
 const ValidationMessage_1 = require("../../../models/ValidationMessage.model");
-const mapInputData_service_1 = require("../../../services/mapInputData.service");
-const MapInputData_1 = require("../../../models/MapInputData.model");
+const mapInputData_service_1 = require("../../../services/dataInput/mapInputData.service");
+const MapInputData_1 = require("../../../models/InputDataObject.model");
 let ProgramsComponent =
 /*
  * This component represent DHIS2 programs loaded into checkboxes in the view.

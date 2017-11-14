@@ -3,14 +3,15 @@ import {
   ViewContainerRef
 } from '@angular/core';
 
-import {ProgramsService} from '../../../services/programs.service';
-import {Programs} from "../../../models/Program.model.";
+import {ProgramsService} from '../../../services/dataLoading/programs.service';
+import {Program} from "../../../models/Program.model";
 import {OrganizationUnit} from "../../../models/OrganizationUnit.model";
 import {CustomValidationService} from "../../../services/customValidation.service";
 import {ValidationMessage} from "../../../models/ValidationMessage.model";
-import {MapInputDataService} from "../../../services/mapInputData.service";
-import {MapInputData} from "../../../models/MapInputData.model";
+import {MapInputDataService} from "../../../services/dataInput/mapInputData.service";
 import {ProgramFilterComponent} from "./programFilter.component";
+import {InputDataMessage} from "../../../models/InputDataMessage.model";
+import {InputDataContent} from "../../../enums/InputDataContent.enum";
 
 @Component({
   selector: 'programPicker',
@@ -24,7 +25,7 @@ import {ProgramFilterComponent} from "./programFilter.component";
  */
 export class ProgramsComponent implements OnChanges, OnInit{
   @Input() selectedOrgUnit: OrganizationUnit;
-  programs: Programs[] = [];
+  programs: Program[] = [];
   private query: string;
   private readonly senderId:string = "programPicker";
   @ViewChild('programFilterContainer', {read: ViewContainerRef}) container: ViewContainerRef;
@@ -82,8 +83,10 @@ export class ProgramsComponent implements OnChanges, OnInit{
       filterComp.instance.selectedOrgUnit = this.selectedOrgUnit;
     }
 
-    let mapInputData = new MapInputData(this.getSelectedPrograms(), null, null, null, null);
-    this._mapInputDataService.sendMessage(mapInputData);
+    //Send datamessage to CommonResourceDistpatcher service.
+    let inputDataMessage = new InputDataMessage(null, InputDataContent.PROGRAMS,
+      this.programs.filter(prog => { return prog.isSelected}));
+    this._mapInputDataService.sendInputDataMessage(inputDataMessage);
   }
   /*
    * Composes error messages
@@ -102,8 +105,8 @@ export class ProgramsComponent implements OnChanges, OnInit{
    * Helper method
    */
 
-  private getSelectedPrograms():Programs[]{
-    let selectedProgs = new Array<Programs>();
+  private getSelectedPrograms():Program[]{
+    let selectedProgs = new Array<Program>();
     this.programs.forEach((prog) => {
       if(prog.isSelected)
         selectedProgs.push(prog);

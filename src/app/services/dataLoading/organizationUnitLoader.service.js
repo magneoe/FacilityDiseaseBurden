@@ -15,7 +15,7 @@ require("rxjs/add/operator/map");
 require("rxjs/add/operator/do");
 require("rxjs/add/operator/catch");
 const core_1 = require("@angular/core");
-const HttpWrapper_service_1 = require("./HttpWrapper.service");
+const HttpWrapper_service_1 = require("./dataLoading/HttpWrapper.service");
 /*
  * This service supports the organisation loader component -
  * A lot of the supporting methods from the component are placed here,

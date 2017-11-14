@@ -24,7 +24,7 @@ const LoaderOptionsPlugin = require('webpack/lib/LoaderOptionsPlugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const ngcWebpack = require('ngc-webpack');
 const DotenvPlugin = require('webpack-dotenv-plugin');
-//const PreloadWebpackPlugin = require('preload-webpack-plugin');
+
 
 /**
  * Webpack Constants

@@ -1,6 +1,12 @@
 
 import {MapObject} from "../models/MapObject.model";
+import {MapObjectType} from "../enums/MapObjectType.enum";
 
+/*
+ * What: This class has the responsibility of handing out available colors for map objects.
+ * Also, it creates map objects (markers/orgUnit markers)
+ * Why: To make to code more reuseable.
+ */
 export class MapObjectFactory {
   private static readonly colors:string[] = ["RED", "BLUE", "YELLOW", "BROWN", "PURPLE", "GREEN"];
   private static pointer:number = 0;
@@ -44,7 +50,4 @@ export class MapObjectFactory {
   }
 }
 
-export enum MapObjectType {
-  ENTITY,
-  FACILITY
-}
+

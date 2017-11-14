@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@angular/core");
 const http_1 = require("@angular/http");
 const Observable_1 = require("rxjs/Observable");
-const HttpWrapper_service_1 = require("./HttpWrapper.service");
+const HttpWrapper_service_1 = require("./dataLoading/HttpWrapper.service");
 /*
  * This service supports the programs component.
  * Increased reuse of code - stateless service
