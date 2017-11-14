@@ -1,0 +1,3 @@
+export enum InputDataContent {
+  START_DATE, END_DATE, PROGRAMS, ORG_UNIT, FILTER_QUERY_MAP
+}

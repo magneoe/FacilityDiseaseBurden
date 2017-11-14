@@ -1,0 +1,9 @@
+<!-- Programs -->
+<fieldset>
+<legend>Programs: </legend>
+
+<li *ngFor="let prog of programs">
+  <input type="checkbox" [value]="prog.id" (change)="notifyValueChange($event)"> {{prog.displayName}}
+</li>
+  <div #programFilterContainer></div>
+</fieldset>
