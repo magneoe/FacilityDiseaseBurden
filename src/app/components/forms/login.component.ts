@@ -1,13 +1,13 @@
 import {Component} from "@angular/core";
 import { Router }  from '@angular/router';
 import {CustomValidationService} from "../../services/customValidation.service";
-import {User} from "../../models/User";
+import {User} from "../../models/User.model";
 import {AuthorizationService} from "../../services/login.service";
 
 
 @Component({
   selector: 'login',
-  templateUrl: 'app/views/login.component.html',
+  templateUrl: '../../views/login.component.html',
   providers: [CustomValidationService]
 })
 

@@ -1,0 +1,30 @@
+<form>
+  Select attribute:
+
+  <select (change)="selectAttribute($event.target.value)">
+    <option [value]="null">Select attribute</option>
+    <option *ngFor="let attribute of entityAttributes" [value]="attribute.attribute">{{attribute.displayName}}</option>
+  </select>
+
+  <div *ngIf="selectedAttribute !== null && selectedAttribute.valueType === 'NUMBER'">
+    <label for="NumberFrom">From:</label>
+    <input id="NumberFrom" type="number" [(ngModel)]="formModel.fromNumberRange" name="fromNumberRange">
+
+    <label for="NumberTo">To:</label>
+    <input id="NumberTo" type="number" [(ngModel)]="formModel.toNumberRange" name="toNumberRange">
+  </div>
+  <div *ngIf="selectedAttribute !== null && selectedAttribute.valueType === 'TEXT'">
+
+    <input type="text" id="textSearchString" [(ngModel)]="formModel.searchTextString" name="searchTextString">
+
+    <input type="radio" value="EQUALS" id="equals" [(ngModel)]="formModel.searchType" name="searchType"/>
+    <label for="equals">Equals</label>
+
+    <input type="radio" value="LIKE" id="like" checked="checked" [(ngModel)]="formModel.searchType" name="searchType"/>
+    <label for="like">Like</label>
+
+  </div>
+
+  <button type="submit" (click)="save()">Set</button>
+  <button type="button" (click)="removeObject()">Remove</button>
+</form>
