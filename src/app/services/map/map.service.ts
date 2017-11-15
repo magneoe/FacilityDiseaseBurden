@@ -40,12 +40,11 @@ export class MapService {
         let color = MapObjectFactory.getNextAvailableColor(programId);
 
         //Adds all the data to map and returns the overlays to pass to the map control.
-        let overlayLayers = this.addDataToMap(selOrgUnit, this.getEntities(trackedEntities, L, color),
+        let overlayLayers = this.addDataToMap(selOrgUnit, this.addToCluster(this.getEntities(trackedEntities, L, color), L, color),
           this.getPolyLines(trackedEntities, L, selOrgUnit, color), L, map, mapData);
 
         //Sets up the map overlay
         this.addControlMapOverlay(selOrgUnit, selProg, overlayLayers, controls, color);
-      //});
   }
 
   public clearMap(controls:any, mapData:Map<string, any[]>){
@@ -62,7 +61,7 @@ export class MapService {
 
 
   //Makes markers based on the entities with a given color and returns them as a layer reference
-  private getEntities(trackedEntities: TrackedEntity[], L:any, color:string){
+  private getEntities(trackedEntities: TrackedEntity[], L:any, color:string): any {
     var entityIcon = MapObjectFactory.getMapObject(MapObjectType.ENTITY, color, L).getIcon();
     let newLayer = L.geoJSON(null, {pointToLayer: function (feature, latlng) {
       return L.marker(latlng, {icon: entityIcon});
@@ -72,12 +71,39 @@ export class MapService {
 
     trackedEntities.forEach((entity:TrackedEntity) => {
       let geoJSON = GeoJSONUtil.exportPointToGeo(entity.getCoords(), entity.toString());
-      console.log('Geo JSON:', geoJSON);
+      this._logger.debug('Geo JSON:', geoJSON);
       if(geoJSON != null)
         newLayer.addData(geoJSON);
     });
     return newLayer;
   }
+  private addToCluster(newLayer:any, L:any, color:string):any {
+    //Making a new clustergroup and adding the newLayer containing all the markers inside.
+    let clusterGroup = L.markerClusterGroup({
+      chunkedLoading: true,
+      showCoverageOnHover: true,
+      iconCreateFunction: function(cluster) {
+        var clusterSize = "small";
+        if (cluster.getChildCount() >= 5000) {
+          clusterSize = "medium";
+        }else if(cluster.getChildCount() >= 10000){
+          clusterSize = "large";
+        }
+        var childMarkers = cluster.getAllChildMarkers();
+        childMarkers.forEach(marker => {
+          marker.bindPopup(marker.feature.properties.popupContent);
+        });
+        return new L.DivIcon({
+          html: '<div><span>' + cluster.getChildCount() + '</span></div>',
+          className: 'marker-cluster marker-cluster-' + clusterSize + '-' + color.toLowerCase(),
+          iconSize: new L.Point(40, 40)
+        });
+      }
+    });
+    clusterGroup.addLayer(newLayer);
+    return clusterGroup;
+  }
+
 
   private getPolyLines(trackedEntities: TrackedEntity[], L:any, orgUnit:OrganizationUnit, color:string){
     let newLayer = L.geoJSON(null, {

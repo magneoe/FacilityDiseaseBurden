@@ -6,6 +6,8 @@ import {Logger} from "angular2-logger/core";
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/forkJoin';
 import {TrackedEntity} from "../../models/TrackedEntity.model";
+import {NgProgress} from "ngx-progressbar";
+import {IUpdateableComponent} from "../../services/IUpdateable.component";
 
 
 declare var L: any;
@@ -19,7 +21,7 @@ declare var L: any;
 /*
  * This component manages the Leaflet map
  */
-export class MapComponent {
+export class MapComponent implements IUpdateableComponent{
 
   private activeMapInputData: InputDataObject;
   private map: any;
@@ -29,7 +31,7 @@ export class MapComponent {
   private trackedEntityAttributes:InputDataObject[] = [];
 
 
-  constructor(private _mapService: MapService, private _logger:Logger) {
+  constructor(private _mapService: MapService, private _logger:Logger, private _ngProgress:NgProgress) {
     this.mapData = new Map<string, any[]>();
     this.activeMapInputData = new InputDataObject(null, null, null, null, new Map<string, FilterQuery[]>());
 
@@ -43,14 +45,16 @@ export class MapComponent {
   /*
    * This runs when the input data has been changed and must be rendered.
    */
-  public updateMap(inputDataObject: InputDataObject): void {
+  public update(inputDataObject: InputDataObject, callOnFinish:any): void {
     this._mapService.clearMap(this.mapControl, this.mapData);
     this.activeMapInputData = inputDataObject;
 
+
+
     Observable.forkJoin(this.trackedEntityQueue).subscribe((entityArray:any[]) => {
-      this._logger.log("Update map trackedEntitiy observables:", entityArray);
+      this._logger.debug("Update map trackedEntitiy observables:", entityArray);
       for(let i = 0; i < entityArray.length; i++){
-        this._logger.log("Entities on program:", entityArray[i]);
+        this._logger.debug("Entities on program:", entityArray[i]);
 
         let trackedEntitiesArray: TrackedEntity[] = [];
         entityArray[i].trackedEntityInstances.forEach((unit: TrackedEntity) => {
@@ -64,6 +68,7 @@ export class MapComponent {
       };
       this.trackedEntityAttributes = [];
       this.trackedEntityQueue = [];
+      callOnFinish(this);
     });
   }
 

@@ -5,6 +5,8 @@ import {ValidationMessage} from '../../models/ValidationMessage.model';
 import {MapComponent} from "../map/map.component";
 import {TemporalDimensionComponent} from "../temporal/TemporalDimension.component";
 import {CommonResourceDispatcherService} from "../../services/dataInput/CommonResourceDispatcher.service";
+import {NgProgress} from "ngx-progressbar";
+import {IUpdateableComponent} from "../../services/IUpdateable.component";
 
 
 @Component({
@@ -26,7 +28,8 @@ export class AppMainContainerComponent implements OnDestroy {
   @ViewChild(TemporalDimensionComponent) temporalComponent: TemporalDimensionComponent;
 
   constructor(private _customValidationService: CustomValidationService,
-              private _commonResourceDispatcher:CommonResourceDispatcherService) {
+              private _commonResourceDispatcher:CommonResourceDispatcherService,
+              private _ngProgress:NgProgress) {
 
     // Subscribes to the Validation message service used by the child components for sending validation messages.
     this.subscription = this._customValidationService.getErrorMessage().subscribe(validationMessage => {
@@ -63,7 +66,32 @@ export class AppMainContainerComponent implements OnDestroy {
    * The submitting
    */
   select(): void {
-    this._commonResourceDispatcher.handleUpdate(this.mapComponent, this.temporalComponent);
+    //Make a list of updateable components;
+    let updateableComponents:IUpdateableComponent[] = [];
+    updateableComponents.push(this.mapComponent);
+    updateableComponents.push(this.temporalComponent);
+
+    //The list of components that still not have reported that their are finished
+    let pendingComponentsInProgress:IUpdateableComponent[] = [];
+    pendingComponentsInProgress = pendingComponentsInProgress.concat(updateableComponents);
+
+    //Upon finshed - remove the component from the pendingComponentsList
+    const callOnFinish = (component) => {
+      for(let i = 0; i < pendingComponentsInProgress.length; i++){
+        if(pendingComponentsInProgress[i] === component) {
+          pendingComponentsInProgress = pendingComponentsInProgress.filter(comp => {
+            if (comp !== pendingComponentsInProgress[i])
+              return true;
+          });
+        }
+      }
+      //When all are done, stop the progressbar
+      if(pendingComponentsInProgress.length === 0)
+        this._ngProgress.done();
+    };
+
+    this._ngProgress.start();
+    this._commonResourceDispatcher.handleUpdate(updateableComponents, callOnFinish);
   }
 
   ngOnDestroy(){

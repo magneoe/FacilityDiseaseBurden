@@ -15,6 +15,9 @@ import {MapInputDataService} from "./mapInputData.service";
 import {Logger} from "angular2-logger/core";
 import {TrackedEntityLoaderService} from "../dataLoading/TrackedEntityLoaderService.service";
 import {InputDataContent} from "../../enums/InputDataContent.enum";
+import {MapService} from "../map/map.service";
+import {NgProgress} from "ngx-progressbar";
+import {IUpdateableComponent} from "../IUpdateable.component";
 
 @Injectable()
 export class CommonResourceDispatcherService {
@@ -32,8 +35,7 @@ export class CommonResourceDispatcherService {
     });
   }
 
-  public handleUpdate(mapComponent: MapComponent, temporalComponent:TemporalDimensionComponent) {
-
+  public handleUpdate(updateableComponents:IUpdateableComponent[], callOnFinish:any) {
     let inputDataObject: InputDataObject = this.dataInputBuilder.createDataInputObject();
     this._logger.debug('InpudataObject in handleUpdate', inputDataObject);
 
@@ -64,18 +66,28 @@ export class CommonResourceDispatcherService {
 
           localInputDataObj.setSelectedOrgUnit(orgUnitsToMap[selOrgIndex]);
           localInputDataObj.setSelectedPrograms([inputDataObject.getSelectedPrograms()[selProgIndex]]);
-          if(mapComponent !== null) {
+          /*if(mapComponent !== null) {
             mapComponent.addData(localInputDataObj,trackedEntities);
           }
           if(temporalComponent !== null){
             temporalComponent.addData(localInputDataObj, trackedEntities);
-          }
+          }*/
+          updateableComponents.forEach(comp => {
+            if(comp !== null)
+              comp.addData(localInputDataObj, trackedEntities);
+          });
         }
       }
+      updateableComponents.forEach(comp => {
+          if(comp !== null)
+            comp.update(inputDataObject, callOnFinish);
+      });
+      /*
       if(mapComponent != null)
-        mapComponent.updateMap(inputDataObject);
+        mapComponent.update(inputDataObject, callOnFinish);
       if(temporalComponent != null)
-        temporalComponent.updateTemporalDimension(inputDataObject);
+        temporalComponent.update(inputDataObject, callOnFinish);
+        */
     });
   }
 

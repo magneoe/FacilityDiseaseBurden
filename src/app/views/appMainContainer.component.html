@@ -6,3 +6,7 @@
 <button type="button" [disabled]="!formIsValid" (click)="select()">Update map</button>
 <mapComponent></mapComponent>
 <temporalComponent></temporalComponent>
+<ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
+             [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
+             [color]="'red'" [trickleSpeed]="250" [thick]="true" [ease]="'linear'"
+></ng-progress>
