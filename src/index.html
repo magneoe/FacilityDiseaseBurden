@@ -1,41 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= htmlWebpackPlugin.options.title %></title>
-  <meta name="description" content="<%= htmlWebpackPlugin.options.title %>">
-  <!-- base url -->
-  <base href="<%= htmlWebpackPlugin.options.metadata.baseUrl %>">
-  <% if (webpackConfig.htmlElements.headTags) { %>
-  <!-- Configured Head Tags  -->
-  <%= webpackConfig.htmlElements.headTags %>
-  <% } %>
+    <meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>The facility disease burden app</title>
+	<!-- base url -->
 
-  <%= htmlWebpackPlugin.files.webpackManifest %>
-  <% if (htmlWebpackPlugin.options.metadata.isDevServer && htmlWebpackPlugin.options.metadata.HMR !== true) { %>
-  <!-- Webpack Dev Server reload -->
-  <script src="/webpack-dev-server.js"></script>
-  <% } %>
- <link rel="stylesheet" href="styles/leaflet.css"/>
-  <script type="text/javascript" src="leaflet.js"></script>
+	<base href="/"> 
 
-  <link rel="stylesheet" href="styles/MarkerCluster.css"/>
-  <link rel="stylesheet" href="styles/MarkerCluster.Default.css"/>
-  <script type="application/javascript" src="leaflet.markercluster-src.js"></script>
-  <!-- CSS will be injected by webpack here -->
-  <!-- Preload link tags will be injected by webpack here -->
-  <link rel="stylesheet" href="styles/mainStyle.css"/>
+	
+  
 </head>
-
 <body>
-
-  <facilityBurden-app>
+<facilityBurden-app>
     Loading...
-  </facilityBurden-app>
-
-  <!-- Scripts will be injected by webpack here -->
-
+  </facilityBurden-app> 
 </body>
 </html>

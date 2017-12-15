@@ -63,9 +63,9 @@ export class MapService {
   //Makes markers based on the entities with a given color and returns them as a layer reference
   private getEntities(trackedEntities: TrackedEntity[], L:any, color:string): any {
     var entityIcon = MapObjectFactory.getMapObject(MapObjectType.ENTITY, color, L).getIcon();
-    let newLayer = L.geoJSON(null, {pointToLayer: function (feature, latlng) {
+    let newLayer = L.geoJSON(null, {pointToLayer: function (feature:any, latlng:any) { 
       return L.marker(latlng, {icon: entityIcon});
-    }}).bindPopup(function (layer){
+    }}).bindPopup(function (layer:any){
       return layer.feature.properties.popupContent;
     });
 
@@ -82,7 +82,7 @@ export class MapService {
     let clusterGroup = L.markerClusterGroup({
       chunkedLoading: true,
       showCoverageOnHover: true,
-      iconCreateFunction: function(cluster) {
+      iconCreateFunction: function(cluster:any) {
         var clusterSize = "small";
         if (cluster.getChildCount() >= 5000) {
           clusterSize = "medium";
@@ -90,7 +90,7 @@ export class MapService {
           clusterSize = "large";
         }
         var childMarkers = cluster.getAllChildMarkers();
-        childMarkers.forEach(marker => {
+        childMarkers.forEach((marker:any) => {
           marker.bindPopup(marker.feature.properties.popupContent);
         });
         return new L.DivIcon({
@@ -121,9 +121,9 @@ export class MapService {
   }
   private getOrgUnitLayer(orgUnit: OrganizationUnit, L:any, map:any){
     var facilityIcon = MapObjectFactory.getMapObject(MapObjectType.FACILITY, null, L).getIcon();
-    let layer = L.geoJSON(null, {pointToLayer: function (feature, latlng) {
+    let layer = L.geoJSON(null, {pointToLayer: function (feature:any, latlng:any) {
       return L.marker(latlng, {icon: facilityIcon});
-    }}).bindPopup(function (layer){
+    }}).bindPopup(function (layer:any){
       return layer.feature.properties.popupContent;
     }).addTo(map);
 

@@ -42,7 +42,7 @@ export class CommonResourceDispatcherService {
     this.getOrgUnitChildern(inputDataObject).subscribe((units:any) => {
       //Need to resolve all subunits connected to the program (if any) - saves resources by performing the task after the form is submitted
       this._logger.log('AddDataToMap query:', units);
-      let orgUnitsToMap:OrganizationUnit[] = units.organisationUnits.filter(orgUnit => {
+      let orgUnitsToMap:OrganizationUnit[] = units.organisationUnits.filter((orgUnit:any) => {
         if(orgUnit.ChildCount === 0 && orgUnit.coordinates !== undefined)
           return true;
         return false;

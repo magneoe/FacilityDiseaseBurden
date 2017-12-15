@@ -76,7 +76,7 @@ export class AppMainContainerComponent implements OnDestroy {
     pendingComponentsInProgress = pendingComponentsInProgress.concat(updateableComponents);
 
     //Upon finshed - remove the component from the pendingComponentsList
-    const callOnFinish = (component) => {
+    const callOnFinish = (component:any) => { 
       for(let i = 0; i < pendingComponentsInProgress.length; i++){
         if(pendingComponentsInProgress[i] === component) {
           pendingComponentsInProgress = pendingComponentsInProgress.filter(comp => {

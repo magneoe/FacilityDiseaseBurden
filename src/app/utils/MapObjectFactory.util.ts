@@ -32,11 +32,11 @@ export class MapObjectFactory {
     switch(type) {
       case MapObjectType.ENTITY :
         mapObject.setIconShadowUrl('../../assets/img/marker-shadow.png');
-        mapObject.setIconAttributes({iconSize: [25, 41], iconAnchor: [12,40], iconUrl: '../../assets/img/marker-icon-' + color + '.png'});
+        mapObject.setIconAttributes({iconSize: [25, 41], iconAnchor: [12,40], iconUrl: './../../assets/images/marker-icon-' + color + '.png'});
           break;
       case MapObjectType.FACILITY :
         mapObject.setIconShadowUrl('../../assets/img/facility-shadow.png');
-        mapObject.setIconAttributes({iconAnchor: [15, 15] ,iconUrl: '../../assets/img/facility.png'});
+        mapObject.setIconAttributes({iconAnchor: [15, 15] ,iconUrl: './../../assets/images/facility.png'});
         break;
       default :
         break;

@@ -66,7 +66,7 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
     this.lastCommitedFilters = filterQueries;
     this.sendInputDataMessage(filterQueries);
   }
-  selectAttribute(selectedAttributeId){
+  selectAttribute(selectedAttributeId:string){ 
     if(selectedAttributeId === "null")
     {
       this.selectedAttribute = null;

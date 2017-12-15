@@ -5,6 +5,6 @@ import {Observable} from "rxjs/Observable";
 import {InputDataObject} from "../models/InputDataObject.model";
 
 export interface IUpdateableComponent {
-  addData(inputDataObject:InputDataObject, trackedEntities:Observable<TrackedEntity[]>);
-  update(inputDataObject:InputDataObject, callOnFinish:any);
+  addData(inputDataObject:InputDataObject, trackedEntities:Observable<TrackedEntity[]>):any;
+  update(inputDataObject:InputDataObject, callOnFinish:any):any; 
 }
