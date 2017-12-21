@@ -24,6 +24,7 @@ import {LOG_LOGGER_PROVIDERS} from "angular2-logger/core";
 import {TemporalDimensionComponent} from "./components/temporal/TemporalDimension.component";
 import {OrganizationUnitLoaderService} from "./services/dataLoading/organizationUnitLoader.service";
 import {NgProgressModule} from "ngx-progressbar";
+import {APP_BASE_HREF} from "@angular/common";
 
 
 const appRoutes: Routes = [
@@ -41,7 +42,10 @@ const appRoutes: Routes = [
     OrderByDisplayNamePipe, DatePickerComponent,
     AppMainContainerComponent, ProgramsComponent, MapComponent, ProgramFilterComponent, ProgramFilterAttributeComponent, TemporalDimensionComponent ],
   bootstrap:    [ AppComponent ],
-  providers: [AuthorizationService, ProgramsService, CustomValidationService, MapInputDataService, TrackedEntityLoaderService, OrganizationUnitLoaderService, LOG_LOGGER_PROVIDERS],
+  providers: [AuthorizationService, ProgramsService, CustomValidationService,
+      MapInputDataService, TrackedEntityLoaderService,
+      OrganizationUnitLoaderService, LOG_LOGGER_PROVIDERS,
+      ],
   entryComponents: [ProgramFilterComponent, ProgramFilterAttributeComponent]
 })
 export class AppModule { }

@@ -1,4 +1,14 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -9,41 +19,43 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-const http_1 = require("@angular/http");
-const Observable_1 = require("rxjs/Observable");
-const HttpWrapper_service_1 = require("./dataLoading/HttpWrapper.service");
+var core_1 = require("@angular/core");
+var http_1 = require("@angular/http");
+var Observable_1 = require("rxjs/Observable");
+var HttpWrapper_service_1 = require("./HttpWrapper.service");
 /*
  * This service supports the programs component.
  * Increased reuse of code - stateless service
  */
-let ProgramsService = class ProgramsService extends HttpWrapper_service_1.HttpWrapperService {
-    constructor(_http) {
-        super(_http, JSON.parse(sessionStorage.getItem("user")));
+var ProgramsService = (function (_super) {
+    __extends(ProgramsService, _super);
+    function ProgramsService(_http) {
+        return _super.call(this, _http, JSON.parse(sessionStorage.getItem("user"))) || this;
     }
-    loadPrograms(query) {
-        return this.get(query).do(data => console.log(JSON.stringify(data))).catch(this.handleError);
-    }
+    ProgramsService.prototype.loadPrograms = function (query) {
+        return this.get(query).do(function (data) { return console.log(JSON.stringify(data)); }).catch(this.handleError);
+    };
     /*
      * Implements the HttpWrapper service methods
      */
-    getAsArray(res) {
+    ProgramsService.prototype.getAsArray = function (res) {
         return res.json();
-    }
-    handleError(error) {
+    };
+    ProgramsService.prototype.handleError = function (error) {
         console.error(error);
         return Observable_1.Observable.throw(error.json().error());
-    }
-    setSelectedProgram(event, programs) {
+    };
+    ProgramsService.prototype.setSelectedProgram = function (event, programs) {
         if (event == null || event === undefined)
             return programs;
-        for (let i = 0; i < programs.length; i++) {
+        for (var i = 0; i < programs.length; i++) {
             if (programs[i].id == event.target.value)
                 programs[i].isSelected = event.target.checked;
         }
         return programs;
-    }
-};
+    };
+    return ProgramsService;
+}(HttpWrapper_service_1.HttpWrapperService));
 ProgramsService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [http_1.Http])

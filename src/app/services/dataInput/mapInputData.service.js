@@ -9,26 +9,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-const Subject_1 = require("rxjs/Subject");
+var core_1 = require("@angular/core");
+var Subject_1 = require("rxjs/Subject");
 /*
  * This service is used for sending validation messages between components
  * A issue is the ability for reuse if there are multiple observers - it runs as a singelton instance.
  */
-let MapInputDataService = class MapInputDataService {
-    constructor() {
-        this.mapInputData = new Subject_1.Subject();
+var MapInputDataService = (function () {
+    function MapInputDataService() {
+        this.inputDataMessage = new Subject_1.Subject();
     }
-    getMapInputData() {
-        return this.mapInputData.asObservable();
-    }
-    clearMapInputData() {
-        this.mapInputData.next();
-    }
-    sendMessage(mapInputData) {
-        this.mapInputData.next(mapInputData);
-    }
-};
+    MapInputDataService.prototype.getInputDataMessage = function () {
+        return this.inputDataMessage.asObservable();
+    };
+    MapInputDataService.prototype.clearInputDataMessage = function () {
+        this.inputDataMessage.next();
+    };
+    MapInputDataService.prototype.sendInputDataMessage = function (inputDataMessage) {
+        this.inputDataMessage.next(inputDataMessage);
+    };
+    return MapInputDataService;
+}());
 MapInputDataService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [])

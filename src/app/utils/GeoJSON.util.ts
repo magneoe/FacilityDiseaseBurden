@@ -4,12 +4,11 @@ export class GeoJSONUtil {
   public static exportPointToGeo(coordinates: string, popupContent: string): any {
     let lat = this.getLat(coordinates);
     let lng = this.getLng(coordinates);
-    console.log('Lat:', lat);
-    console.log('Lon:', lng);
-
+    console.log('Coorinates in export Point to geo:', coordinates);
     if (lat === null || lat === undefined || lng === null || lng === undefined)
       return null;
     else {
+      console.log('Export point:', [lat, lng]);
       let geoJSONFeature = {
         "type": "Feature",
         "properties": {
@@ -24,36 +23,39 @@ export class GeoJSONUtil {
     }
   }
   public static exportPolyLineToGeo(coordinates: string[]): any {
-    let coordList = Array<any[]>();
+    console.log('Coords:', coordinates);
+    let coordList:number[][] = [];
     coordinates.forEach(coordinate => {
-      let lat = this.getLat(coordinate);
-      let lng = this.getLng(coordinate);
-      if (lat != null && lat != undefined && lng != null && lng != undefined)
-        coordList.push([lat,lng]);
+      let lat:number = parseFloat(this.getLat(coordinate));
+      let lng:number = parseFloat(this.getLng(coordinate));
+      coordList.push([lat, lng]);
     });
 
     if (coordList.length < 2)
       return null;
     else {
+      console.log('Exporting to poly line coords:', coordList);
       let geoJSONFeature = {
         "type": "LineString",
-        "coordinates": coordList
+        "coordinates": coordList,
       };
       return geoJSONFeature;
     }
   }
-  private static getLat(coordinates: string): string{
+  private static getLat(coordinates: string): string {
     if(coordinates === null || coordinates === undefined)
       return null;
     coordinates = coordinates.trim();
-    coordinates = coordinates.replace(/[^a-zA-Z0-9|,|.]+/g,"");
-    return coordinates.split(',', 2)[0];
+    if(coordinates.startsWith('['))
+      coordinates = coordinates.slice(1, coordinates.length-1);
+    return coordinates.split(',')[0];
   }
-  private static getLng(coordinates:string):string{
+  private static getLng(coordinates:string):string {
     if(coordinates === null || coordinates === undefined)
       return null;
     coordinates = coordinates.trim();
-    coordinates = coordinates.replace(/[^a-zA-Z0-9|,|.]+/g,"");
-    return coordinates.split(',', 2)[1];
+    if(coordinates.startsWith('['))
+        coordinates = coordinates.slice(1, coordinates.length-1);
+    return coordinates.split(',')[1];
   }
 }

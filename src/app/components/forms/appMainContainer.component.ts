@@ -87,7 +87,10 @@ export class AppMainContainerComponent implements OnDestroy {
       }
       //When all are done, stop the progressbar
       if(pendingComponentsInProgress.length === 0)
+      {
         this._ngProgress.done();
+        this.mapComponent.setView();
+      }
     };
 
     this._ngProgress.start();

@@ -6,16 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-let OrderByDisplayNamePipe = 
-/*
- * Orders organisation units by displayName
- */
-class OrderByDisplayNamePipe {
-    transform(array, args) {
+var core_1 = require("@angular/core");
+var OrderByDisplayNamePipe = (function () {
+    /*
+     * Orders organisation units by displayName
+     */
+    function OrderByDisplayNamePipe() {
+    }
+    OrderByDisplayNamePipe.prototype.transform = function (array, args) {
         if (!array || array === undefined || array.length === 0)
             return null;
-        array.sort((a, b) => {
+        array.sort(function (a, b) {
             if (a.displayName < b.displayName) {
                 return -1;
             }
@@ -27,8 +28,9 @@ class OrderByDisplayNamePipe {
             }
         });
         return array;
-    }
-};
+    };
+    return OrderByDisplayNamePipe;
+}());
 OrderByDisplayNamePipe = __decorate([
     core_1.Pipe({
         name: 'orderByDisplayNamePipe'

@@ -9,23 +9,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-const http_1 = require("@angular/http");
-let HttpWrapperService = class HttpWrapperService {
-    constructor(_http, user) {
+var core_1 = require("@angular/core");
+var http_1 = require("@angular/http");
+var HttpWrapperService = (function () {
+    function HttpWrapperService(_http, user) {
         this._http = _http;
         this.user = user;
         this.options = new http_1.RequestOptions();
         this.options.method = 'GET';
-        let headers = new http_1.Headers();
+        var headers = new http_1.Headers();
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', 'Basic ' + btoa(user.username + ':' + user.password));
         this.options.headers = headers;
     }
-    get(query) {
-        return this._http.get(this.user.connectionLink + '/' + query, this.options).map((res) => this.getAsArray(res)).catch(this.handleError);
-    }
-};
+    HttpWrapperService.prototype.get = function (query) {
+        var _this = this;
+        return this._http.get(this.user.connectionLink + '/' + query, this.options).map(function (res) { return _this.getAsArray(res); }).catch(this.handleError);
+    };
+    return HttpWrapperService;
+}());
 HttpWrapperService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [http_1.Http, Object])

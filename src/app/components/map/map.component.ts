@@ -6,7 +6,6 @@ import {Logger} from "angular2-logger/core";
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/forkJoin';
 import {TrackedEntity} from "../../models/TrackedEntity.model";
-import {NgProgress} from "ngx-progressbar";
 import {IUpdateableComponent} from "../../services/IUpdateable.component";
 
 
@@ -31,7 +30,7 @@ export class MapComponent implements IUpdateableComponent{
   private trackedEntityAttributes:InputDataObject[] = [];
 
 
-  constructor(private _mapService: MapService, private _logger:Logger, private _ngProgress:NgProgress) {
+  constructor(private _mapService: MapService, private _logger:Logger) {
     this.mapData = new Map<string, any[]>();
     this.activeMapInputData = new InputDataObject(null, null, null, null, new Map<string, FilterQuery[]>());
 
@@ -83,5 +82,9 @@ export class MapComponent implements IUpdateableComponent{
         trackedEntities.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
       });
     });*/
+  }
+
+  public setView():void {
+    this._mapService.setView(this.map, this.activeMapInputData.getSelectedOrgUnit());
   }
 }
