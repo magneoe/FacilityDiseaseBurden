@@ -69,6 +69,7 @@ var OrganizationUnitLoaderService = (function (_super) {
             orgUnitsAtGivenLevel = orgUnitsAtGivenLevel.find(function (org) { return org.selected === true; }).children;
         }
     };
+    /* This method marks a path in the hiarchy to see what has been selected, it also removes/cleans up children of not-selected org units. */
     OrganizationUnitLoaderService.prototype.setLevel = function (selectedOrgUnit, level, levels, organisationUnits) {
         var orgUnitsAtLevel = this.findChildrenOfSelectedOrgUnit(level, levels.length, organisationUnits);
         orgUnitsAtLevel.map(function (org) { return org.selected = false; });
@@ -79,7 +80,7 @@ var OrganizationUnitLoaderService = (function (_super) {
             levels = levels.slice(0, level);
         return levels;
     };
-    OrganizationUnitLoaderService.prototype.findSelectOrgUnit = function (lvl, numberOfLevels, organisationUnits) {
+    OrganizationUnitLoaderService.prototype.findSelectOrgUnitAtGivenLevel = function (lvl, numberOfLevels, organisationUnits) {
         var orgUnitsAtGivenLevel = organisationUnits;
         for (var i = 0; i < numberOfLevels; i++) {
             if (i + 1 == lvl) {

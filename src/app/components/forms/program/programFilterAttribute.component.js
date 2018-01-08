@@ -42,14 +42,15 @@ var ProgramFilterAttributeComponent = (function () {
         if (this.lastCommitedFilters.length > 0)
             this.ngOnDestroy();
         var filterQueries = [];
+        console.log('Attribute filter:', this.selectedAttribute);
         //Text search
         if (this.formModel.fromNumberRange === 0 && this.formModel.toNumberRange === 0) {
             var operatorTypeString = this.formModel.searchType;
-            filterQueries.push(new FilterQuery_model_1.FilterQuery(this.selectedAttribute.attribute, OperatorType_enum_1.OperatorType[operatorTypeString], this.formModel.searchTextString, FilterOperation_enum_1.FilterOperation.ADD));
+            filterQueries.push(new FilterQuery_model_1.FilterQuery(this.selectedAttribute, OperatorType_enum_1.OperatorType[operatorTypeString], this.formModel.searchTextString, FilterOperation_enum_1.FilterOperation.ADD));
         }
         else {
-            filterQueries.push(new FilterQuery_model_1.FilterQuery(this.selectedAttribute.attribute, OperatorType_enum_1.OperatorType.GREATER_THAN, this.formModel.fromNumberRange, FilterOperation_enum_1.FilterOperation.ADD));
-            filterQueries.push(new FilterQuery_model_1.FilterQuery(null, OperatorType_enum_1.OperatorType.LESS_THAN, this.formModel.toNumberRange, FilterOperation_enum_1.FilterOperation.ADD));
+            filterQueries.push(new FilterQuery_model_1.FilterQuery(this.selectedAttribute, OperatorType_enum_1.OperatorType.GREATER_THAN, this.formModel.fromNumberRange, FilterOperation_enum_1.FilterOperation.ADD));
+            filterQueries.push(new FilterQuery_model_1.FilterQuery(this.selectedAttribute, OperatorType_enum_1.OperatorType.LESS_THAN, this.formModel.toNumberRange, FilterOperation_enum_1.FilterOperation.ADD)); //was null attribute
             console.log('Formatted:', filterQueries[0].convertToFormattedQuery());
             console.log('Formatted:', filterQueries[1].convertToFormattedQuery());
         }

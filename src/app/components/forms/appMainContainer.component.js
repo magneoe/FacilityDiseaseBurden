@@ -15,6 +15,7 @@ var map_component_1 = require("../map/map.component");
 var TemporalDimension_component_1 = require("../temporal/TemporalDimension.component");
 var CommonResourceDispatcher_service_1 = require("../../services/dataInput/CommonResourceDispatcher.service");
 var ngx_progressbar_1 = require("ngx-progressbar");
+var selectedDatasetManager_component_1 = require("./selectedDatasetManager.component");
 var AppMainContainerComponent = (function () {
     function AppMainContainerComponent(_customValidationService, _commonResourceDispatcher, _ngProgress) {
         var _this = this;
@@ -54,12 +55,13 @@ var AppMainContainerComponent = (function () {
     /*
      * The submitting
      */
-    AppMainContainerComponent.prototype.select = function () {
+    AppMainContainerComponent.prototype.select = function (stackData) {
         var _this = this;
         //Make a list of updateable components;
         var updateableComponents = [];
         updateableComponents.push(this.mapComponent);
         updateableComponents.push(this.temporalComponent);
+        updateableComponents.push(this.selectedDatasetManager);
         //The list of components that still not have reported that their are finished
         var pendingComponentsInProgress = [];
         pendingComponentsInProgress = pendingComponentsInProgress.concat(updateableComponents);
@@ -83,7 +85,7 @@ var AppMainContainerComponent = (function () {
             }
         };
         this._ngProgress.start();
-        this._commonResourceDispatcher.handleUpdate(updateableComponents, callOnFinish);
+        this._commonResourceDispatcher.handleUpdate(updateableComponents, stackData, callOnFinish);
     };
     AppMainContainerComponent.prototype.ngOnDestroy = function () {
         this.subscription.unsubscribe();
@@ -98,6 +100,10 @@ __decorate([
     core_1.ViewChild(TemporalDimension_component_1.TemporalDimensionComponent),
     __metadata("design:type", TemporalDimension_component_1.TemporalDimensionComponent)
 ], AppMainContainerComponent.prototype, "temporalComponent", void 0);
+__decorate([
+    core_1.ViewChild(selectedDatasetManager_component_1.SelectedDatasetManager),
+    __metadata("design:type", selectedDatasetManager_component_1.SelectedDatasetManager)
+], AppMainContainerComponent.prototype, "selectedDatasetManager", void 0);
 AppMainContainerComponent = __decorate([
     core_1.Component({
         selector: 'app',

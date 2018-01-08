@@ -21,7 +21,7 @@ var TemporalDimensionComponent = (function () {
         this.trackedEntityQueue = [];
         this.trackedEntityAttributes = [];
     }
-    TemporalDimensionComponent.prototype.update = function (inputDataObject, callOnFinish) {
+    TemporalDimensionComponent.prototype.update = function (inputDataObject, stackData, callOnFinish) {
         var _this = this;
         this._logger.log("UpdateTemporalDimension invoked", inputDataObject);
         this.clear();

@@ -23,13 +23,18 @@ var core_1 = require("@angular/core");
 var HttpWrapper_service_1 = require("./HttpWrapper.service");
 var Observable_1 = require("rxjs/Observable");
 var http_1 = require("@angular/http");
+var core_2 = require("angular2-logger/core");
+var OperatorType_enum_1 = require("../../enums/OperatorType.enum");
 var TrackedEntityLoaderService = (function (_super) {
     __extends(TrackedEntityLoaderService, _super);
-    function TrackedEntityLoaderService(_http) {
-        return _super.call(this, _http, JSON.parse(sessionStorage.getItem("user"))) || this;
+    function TrackedEntityLoaderService(_http, _logger) {
+        var _this = _super.call(this, _http, JSON.parse(sessionStorage.getItem("user"))) || this;
+        _this._logger = _logger;
+        return _this;
     }
     // Loads the tracked entity instances from the server
     TrackedEntityLoaderService.prototype.getTrackedEntityInstances = function (query) {
+        this._logger.log('Get tracked entity instances query:', query);
         return this.get(query).do(function (data) { return console.log(JSON.stringify(data)); }).catch(this.handleError);
     };
     /*
@@ -49,7 +54,7 @@ var TrackedEntityLoaderService = (function (_super) {
         if (filterQueries != null && filterQueries.get(programId) !== undefined) {
             var programQueries = filterQueries.get(programId);
             for (var i = 0; i < programQueries.length; i++) {
-                if (i === 0)
+                if (programQueries[i].getOperator() !== OperatorType_enum_1.OperatorType.LESS_THAN)
                     filterQueryString += '&filter=';
                 filterQueryString += programQueries[i].convertToFormattedQuery();
             }
@@ -62,7 +67,7 @@ var TrackedEntityLoaderService = (function (_super) {
 }(HttpWrapper_service_1.HttpWrapperService));
 TrackedEntityLoaderService = __decorate([
     core_1.Injectable(),
-    __metadata("design:paramtypes", [http_1.Http])
+    __metadata("design:paramtypes", [http_1.Http, core_2.Logger])
 ], TrackedEntityLoaderService);
 exports.TrackedEntityLoaderService = TrackedEntityLoaderService;
 //# sourceMappingURL=TrackedEntityLoaderService.service.js.map

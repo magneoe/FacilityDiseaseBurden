@@ -32,6 +32,7 @@ var core_2 = require("angular2-logger/core");
 var TemporalDimension_component_1 = require("./components/temporal/TemporalDimension.component");
 var organizationUnitLoader_service_1 = require("./services/dataLoading/organizationUnitLoader.service");
 var ngx_progressbar_1 = require("ngx-progressbar");
+var selectedDatasetManager_component_1 = require("./components/forms/selectedDatasetManager.component");
 var appRoutes = [
     { path: '', component: login_component_1.LoginComponent },
     { path: 'login', component: login_component_1.LoginComponent },
@@ -50,7 +51,9 @@ AppModule = __decorate([
             forms_1.FormsModule, forms_2.ReactiveFormsModule, ngx_progressbar_1.NgProgressModule],
         declarations: [app_component_1.AppComponent, organizationLoader_component_1.OrganizationLoaderComponent, notfound_component_1.PageNotFoundComponent, login_component_1.LoginComponent,
             organizationLoader_pipe_1.OrderByDisplayNamePipe, datePicker_component_1.DatePickerComponent,
-            appMainContainer_component_1.AppMainContainerComponent, program_component_1.ProgramsComponent, map_component_1.MapComponent, programFilter_component_1.ProgramFilterComponent, programFilterAttribute_component_1.ProgramFilterAttributeComponent, TemporalDimension_component_1.TemporalDimensionComponent],
+            appMainContainer_component_1.AppMainContainerComponent, program_component_1.ProgramsComponent, map_component_1.MapComponent,
+            programFilter_component_1.ProgramFilterComponent, programFilterAttribute_component_1.ProgramFilterAttributeComponent, TemporalDimension_component_1.TemporalDimensionComponent,
+            selectedDatasetManager_component_1.SelectedDatasetManager],
         bootstrap: [app_component_1.AppComponent],
         providers: [login_service_1.AuthorizationService, programs_service_1.ProgramsService, customValidation_service_1.CustomValidationService,
             mapInputData_service_1.MapInputDataService, TrackedEntityLoaderService_service_1.TrackedEntityLoaderService,

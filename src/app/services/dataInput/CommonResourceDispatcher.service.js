@@ -30,13 +30,11 @@ var CommonResourceDispatcherService = (function () {
             _this.handleInputDataMessage(inputDataMessage);
         });
     }
-    CommonResourceDispatcherService.prototype.handleUpdate = function (updateableComponents, callOnFinish) {
+    CommonResourceDispatcherService.prototype.handleUpdate = function (updateableComponents, stackData, callOnFinish) {
         var _this = this;
         var inputDataObject = this.dataInputBuilder.createDataInputObject();
-        this._logger.debug('InpudataObject in handleUpdate', inputDataObject);
         this.getOrgUnitChildern(inputDataObject).subscribe(function (units) {
             //Need to resolve all subunits connected to the program (if any) - saves resources by performing the task after the form is submitted
-            _this._logger.log('AddDataToMap query:', units);
             var orgUnitsToMap = units.organisationUnits.filter(function (orgUnit) {
                 if (orgUnit.ChildCount === 0 && orgUnit.coordinates !== undefined)
                     return true;
@@ -44,7 +42,6 @@ var CommonResourceDispatcherService = (function () {
             });
             if (orgUnitsToMap === null || orgUnitsToMap.length === 0)
                 orgUnitsToMap = [inputDataObject.getSelectedOrgUnit()];
-            _this._logger.debug('OrgUnit array to send for mapping:', orgUnitsToMap);
             /*
              * For each selected programs one single layer group is being loaded,
              * containing all the markers and polyfigures connected to the program.
@@ -72,7 +69,7 @@ var CommonResourceDispatcherService = (function () {
             }
             updateableComponents.forEach(function (comp) {
                 if (comp !== null)
-                    comp.update(inputDataObject, callOnFinish);
+                    comp.update(inputDataObject, stackData, callOnFinish);
             });
             /*
             if(mapComponent != null)

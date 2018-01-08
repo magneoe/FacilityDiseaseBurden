@@ -2,14 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var OperatorType_enum_1 = require("../enums/OperatorType.enum");
 var FilterQuery = (function () {
-    function FilterQuery(property, operator, value, filterOperation) {
-        this.property = property;
+    function FilterQuery(trackedEntityAttributes, operator, value, filterOperation) {
+        this.trackedEntityAttributes = trackedEntityAttributes;
         this.operator = operator;
         this.value = value;
         this.filterOperation = filterOperation;
     }
-    FilterQuery.prototype.getProperty = function () {
-        return this.property;
+    FilterQuery.prototype.getTrackedEntityAttributes = function () {
+        return this.trackedEntityAttributes;
     };
     FilterQuery.prototype.getOperator = function () {
         return this.operator;
@@ -26,9 +26,9 @@ var FilterQuery = (function () {
     FilterQuery.prototype.convertToFormattedQuery = function () {
         var output = '';
         //self validation
-        if (this.getProperty() === undefined || this.getValue() === undefined || this.getOperator() === undefined)
+        if (this.getTrackedEntityAttributes() === undefined || this.getValue() === undefined || this.getOperator() === undefined)
             return output;
-        output += (this.getProperty() === null ? '' : this.getProperty()) + ':';
+        output += (this.getTrackedEntityAttributes() === null ? '' : this.getTrackedEntityAttributes().attribute) + ':';
         switch (this.getOperator()) {
             case OperatorType_enum_1.OperatorType.GREATER_THAN:
                 output += 'ge:';
@@ -48,6 +48,25 @@ var FilterQuery = (function () {
     };
     FilterQuery.prototype.toString = function () {
         return this.convertToFormattedQuery();
+    };
+    FilterQuery.prototype.getDisplayString = function () {
+        var output = '' + this.getTrackedEntityAttributes().displayName;
+        switch (this.getOperator()) {
+            case OperatorType_enum_1.OperatorType.GREATER_THAN:
+                output += ' >= ';
+                break;
+            case OperatorType_enum_1.OperatorType.LESS_THAN:
+                output += ' <= ';
+                break;
+            case OperatorType_enum_1.OperatorType.EQUALS:
+                output += ' equals ';
+                break;
+            case OperatorType_enum_1.OperatorType.LIKE:
+                output += ' like ';
+                break;
+        }
+        output += '"' + this.getValue() + '"';
+        return output;
     };
     return FilterQuery;
 }());

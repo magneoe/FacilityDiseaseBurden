@@ -75,7 +75,7 @@ var OrganizationLoaderComponent = (function () {
             });
         }
         else if (lvl > 1) {
-            this.selectedOrgUnit = this._orgLoaderService.findSelectOrgUnit(lvl - 1, this.levels.length, this.organizationUnits);
+            this.selectedOrgUnit = this._orgLoaderService.findSelectOrgUnitAtGivenLevel(lvl - 1, this.levels.length, this.organizationUnits);
         }
         this.isLoading = false;
         this.notifyValueChange(null);

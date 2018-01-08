@@ -32,10 +32,8 @@ var MapService = (function () {
         return map;
     };
     MapService.prototype.setView = function (map, orgUnit) {
-        this._logger.log('Set view latlng:', orgUnit.coordinates.slice(1, orgUnit.coordinates.length - 1));
-        var lat = orgUnit.coordinates.slice(1, orgUnit.coordinates.length - 1).split(',')[0];
-        var lng = orgUnit.coordinates.slice(1, orgUnit.coordinates.length - 1).split(',')[1];
-        //map.setView([lng, lat], 8);
+        var lat = orgUnit.coordinates.split(',')[0].slice(orgUnit.coordinates.search(/[0-9]/g), orgUnit.coordinates.length - 1);
+        var lng = orgUnit.coordinates.split(',')[1].slice(0, orgUnit.coordinates.search(/\\]/g));
         map.panTo([lng, lat]);
     };
     /*

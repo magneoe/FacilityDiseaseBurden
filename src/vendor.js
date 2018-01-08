@@ -16,5 +16,6 @@ require("../assets/js/leaflet.js");
 require("../assets/styles/MarkerCluster.css");
 require("../assets/styles/MarkerCluster.Default.css");
 require("../assets/js/leaflet.markercluster-src.js");
+require("../assets/js/Chart.bundle.min.js");
 require("../assets/styles/styles.css");
 //# sourceMappingURL=vendor.js.map

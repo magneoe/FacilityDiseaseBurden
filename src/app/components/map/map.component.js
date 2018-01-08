@@ -34,9 +34,10 @@ var MapComponent = (function () {
     /*
      * This runs when the input data has been changed and must be rendered.
      */
-    MapComponent.prototype.update = function (inputDataObject, callOnFinish) {
+    MapComponent.prototype.update = function (inputDataObject, stackData, callOnFinish) {
         var _this = this;
-        this._mapService.clearMap(this.mapControl, this.mapData);
+        if (!stackData)
+            this.clearMap();
         this.activeMapInputData = inputDataObject;
         Observable_1.Observable.forkJoin(this.trackedEntityQueue).subscribe(function (entityArray) {
             _this._logger.debug("Update map trackedEntitiy observables:", entityArray);
@@ -67,6 +68,9 @@ var MapComponent = (function () {
                 trackedEntities.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
               });
             });*/
+    };
+    MapComponent.prototype.clearMap = function () {
+        this._mapService.clearMap(this.mapControl, this.mapData);
     };
     MapComponent.prototype.setView = function () {
         this._mapService.setView(this.map, this.activeMapInputData.getSelectedOrgUnit());
