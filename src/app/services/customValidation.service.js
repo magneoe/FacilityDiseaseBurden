@@ -9,26 +9,27 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-const Subject_1 = require("rxjs/Subject");
+var core_1 = require("@angular/core");
+var Subject_1 = require("rxjs/Subject");
 /*
  * This service is used for sending validation messages between components
  * A issue is the ability for reuse if there are multiple observers - it runs as a singelton instance.
  */
-let CustomValidationService = class CustomValidationService {
-    constructor() {
+var CustomValidationService = (function () {
+    function CustomValidationService() {
         this.errorMessage = new Subject_1.Subject();
     }
-    getErrorMessage() {
+    CustomValidationService.prototype.getErrorMessage = function () {
         return this.errorMessage.asObservable();
-    }
-    clearMessage() {
+    };
+    CustomValidationService.prototype.clearMessage = function () {
         this.errorMessage.next();
-    }
-    sendMessage(validationMessage) {
+    };
+    CustomValidationService.prototype.sendMessage = function (validationMessage) {
         this.errorMessage.next(validationMessage);
-    }
-};
+    };
+    return CustomValidationService;
+}());
 CustomValidationService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [])

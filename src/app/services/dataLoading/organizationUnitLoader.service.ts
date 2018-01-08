@@ -29,6 +29,7 @@ export class OrganizationUnitLoaderService extends HttpWrapperService<Organizati
  getAsArray(res: Response):OrganizationUnit[]{
    return <OrganizationUnit[]> res.json();
  }
+
  handleError(error: Response) {
     console.error(error);
     return Observable.throw(error.json().error());
@@ -58,6 +59,7 @@ export class OrganizationUnitLoaderService extends HttpWrapperService<Organizati
       orgUnitsAtGivenLevel = orgUnitsAtGivenLevel.find(org => org.selected === true).children;
     }
   }
+  /* This method marks a path in the hiarchy to see what has been selected, it also removes/cleans up children of not-selected org units. */
   setLevel(selectedOrgUnit : OrganizationUnit, level : number, levels: number[], organisationUnits: OrganizationUnit[]) : number[] {
     let orgUnitsAtLevel = this.findChildrenOfSelectedOrgUnit(level, levels.length, organisationUnits);
 
@@ -71,7 +73,7 @@ export class OrganizationUnitLoaderService extends HttpWrapperService<Organizati
     return levels;
   }
 
-  findSelectOrgUnit(lvl:number, numberOfLevels:number, organisationUnits:OrganizationUnit[]): OrganizationUnit {
+  findSelectOrgUnitAtGivenLevel(lvl:number, numberOfLevels:number, organisationUnits:OrganizationUnit[]): OrganizationUnit {
 
     let orgUnitsAtGivenLevel = organisationUnits;
 

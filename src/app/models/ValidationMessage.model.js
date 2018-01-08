@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class ValidationMessage {
-}
+var ValidationMessage = (function () {
+    function ValidationMessage() {
+    }
+    return ValidationMessage;
+}());
 exports.ValidationMessage = ValidationMessage;
-//# sourceMappingURL=ValidationMessage.model.jsdel.js.map
+//# sourceMappingURL=ValidationMessage.model.js.map

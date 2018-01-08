@@ -1,36 +1,64 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class MapInputData {
-    constructor(selectedPrograms, selectedOrgUnit, startDate, endDate) {
+var InputDataObject = (function () {
+    function InputDataObject(selectedPrograms, selectedOrgUnit, startDate, endDate, filterQueryMap) {
         this.selectedPrograms = selectedPrograms;
         this.selectedOrgUnit = selectedOrgUnit;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.filterQueryMap = filterQueryMap;
     }
-    getSelectedPrograms() {
+    InputDataObject.prototype.getSelectedPrograms = function () {
         return this.selectedPrograms;
-    }
-    getSelectedOrgUnit() {
+    };
+    InputDataObject.prototype.getSelectedOrgUnit = function () {
         return this.selectedOrgUnit;
-    }
-    getStartDate() {
+    };
+    InputDataObject.prototype.getStartDate = function () {
         return this.startDate;
-    }
-    getEndDate() {
+    };
+    InputDataObject.prototype.getEndDate = function () {
         return this.endDate;
-    }
-    setSelectedPrograms(selectedPrograms) {
+    };
+    InputDataObject.prototype.getFilterQueryMap = function () {
+        return this.filterQueryMap;
+    };
+    InputDataObject.prototype.setSelectedPrograms = function (selectedPrograms) {
         this.selectedPrograms = selectedPrograms;
-    }
-    setSelectedOrgUnit(selectedOrgUnit) {
+    };
+    InputDataObject.prototype.setSelectedOrgUnit = function (selectedOrgUnit) {
         this.selectedOrgUnit = selectedOrgUnit;
-    }
-    setStartDate(selectedStartDate) {
+    };
+    InputDataObject.prototype.setStartDate = function (selectedStartDate) {
         this.startDate = selectedStartDate;
-    }
-    setEndDate(selectedEndDate) {
+    };
+    InputDataObject.prototype.setEndDate = function (selectedEndDate) {
         this.endDate = selectedEndDate;
-    }
-}
-exports.MapInputData = MapInputData;
-//# sourceMappingURL=MapInputData.model.js.mapjs.map
+    };
+    InputDataObject.prototype.setFilterQueriesMap = function (filterQueries) {
+        this.filterQueryMap = filterQueries;
+    };
+    InputDataObject.prototype.equals = function (inputDataObject) {
+        var _this = this;
+        if (inputDataObject.getStartDate() !== this.getStartDate())
+            return false;
+        if (inputDataObject.getEndDate() !== this.getEndDate())
+            return false;
+        if (inputDataObject.getSelectedOrgUnit().id !== this.getSelectedOrgUnit().id)
+            return false;
+        for (var i = 0; i < this.getSelectedPrograms().length; i++) {
+            if (inputDataObject.getSelectedPrograms()[i].id !== this.getSelectedPrograms()[i].id)
+                return false;
+        }
+        var iterator = inputDataObject.getFilterQueryMap().keys();
+        inputDataObject.getFilterQueryMap().forEach(function (value) {
+            var key = iterator.next();
+            if (!_this.getFilterQueryMap().has(key.value))
+                return false;
+        });
+        return true;
+    };
+    return InputDataObject;
+}());
+exports.InputDataObject = InputDataObject;
+//# sourceMappingURL=InputDataObject.model.js.map

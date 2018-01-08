@@ -9,12 +9,12 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-const http_1 = require("@angular/http");
-const Observable_1 = require("rxjs/Observable");
-const router_1 = require("@angular/router");
-let AuthorizationService = class AuthorizationService {
-    constructor(_http, _router) {
+var core_1 = require("@angular/core");
+var http_1 = require("@angular/http");
+var Observable_1 = require("rxjs/Observable");
+var router_1 = require("@angular/router");
+var AuthorizationService = (function () {
+    function AuthorizationService(_http, _router) {
         this._http = _http;
         this._router = _router;
         this.authorizationMessage = "";
@@ -26,39 +26,41 @@ let AuthorizationService = class AuthorizationService {
     /*
      * Method used for testing connectivity/validity of username/password
      */
-    testConnectivity(user) {
+    AuthorizationService.prototype.testConnectivity = function (user) {
         this.options.headers.set('Authorization', 'Basic ' + btoa(user.getUsername() + ':' + user.getPassword()));
         console.log("Header", this.options.headers);
-        return this._http.get(user.getConnectionLink() + "/api", this.options).map((response) => response.json()).catch(this.handleError);
-    }
-    login(user) {
-        this.testConnectivity(user).subscribe((isSuccess) => {
+        return this._http.get(user.getConnectionLink() + "/api", this.options).map(function (response) { return response.json(); }).catch(this.handleError);
+    };
+    AuthorizationService.prototype.login = function (user) {
+        var _this = this;
+        this.testConnectivity(user).subscribe(function (isSuccess) {
             //Setting user info in session storage
             sessionStorage.setItem("user", JSON.stringify(user));
             //Directing to orgLoader whenever logged in
-            this._router.navigate(['/app']);
-            this.authorizationMessage = "Success";
-        }, (error) => {
-            this.authorizationMessage = "Wrong username/password";
+            _this._router.navigate(['/app']);
+            _this.authorizationMessage = "Success";
+        }, function (error) {
+            _this.authorizationMessage = "Wrong username/password";
         });
-    }
+    };
     //Authorization service function
-    canActivate(route, state) {
+    AuthorizationService.prototype.canActivate = function (route, state) {
         //Whenever not authenticated - navigate to login page
         if (sessionStorage.getItem("user") == null) {
             this._router.navigate(['/login']);
             return false;
         }
         return true;
-    }
+    };
     /*
      * Support functions
      */
-    handleError(error) {
+    AuthorizationService.prototype.handleError = function (error) {
         console.error('Catch:', error);
         return Observable_1.Observable.throw(error.json().error());
-    }
-};
+    };
+    return AuthorizationService;
+}());
 AuthorizationService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [http_1.Http, router_1.Router])

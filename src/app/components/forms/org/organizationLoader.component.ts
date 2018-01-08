@@ -84,9 +84,7 @@ export class OrganizationLoaderComponent {
     }
     //If we are clicking 'Choose level x' - we need to set back the selected org unit to the previous level
     else if(lvl > 1) {
-      this.selectedOrgUnit = this._orgLoaderService.findSelectOrgUnit(lvl-1, this.levels.length, this.organizationUnits);
-      console.log('Else if:', lvl);
-      console.log('Org unit selected:', this.selectedOrgUnit);
+      this.selectedOrgUnit = this._orgLoaderService.findSelectOrgUnitAtGivenLevel(lvl-1, this.levels.length, this.organizationUnits);
     }
     this.isLoading = false;
     this.notifyValueChange(null);
@@ -105,7 +103,6 @@ export class OrganizationLoaderComponent {
     let errorMessages = new Array();
     if(this.selectedOrgUnit == null) {
       errorMessages.push("OrgUnit not set");
-      console.log('errors:', errorMessages);
     }
     return errorMessages;
   }

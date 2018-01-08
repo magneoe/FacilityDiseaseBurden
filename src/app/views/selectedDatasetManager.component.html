@@ -1,0 +1,29 @@
+<fieldset>
+    <legend>Active datasets:</legend>
+    <div id="">
+        <table>
+            <tr>
+                <th>Number</th>
+                <th>Org. unit</th>
+                <th>Programs</th>
+                <th>Time interval</th>
+                <th>Filters</th>
+                <th>Number of entities (TEI)</th>
+            </tr>
+            <tr *ngFor="let dataset of inputDataObjects; let i = index">
+                <td>{{i+1}}</td>
+                <td>{{dataset.selectedOrgUnit.displayName + '(level ' + dataset.selectedOrgUnit.level + ')'}}</td>
+                <td>
+                    <li class="datasetListStyle" *ngFor="let program of dataset.selectedPrograms">
+                        {{program.displayName}}
+                    </li>
+                </td>
+                <td>{{dataset.startDate}}<br/>{{dataset.endDate}}</td>
+                <td>
+                    <li class="datasetListStyle" *ngFor="let filterDisplayString of dataset.filterDisplayStrings">{{filterDisplayString}}</li>
+                </td>
+                <td>{{dataset.numberOfEntities}}</td>
+            </tr>
+        </table>
+    </div>
+</fieldset>

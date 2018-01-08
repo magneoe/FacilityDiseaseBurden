@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class User {
-    constructor(username, password, connectionLink) {
+var User = (function () {
+    function User(username, password, connectionLink) {
         this.username = username;
         this.password = password;
         this.connectionLink = connectionLink;
@@ -9,18 +9,19 @@ class User {
         this.password = password;
         this.connectionLink = connectionLink;
     }
-    getUsername() {
+    User.prototype.getUsername = function () {
         return this.username;
-    }
-    getPassword() {
+    };
+    User.prototype.getPassword = function () {
         return this.password;
-    }
-    getConnectionLink() {
+    };
+    User.prototype.getConnectionLink = function () {
         return this.connectionLink;
-    }
-    setConnectionLink(connectionLink) {
+    };
+    User.prototype.setConnectionLink = function (connectionLink) {
         this.connectionLink = connectionLink;
-    }
-}
+    };
+    return User;
+}());
 exports.User = User;
-//# sourceMappingURL=User.model.jsdel.js.map
+//# sourceMappingURL=User.model.js.map

@@ -9,41 +9,40 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-const customValidation_service_1 = require("../../services/customValidation.service");
-const ValidationMessage_1 = require("../../models/ValidationMessage.model");
-const mapInputData_service_1 = require("../../services/dataInput/mapInputData.service");
-const MapInputData_1 = require("../../models/InputDataObject.model");
-let DatePickerComponent =
-/*
- * This component represents a datepicking form.
- */
-class DatePickerComponent {
-    constructor(_customValidationService, _mapInputDataService) {
+var core_1 = require("@angular/core");
+var customValidation_service_1 = require("../../../services/customValidation.service");
+var ValidationMessage_model_1 = require("../../../models/ValidationMessage.model");
+var mapInputData_service_1 = require("../../../services/dataInput/mapInputData.service");
+var InputDataMessage_model_1 = require("../../../models/InputDataMessage.model");
+var InputDataContent_enum_1 = require("../../../enums/InputDataContent.enum");
+var DatePickerComponent = (function () {
+    function DatePickerComponent(_customValidationService, _mapInputDataService) {
         this._customValidationService = _customValidationService;
         this._mapInputDataService = _mapInputDataService;
         this.senderId = "datePicker";
     }
-    ngOnInit() {
+    DatePickerComponent.prototype.ngOnInit = function () {
         this.notifyValueChange(null);
-    }
+    };
     /*
      * Upon any event in the view (picking dates) this methods is called
      */
-    notifyValueChange(event) {
-        let validationMessage = new ValidationMessage_1.ValidationMessage();
+    DatePickerComponent.prototype.notifyValueChange = function (event) {
+        var validationMessage = new ValidationMessage_model_1.ValidationMessage();
         validationMessage.senderId = this.senderId;
         validationMessage.errorMessage = this.getErrors().toString();
         validationMessage.formIsValid = (this.getErrors().length > 0 ? false : true);
         this._customValidationService.sendMessage(validationMessage);
-        let mapInputData = new MapInputData_1.MapInputData(null, null, this.startDate, this.endDate);
-        this._mapInputDataService.sendMessage(mapInputData);
-    }
+        var inputDataMessageStartDate = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.START_DATE, this.startDate);
+        var inputDataMessageEndDate = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.END_DATE, this.endDate);
+        this._mapInputDataService.sendInputDataMessage(inputDataMessageStartDate);
+        this._mapInputDataService.sendInputDataMessage(inputDataMessageEndDate);
+    };
     /*
      * A local validation method - composing the errors
      */
-    getErrors() {
-        let errors = new Array();
+    DatePickerComponent.prototype.getErrors = function () {
+        var errors = new Array();
         if (this.startDate == null || this.startDate === undefined)
             errors.push('Start date not set');
         if (this.endDate == null || this.endDate === undefined)
@@ -52,8 +51,9 @@ class DatePickerComponent {
             errors.push('End date must be after startdate');
         console.log('errors:', errors);
         return errors;
-    }
-};
+    };
+    return DatePickerComponent;
+}());
 DatePickerComponent = __decorate([
     core_1.Component({
         selector: 'datePicker',

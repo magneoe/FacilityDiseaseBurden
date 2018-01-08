@@ -9,35 +9,31 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-const router_1 = require("@angular/router");
-const customValidation_service_1 = require("../../services/customValidation.service");
-const User_1 = require("../../models/User.model");
-const login_service_1 = require("../../services/login.service");
-let LoginComponent =
-/*
- * Temporary login component - runs basic authentication for now - will be set up with tokens eventually
- */
-class LoginComponent {
-    constructor(_authorizationService, _router) {
+var core_1 = require("@angular/core");
+var router_1 = require("@angular/router");
+var customValidation_service_1 = require("../../services/customValidation.service");
+var User_model_1 = require("../../models/User.model");
+var login_service_1 = require("../../services/login.service");
+var LoginComponent = (function () {
+    function LoginComponent(_authorizationService, _router) {
         this._authorizationService = _authorizationService;
         this._router = _router;
-        this.model = new User_1.User('', '', '');
+        this.model = new User_model_1.User('', '', '');
         this.errorMessages = [];
     }
-    login() {
+    LoginComponent.prototype.login = function () {
         console.log("Logged in:", this.model);
         this.errorMessages = this.isValid();
         if (this.errorMessages.length > 0)
             return;
         this._authorizationService.login(this.model);
-    }
+    };
     /*
      * Validation method
      */
-    isValid() {
-        let errors = new Array();
-        let connectionLink = this.model.getConnectionLink();
+    LoginComponent.prototype.isValid = function () {
+        var errors = new Array();
+        var connectionLink = this.model.getConnectionLink();
         if (connectionLink.length == 0 || connectionLink === undefined)
             errors.push("Invalid connection url");
         if (this.model.getPassword().length == 0 || this.model.getPassword() === undefined)
@@ -49,8 +45,9 @@ class LoginComponent {
         if (connectionLink.endsWith("/"))
             this.model.setConnectionLink(connectionLink.slice(0, connectionLink.length - 1));
         return errors;
-    }
-};
+    };
+    return LoginComponent;
+}());
 LoginComponent = __decorate([
     core_1.Component({
         selector: 'login',

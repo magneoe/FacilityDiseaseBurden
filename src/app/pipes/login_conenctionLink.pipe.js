@@ -6,13 +6,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-let ValidateConnectionLinkPipe = class ValidateConnectionLinkPipe {
-    transform(connectionLink) {
+var core_1 = require("@angular/core");
+var ValidateConnectionLinkPipe = (function () {
+    function ValidateConnectionLinkPipe() {
+    }
+    ValidateConnectionLinkPipe.prototype.transform = function (connectionLink) {
         if (!connectionLink || connectionLink === undefined || connectionLink.length === 0)
             return null;
-    }
-};
+    };
+    return ValidateConnectionLinkPipe;
+}());
 ValidateConnectionLinkPipe = __decorate([
     core_1.Pipe({
         name: 'validateConnectionLinkPipe'

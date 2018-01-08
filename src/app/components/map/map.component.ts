@@ -6,6 +6,7 @@ import {Logger} from "angular2-logger/core";
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/forkJoin';
 import {TrackedEntity} from "../../models/TrackedEntity.model";
+import {IUpdateableComponent} from "../../services/IUpdateable.component";
 
 
 declare var L: any;
@@ -19,7 +20,7 @@ declare var L: any;
 /*
  * This component manages the Leaflet map
  */
-export class MapComponent {
+export class MapComponent implements IUpdateableComponent{
 
   private activeMapInputData: InputDataObject;
   private map: any;
@@ -43,14 +44,17 @@ export class MapComponent {
   /*
    * This runs when the input data has been changed and must be rendered.
    */
-  public updateMap(inputDataObject: InputDataObject): void {
-    this._mapService.clearMap(this.mapControl, this.mapData);
+  public update(inputDataObject: InputDataObject, stackData:boolean, callOnFinish:any): void {
+    if(!stackData)
+      this.clearMap();
     this.activeMapInputData = inputDataObject;
 
+
+
     Observable.forkJoin(this.trackedEntityQueue).subscribe((entityArray:any[]) => {
-      this._logger.log("Update map trackedEntitiy observables:", entityArray);
+      this._logger.debug("Update map trackedEntitiy observables:", entityArray);
       for(let i = 0; i < entityArray.length; i++){
-        this._logger.log("Entities on program:", entityArray[i]);
+        this._logger.debug("Entities on program:", entityArray[i]);
 
         let trackedEntitiesArray: TrackedEntity[] = [];
         entityArray[i].trackedEntityInstances.forEach((unit: TrackedEntity) => {
@@ -64,6 +68,7 @@ export class MapComponent {
       };
       this.trackedEntityAttributes = [];
       this.trackedEntityQueue = [];
+      callOnFinish(this);
     });
   }
 
@@ -78,5 +83,13 @@ export class MapComponent {
         trackedEntities.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
       });
     });*/
+  }
+
+  public clearMap():void {
+      this._mapService.clearMap(this.mapControl, this.mapData);
+  }
+
+  public setView():void {
+    this._mapService.setView(this.map, this.activeMapInputData.getSelectedOrgUnit());
   }
 }

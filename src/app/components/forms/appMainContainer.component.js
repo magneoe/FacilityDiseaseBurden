@@ -9,29 +9,30 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const core_1 = require("@angular/core");
-const customValidation_service_1 = require("../../services/customValidation.service");
-const mapInputData_service_1 = require("../../services/dataInput/mapInputData.service");
-let AppMainContainerComponent = 
-/*
- * This component represents the main container for all input forms that sets up the
- * initial search for the map component.
- */
-class AppMainContainerComponent {
-    constructor(_customValidationService, _mapInputDataService) {
+var core_1 = require("@angular/core");
+var customValidation_service_1 = require("../../services/customValidation.service");
+var map_component_1 = require("../map/map.component");
+var TemporalDimension_component_1 = require("../temporal/TemporalDimension.component");
+var CommonResourceDispatcher_service_1 = require("../../services/dataInput/CommonResourceDispatcher.service");
+var ngx_progressbar_1 = require("ngx-progressbar");
+var selectedDatasetManager_component_1 = require("./selectedDatasetManager.component");
+var AppMainContainerComponent = (function () {
+    function AppMainContainerComponent(_customValidationService, _commonResourceDispatcher, _ngProgress) {
+        var _this = this;
         this._customValidationService = _customValidationService;
-        this._mapInputDataService = _mapInputDataService;
+        this._commonResourceDispatcher = _commonResourceDispatcher;
+        this._ngProgress = _ngProgress;
         this.formIsValid = false;
         this.errorMessages = new Map();
-        //Subscribes to the Validation message service used by the child components for sending validation messages.
-        this.subscription = this._customValidationService.getErrorMessage().subscribe(validationMessage => {
-            this.handleValidationUpdateEvent(validationMessage);
+        // Subscribes to the Validation message service used by the child components for sending validation messages.
+        this.subscription = this._customValidationService.getErrorMessage().subscribe(function (validationMessage) {
+            _this.handleValidationUpdateEvent(validationMessage);
         });
     }
     /*
      * This methods deals with an incomming validation message
      */
-    handleValidationUpdateEvent(validationMessage) {
+    AppMainContainerComponent.prototype.handleValidationUpdateEvent = function (validationMessage) {
         if (!validationMessage.formIsValid)
             this.errorMessages.set(validationMessage.senderId, validationMessage);
         else
@@ -40,34 +41,74 @@ class AppMainContainerComponent {
             this.formIsValid = true;
         else
             this.formIsValid = false;
-    }
+    };
     /*
      * Converts the Validation messages as an array to be iterated in the view
      */
-    getErrorMessages() {
-        let array = new Array();
-        this.errorMessages.forEach(item => {
+    AppMainContainerComponent.prototype.getErrorMessages = function () {
+        var array = new Array();
+        this.errorMessages.forEach(function (item) {
             array.push(item);
         });
         return array;
-    }
+    };
     /*
      * The submitting
      */
-    select() {
-        //Happy day scenario
-        //let message = 'Selected orgOrg name: ' +
-        //"Date range: from" + this.datePicker.getStartDate().toLocaleDateString('en-GB') + ' to: ' + this.datePicker.getEndDate().toLocaleDateString('en-GB');
-        console.log('Select pushed!');
-    }
-    ngOnDestroy() {
+    AppMainContainerComponent.prototype.select = function (stackData) {
+        var _this = this;
+        //Make a list of updateable components;
+        var updateableComponents = [];
+        updateableComponents.push(this.mapComponent);
+        updateableComponents.push(this.temporalComponent);
+        updateableComponents.push(this.selectedDatasetManager);
+        //The list of components that still not have reported that their are finished
+        var pendingComponentsInProgress = [];
+        pendingComponentsInProgress = pendingComponentsInProgress.concat(updateableComponents);
+        //Upon finshed - remove the component from the pendingComponentsList
+        var callOnFinish = function (component) {
+            var _loop_1 = function (i) {
+                if (pendingComponentsInProgress[i] === component) {
+                    pendingComponentsInProgress = pendingComponentsInProgress.filter(function (comp) {
+                        if (comp !== pendingComponentsInProgress[i])
+                            return true;
+                    });
+                }
+            };
+            for (var i = 0; i < pendingComponentsInProgress.length; i++) {
+                _loop_1(i);
+            }
+            //When all are done, stop the progressbar
+            if (pendingComponentsInProgress.length === 0) {
+                _this._ngProgress.done();
+                _this.mapComponent.setView();
+            }
+        };
+        this._ngProgress.start();
+        this._commonResourceDispatcher.handleUpdate(updateableComponents, stackData, callOnFinish);
+    };
+    AppMainContainerComponent.prototype.ngOnDestroy = function () {
         this.subscription.unsubscribe();
-    }
-};
+    };
+    return AppMainContainerComponent;
+}());
+__decorate([
+    core_1.ViewChild(map_component_1.MapComponent),
+    __metadata("design:type", map_component_1.MapComponent)
+], AppMainContainerComponent.prototype, "mapComponent", void 0);
+__decorate([
+    core_1.ViewChild(TemporalDimension_component_1.TemporalDimensionComponent),
+    __metadata("design:type", TemporalDimension_component_1.TemporalDimensionComponent)
+], AppMainContainerComponent.prototype, "temporalComponent", void 0);
+__decorate([
+    core_1.ViewChild(selectedDatasetManager_component_1.SelectedDatasetManager),
+    __metadata("design:type", selectedDatasetManager_component_1.SelectedDatasetManager)
+], AppMainContainerComponent.prototype, "selectedDatasetManager", void 0);
 AppMainContainerComponent = __decorate([
     core_1.Component({
         selector: 'app',
         templateUrl: '../../views/appMainContainer.component.html',
+        providers: [CommonResourceDispatcher_service_1.CommonResourceDispatcherService]
     })
     /*
      * This component represents the main container for all input forms that sets up the
@@ -75,7 +116,8 @@ AppMainContainerComponent = __decorate([
      */
     ,
     __metadata("design:paramtypes", [customValidation_service_1.CustomValidationService,
-        mapInputData_service_1.MapInputDataService])
+        CommonResourceDispatcher_service_1.CommonResourceDispatcherService,
+        ngx_progressbar_1.NgProgress])
 ], AppMainContainerComponent);
 exports.AppMainContainerComponent = AppMainContainerComponent;
 //# sourceMappingURL=appMainContainer.component.js.map

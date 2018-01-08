@@ -1,0 +1,20 @@
+{
+    "version": "0.1",
+    "name": "Facility-Disease-burden",
+    "description": "A disease surveillance app, monitoring disease patterns linked to facilities",
+    "launch_path": "/index.html",
+    "appType": "APP",
+    "icons": {
+        "48": "facility.png",
+    },
+    "developer": {
+        "name": "Magnus Østeng, Nirujah Kipu",
+        "url": "http://dhis2.org"
+    },
+    "default_locale": "en",
+    "activities": {
+        "dhis": {
+            "href": "*" 
+        }
+    }
+}

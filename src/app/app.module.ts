@@ -23,6 +23,9 @@ import {TrackedEntityLoaderService} from "./services/dataLoading/TrackedEntityLo
 import {LOG_LOGGER_PROVIDERS} from "angular2-logger/core";
 import {TemporalDimensionComponent} from "./components/temporal/TemporalDimension.component";
 import {OrganizationUnitLoaderService} from "./services/dataLoading/organizationUnitLoader.service";
+import {NgProgressModule} from "ngx-progressbar";
+import {APP_BASE_HREF} from "@angular/common"; //Do not remove this!!!
+import {SelectedDatasetManager} from "./components/forms/selectedDatasetManager.component";
 
 
 const appRoutes: Routes = [
@@ -35,12 +38,17 @@ const appRoutes: Routes = [
 
 @NgModule({
   imports:      [ BrowserModule, HttpModule, RouterModule.forRoot(appRoutes),
-    FormsModule, ReactiveFormsModule ],
+    FormsModule, ReactiveFormsModule, NgProgressModule ],
   declarations: [ AppComponent, OrganizationLoaderComponent, PageNotFoundComponent, LoginComponent,
     OrderByDisplayNamePipe, DatePickerComponent,
-    AppMainContainerComponent, ProgramsComponent, MapComponent, ProgramFilterComponent, ProgramFilterAttributeComponent, TemporalDimensionComponent ],
+    AppMainContainerComponent, ProgramsComponent, MapComponent,
+      ProgramFilterComponent, ProgramFilterAttributeComponent, TemporalDimensionComponent,
+      SelectedDatasetManager],
   bootstrap:    [ AppComponent ],
-  providers: [AuthorizationService, ProgramsService, CustomValidationService, MapInputDataService, TrackedEntityLoaderService, OrganizationUnitLoaderService, LOG_LOGGER_PROVIDERS],
+  providers: [AuthorizationService, ProgramsService, CustomValidationService,
+      MapInputDataService, TrackedEntityLoaderService,
+      OrganizationUnitLoaderService, LOG_LOGGER_PROVIDERS,
+      ],
   entryComponents: [ProgramFilterComponent, ProgramFilterAttributeComponent]
 })
 export class AppModule { }

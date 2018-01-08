@@ -15,6 +15,9 @@ import {MapInputDataService} from "./mapInputData.service";
 import {Logger} from "angular2-logger/core";
 import {TrackedEntityLoaderService} from "../dataLoading/TrackedEntityLoaderService.service";
 import {InputDataContent} from "../../enums/InputDataContent.enum";
+import {MapService} from "../map/map.service";
+import {NgProgress} from "ngx-progressbar";
+import {IUpdateableComponent} from "../IUpdateable.component";
 
 @Injectable()
 export class CommonResourceDispatcherService {
@@ -32,22 +35,19 @@ export class CommonResourceDispatcherService {
     });
   }
 
-  public handleUpdate(mapComponent: MapComponent, temporalComponent:TemporalDimensionComponent) {
-
+  public handleUpdate(updateableComponents:IUpdateableComponent[], stackData:boolean, callOnFinish:any) {
     let inputDataObject: InputDataObject = this.dataInputBuilder.createDataInputObject();
-    this._logger.debug('InpudataObject in handleUpdate', inputDataObject);
 
     this.getOrgUnitChildern(inputDataObject).subscribe((units:any) => {
       //Need to resolve all subunits connected to the program (if any) - saves resources by performing the task after the form is submitted
-      this._logger.log('AddDataToMap query:', units);
-      let orgUnitsToMap:OrganizationUnit[] = units.organisationUnits.filter(orgUnit => {
+      let orgUnitsToMap:OrganizationUnit[] = units.organisationUnits.filter((orgUnit:any) => {
         if(orgUnit.ChildCount === 0 && orgUnit.coordinates !== undefined)
           return true;
         return false;
       });
       if(orgUnitsToMap === null || orgUnitsToMap.length === 0)
         orgUnitsToMap = [inputDataObject.getSelectedOrgUnit()];
-      this._logger.debug('OrgUnit array to send for mapping:', orgUnitsToMap);
+
       /*
        * For each selected programs one single layer group is being loaded,
        * containing all the markers and polyfigures connected to the program.
@@ -64,18 +64,28 @@ export class CommonResourceDispatcherService {
 
           localInputDataObj.setSelectedOrgUnit(orgUnitsToMap[selOrgIndex]);
           localInputDataObj.setSelectedPrograms([inputDataObject.getSelectedPrograms()[selProgIndex]]);
-          if(mapComponent !== null) {
+          /*if(mapComponent !== null) {
             mapComponent.addData(localInputDataObj,trackedEntities);
           }
           if(temporalComponent !== null){
             temporalComponent.addData(localInputDataObj, trackedEntities);
-          }
+          }*/
+          updateableComponents.forEach(comp => {
+            if(comp !== null)
+              comp.addData(localInputDataObj, trackedEntities);
+          });
         }
       }
+      updateableComponents.forEach(comp => {
+          if(comp !== null)
+            comp.update(inputDataObject, stackData, callOnFinish);
+      });
+      /*
       if(mapComponent != null)
-        mapComponent.updateMap(inputDataObject);
+        mapComponent.update(inputDataObject, callOnFinish);
       if(temporalComponent != null)
-        temporalComponent.updateTemporalDimension(inputDataObject);
+        temporalComponent.update(inputDataObject, callOnFinish);
+        */
     });
   }
 
