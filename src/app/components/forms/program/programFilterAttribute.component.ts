@@ -50,15 +50,16 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
 
 
     let filterQueries:FilterQuery[] = [];
+    console.log('Attribute filter:', this.selectedAttribute);
     //Text search
     if(this.formModel.fromNumberRange === 0 && this.formModel.toNumberRange === 0){
       let operatorTypeString = this.formModel.searchType as keyof typeof OperatorType;
-      filterQueries.push(new FilterQuery(this.selectedAttribute.attribute, OperatorType[operatorTypeString], this.formModel.searchTextString, FilterOperation.ADD));
+      filterQueries.push(new FilterQuery(this.selectedAttribute, OperatorType[operatorTypeString], this.formModel.searchTextString, FilterOperation.ADD));
     }
     //Number intervall
     else {
-      filterQueries.push(new FilterQuery(this.selectedAttribute.attribute, OperatorType.GREATER_THAN, this.formModel.fromNumberRange, FilterOperation.ADD));
-      filterQueries.push(new FilterQuery(null, OperatorType.LESS_THAN, this.formModel.toNumberRange, FilterOperation.ADD));
+      filterQueries.push(new FilterQuery(this.selectedAttribute, OperatorType.GREATER_THAN, this.formModel.fromNumberRange, FilterOperation.ADD));
+      filterQueries.push(new FilterQuery(this.selectedAttribute, OperatorType.LESS_THAN, this.formModel.toNumberRange, FilterOperation.ADD)); //was null attribute
 
       console.log('Formatted:', filterQueries[0].convertToFormattedQuery());
       console.log('Formatted:', filterQueries[1].convertToFormattedQuery());
@@ -66,7 +67,7 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
     this.lastCommitedFilters = filterQueries;
     this.sendInputDataMessage(filterQueries);
   }
-  selectAttribute(selectedAttributeId:string){ 
+  selectAttribute(selectedAttributeId:string){
     if(selectedAttributeId === "null")
     {
       this.selectedAttribute = null;

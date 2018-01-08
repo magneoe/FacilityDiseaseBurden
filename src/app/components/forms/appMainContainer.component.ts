@@ -7,6 +7,7 @@ import {TemporalDimensionComponent} from "../temporal/TemporalDimension.componen
 import {CommonResourceDispatcherService} from "../../services/dataInput/CommonResourceDispatcher.service";
 import {NgProgress} from "ngx-progressbar";
 import {IUpdateableComponent} from "../../services/IUpdateable.component";
+import {SelectedDatasetManager} from "./selectedDatasetManager.component";
 
 
 @Component({
@@ -26,6 +27,7 @@ export class AppMainContainerComponent implements OnDestroy {
   private subscription: Subscription;
   @ViewChild(MapComponent) mapComponent: MapComponent;
   @ViewChild(TemporalDimensionComponent) temporalComponent: TemporalDimensionComponent;
+  @ViewChild(SelectedDatasetManager) selectedDatasetManager: SelectedDatasetManager;
 
   constructor(private _customValidationService: CustomValidationService,
               private _commonResourceDispatcher:CommonResourceDispatcherService,
@@ -62,14 +64,16 @@ export class AppMainContainerComponent implements OnDestroy {
     return array;
   }
 
+
   /*
    * The submitting
    */
-  select(): void {
+    select(stackData:boolean): void {
     //Make a list of updateable components;
     let updateableComponents:IUpdateableComponent[] = [];
     updateableComponents.push(this.mapComponent);
     updateableComponents.push(this.temporalComponent);
+    updateableComponents.push(this.selectedDatasetManager);
 
     //The list of components that still not have reported that their are finished
     let pendingComponentsInProgress:IUpdateableComponent[] = [];
@@ -94,7 +98,7 @@ export class AppMainContainerComponent implements OnDestroy {
     };
 
     this._ngProgress.start();
-    this._commonResourceDispatcher.handleUpdate(updateableComponents, callOnFinish);
+    this._commonResourceDispatcher.handleUpdate(updateableComponents, stackData, callOnFinish);
   }
 
   ngOnDestroy(){

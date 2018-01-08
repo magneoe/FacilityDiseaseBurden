@@ -6,7 +6,7 @@ import {MapObjectFactory} from "../../utils/MapObjectFactory.util";
 import {TrackedEntity} from "../../models/TrackedEntity.model";
 import {Logger} from "angular2-logger/core";
 import {MapObjectType} from "../../enums/MapObjectType.enum";
-import {flipLatLng} from './../../constants/global_constants';
+
 
 @Injectable()
 export class MapService {
@@ -26,10 +26,8 @@ export class MapService {
     return map;
   }
   public setView(map:any, orgUnit:OrganizationUnit):void {
-    this._logger.log('Set view latlng:', orgUnit.coordinates.slice(1, orgUnit.coordinates.length-1));
-    let lat = orgUnit.coordinates.slice(1, orgUnit.coordinates.length-1).split(',')[0];
-    let lng = orgUnit.coordinates.slice(1, orgUnit.coordinates.length-1).split(',')[1];
-    //map.setView([lng, lat], 8);
+    let lat = orgUnit.coordinates.split(',')[0].slice(orgUnit.coordinates.search(/[0-9]/g), orgUnit.coordinates.length-1);
+    let lng = orgUnit.coordinates.split(',')[1].slice(0, orgUnit.coordinates.search(/\\]/g));
     map.panTo([lng, lat]);
   }
 

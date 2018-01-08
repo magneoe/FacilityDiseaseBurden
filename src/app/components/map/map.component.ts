@@ -44,8 +44,9 @@ export class MapComponent implements IUpdateableComponent{
   /*
    * This runs when the input data has been changed and must be rendered.
    */
-  public update(inputDataObject: InputDataObject, callOnFinish:any): void {
-    this._mapService.clearMap(this.mapControl, this.mapData);
+  public update(inputDataObject: InputDataObject, stackData:boolean, callOnFinish:any): void {
+    if(!stackData)
+      this.clearMap();
     this.activeMapInputData = inputDataObject;
 
 
@@ -82,6 +83,10 @@ export class MapComponent implements IUpdateableComponent{
         trackedEntities.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
       });
     });*/
+  }
+
+  public clearMap():void {
+      this._mapService.clearMap(this.mapControl, this.mapData);
   }
 
   public setView():void {

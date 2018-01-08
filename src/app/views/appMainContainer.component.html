@@ -3,7 +3,10 @@
 <organisationPicker></organisationPicker>
 <datePicker></datePicker>
 <div class="errorMessageStyle" *ngFor='let errorMessage of getErrorMessages()'>{{errorMessage.errorMessage}}</div>
-<button type="button" [disabled]="!formIsValid" (click)="select()">Update map</button>
+<button type="button" [disabled]="!formIsValid" (click)="select(false)">Clear and update</button>
+<button type="button" [disabled]="!formIsValid" (click)="select(true)">Add and update</button>
+
+<selectedDatasetManager></selectedDatasetManager>
 <mapComponent></mapComponent>
 <temporalComponent></temporalComponent>
 <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"

@@ -35,13 +35,11 @@ export class CommonResourceDispatcherService {
     });
   }
 
-  public handleUpdate(updateableComponents:IUpdateableComponent[], callOnFinish:any) {
+  public handleUpdate(updateableComponents:IUpdateableComponent[], stackData:boolean, callOnFinish:any) {
     let inputDataObject: InputDataObject = this.dataInputBuilder.createDataInputObject();
-    this._logger.debug('InpudataObject in handleUpdate', inputDataObject);
 
     this.getOrgUnitChildern(inputDataObject).subscribe((units:any) => {
       //Need to resolve all subunits connected to the program (if any) - saves resources by performing the task after the form is submitted
-      this._logger.log('AddDataToMap query:', units);
       let orgUnitsToMap:OrganizationUnit[] = units.organisationUnits.filter((orgUnit:any) => {
         if(orgUnit.ChildCount === 0 && orgUnit.coordinates !== undefined)
           return true;
@@ -49,7 +47,7 @@ export class CommonResourceDispatcherService {
       });
       if(orgUnitsToMap === null || orgUnitsToMap.length === 0)
         orgUnitsToMap = [inputDataObject.getSelectedOrgUnit()];
-      this._logger.debug('OrgUnit array to send for mapping:', orgUnitsToMap);
+
       /*
        * For each selected programs one single layer group is being loaded,
        * containing all the markers and polyfigures connected to the program.
@@ -80,7 +78,7 @@ export class CommonResourceDispatcherService {
       }
       updateableComponents.forEach(comp => {
           if(comp !== null)
-            comp.update(inputDataObject, callOnFinish);
+            comp.update(inputDataObject, stackData, callOnFinish);
       });
       /*
       if(mapComponent != null)

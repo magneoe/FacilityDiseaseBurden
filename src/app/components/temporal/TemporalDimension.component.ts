@@ -19,7 +19,7 @@ export class TemporalDimensionComponent implements IUpdateableComponent{
 
   constructor(private _logger: Logger, private _ngProgress:NgProgress){}
 
-  public update(inputDataObject:InputDataObject, callOnFinish:any){
+  public update(inputDataObject:InputDataObject, stackData:boolean, callOnFinish:any){
       this._logger.log("UpdateTemporalDimension invoked", inputDataObject);
     this.clear();
     this.activeInputData = inputDataObject;

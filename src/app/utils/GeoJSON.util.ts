@@ -4,11 +4,10 @@ export class GeoJSONUtil {
   public static exportPointToGeo(coordinates: string, popupContent: string): any {
     let lat = this.getLat(coordinates);
     let lng = this.getLng(coordinates);
-    console.log('Coorinates in export Point to geo:', coordinates);
-    if (lat === null || lat === undefined || lng === null || lng === undefined)
+
+    if (lat === null || lng === null)
       return null;
     else {
-      console.log('Export point:', [lat, lng]);
       let geoJSONFeature = {
         "type": "Feature",
         "properties": {
@@ -23,7 +22,6 @@ export class GeoJSONUtil {
     }
   }
   public static exportPolyLineToGeo(coordinates: string[]): any {
-    console.log('Coords:', coordinates);
     let coordList:number[][] = [];
     coordinates.forEach(coordinate => {
       let lat:number = parseFloat(this.getLat(coordinate));
@@ -31,7 +29,7 @@ export class GeoJSONUtil {
       coordList.push([lat, lng]);
     });
 
-    if (coordList.length < 2)
+    if (coordList.length < 2 || coordList[0].length < 2 || coordList[1].length < 2)
       return null;
     else {
       console.log('Exporting to poly line coords:', coordList);
@@ -43,7 +41,7 @@ export class GeoJSONUtil {
     }
   }
   private static getLat(coordinates: string): string {
-    if(coordinates === null || coordinates === undefined)
+    if(coordinates === null || coordinates === undefined || (coordinates.split('[').length -1 ) > 2) //We do not support polygons, if more than one coordinate occurs, we assume its a polygon
       return null;
     coordinates = coordinates.trim();
     if(coordinates.startsWith('['))
@@ -51,7 +49,7 @@ export class GeoJSONUtil {
     return coordinates.split(',')[0];
   }
   private static getLng(coordinates:string):string {
-    if(coordinates === null || coordinates === undefined)
+    if(coordinates === null || coordinates === undefined ||  (coordinates.split('[').length -1 ) > 2)  //We do not support polygons, if more than one coordinate occurs, we assume its a polygon
       return null;
     coordinates = coordinates.trim();
     if(coordinates.startsWith('['))

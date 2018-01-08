@@ -51,6 +51,38 @@ header {
   width: 800px;
   height: 500px;
 }
+
+table {
+  border-collapse: collapse;
+  width: 750px;
+  table-layout: fixed;
+}
+th,td {
+  text-align: left;
+  padding: 8px;
+}
+tr:nth-child(even){background-color:#f2f2f2 }
+th {
+  background-color: #4CAF50;
+  color: white;
+}
+.datasetListStyle {
+  list-style-type: disc;
+  list-style-position: inside;
+  text-indent: -1.5em;
+  padding-left: 1em;
+}
+
+#datasetContainer {
+  height: 60px;
+  overflow-y: auto;
+}
+
+#tableHeader {
+  display: block;
+  position: relative;
+}
+
 /*
 #progressBar {
   width: 0%;
