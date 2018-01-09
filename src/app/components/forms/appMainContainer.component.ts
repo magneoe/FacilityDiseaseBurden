@@ -98,6 +98,14 @@ export class AppMainContainerComponent implements OnDestroy {
     };
 
     this._ngProgress.start();
+    //To avoid infinite loading...
+    setTimeout(() => {
+      if(pendingComponentsInProgress.length > 0) {
+          alert('The server is too slow, or something went wrong :(');
+          pendingComponentsInProgress = [];
+          callOnFinish(null);
+      }
+    }, 1000*120);
     this._commonResourceDispatcher.handleUpdate(updateableComponents, stackData, callOnFinish);
   }
 

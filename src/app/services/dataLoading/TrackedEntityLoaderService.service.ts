@@ -21,7 +21,7 @@ export class TrackedEntityLoaderService extends HttpWrapperService<TrackedEntity
   // Loads the tracked entity instances from the server
   public getTrackedEntityInstances(query:string): Observable<TrackedEntity[]> {
     this._logger.log('Get tracked entity instances query:', query);
-    return this.get(query).do((data) => console.log(JSON.stringify(data))).catch(this.handleError);
+    return this.get(query).do((data) => JSON.stringify(data)).catch(this.handleError);
   }
   /*
   * Implements the HttpWrapper service methods

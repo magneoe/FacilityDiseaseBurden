@@ -21,7 +21,7 @@ export class OrganizationUnitLoaderService extends HttpWrapperService<Organizati
 
 
  getOrgUnits(query:string){
-   return this.get(query).do(data => console.log(JSON.stringify(data))).catch(this.handleError);
+   return this.get(query).do(data => JSON.stringify(data)).catch(this.handleError);
  }
   /*
     * Implements the HttpWrapper methods

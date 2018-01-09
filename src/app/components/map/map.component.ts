@@ -75,14 +75,6 @@ export class MapComponent implements IUpdateableComponent{
   public addData(inputDataObject:InputDataObject, trackedEntities:Observable<TrackedEntity[]>) {
     this.trackedEntityQueue.push(trackedEntities);
     this.trackedEntityAttributes.push(inputDataObject);
-
-/*
-    trackedEntities.subscribe((units: any) => {
-      let trackedEntities: TrackedEntity[] = [];
-      units.trackedEntityInstances.forEach((unit: TrackedEntity) => {
-        trackedEntities.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
-      });
-    });*/
   }
 
   public clearMap():void {
