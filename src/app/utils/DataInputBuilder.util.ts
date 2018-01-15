@@ -4,8 +4,9 @@ import {FilterQuery} from "../models/FilterQuery.model";
 import {OrganizationUnit} from "../models/OrganizationUnit.model";
 import {Program} from "../models/Program.model";
 import {Logger} from "angular2-logger/core";
-import {InputDataObject} from "../models/InputDataObject.model";
 import {FilterOperation} from "../enums/FilterOperation.enum";
+import {MapObjectFactory} from "./MapObjectFactory.util";
+import {Dataset} from "../models/Dataset.model";
 
 /*
  * What: This is a builder class for constructing InputDataObjects for
@@ -18,13 +19,15 @@ import {FilterOperation} from "../enums/FilterOperation.enum";
  */
 export class DataInputBuilderUtil {
 
-  private selectedPrograms: Program[];
-  private selectedOrgUnit: OrganizationUnit;
-  private startDate:string;
-  private endDate:string;
+  private selectedPrograms: Program[]; //Mandatory field
+  private selectedOrgUnit: OrganizationUnit; //Mandatory field
+  private startDate:string; //Mandatory field
+  private endDate:string; //Mandatory field
   private filterQueryMap:Map<string, FilterQuery[]>;
 
-  constructor(private _logger: Logger){
+  private static datasetId:number = 0;
+
+  constructor(private _logger: Logger) {
     this.filterQueryMap = new Map<string, FilterQuery[]>();
   }
   public setSelectedPrograms(selectedPrograms: Program[]): DataInputBuilderUtil {
@@ -93,8 +96,46 @@ export class DataInputBuilderUtil {
     this.setFilterQueryMap(this.filterQueryMap.set(programId, updatedFilterQueryList));
     this._logger.info('Query List after removing:', this.filterQueryMap);
   }
-
-  public createDataInputObject():InputDataObject {
-    return new InputDataObject(this.selectedPrograms, this.selectedOrgUnit, this.startDate, this.endDate, this.filterQueryMap);
+  public validateInputObject(): string[] {
+    let errorMessages:string[] = [];
+    if(this.selectedOrgUnit === null || this.selectedOrgUnit === undefined)
+      errorMessages.push('Selected organisation unit not set');
+    if(this.startDate === null || this.startDate === undefined)
+        errorMessages.push('Start date not set');
+    if(this.endDate === null || this.endDate === undefined)
+      errorMessages.push('End date not set');
+    if(this.selectedPrograms === null || this.selectedPrograms === undefined ||
+        this.selectedPrograms.length === 0 || this.selectedPrograms[0] === null ||
+    this.selectedPrograms[0] === undefined)
+      errorMessages.push('Program not set');
+    return errorMessages;
   }
+
+  public createDataInputObject():Dataset {
+    let newColor = MapObjectFactory.getNewColor();
+    if(newColor === null)
+      return null;
+
+    let datasetId = DataInputBuilderUtil.datasetId++;
+    let programsClone:Program[] = this.selectedPrograms.concat([]);
+    let orgUnitClone:OrganizationUnit = {...this.selectedOrgUnit};
+    let startDateClone:string = this.startDate + '';
+    let endDateClone:string = this.endDate + '';
+    let filterQueryMapClone:Map<string, FilterQuery[]> = new Map();
+    this.filterQueryMap.forEach((filterQueries:FilterQuery[], key:string) => {
+        let filterQueryClones:FilterQuery[] = [];
+        filterQueries.forEach((filterQuery:FilterQuery) => {
+            filterQueryClones.push(filterQuery.clone());
+        });
+        filterQueryMapClone.set('' + key, filterQueryClones);
+    });
+
+    return new Dataset(
+       datasetId, newColor, programsClone,
+        orgUnitClone, startDateClone, endDateClone, filterQueryMapClone);
+  }
+  public static resetDatasetId():void {
+    DataInputBuilderUtil.datasetId = 0;
+  }
+
 }

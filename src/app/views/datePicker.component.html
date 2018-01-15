@@ -1,5 +1,6 @@
-<fieldset>
-  <legend>Pick time interval</legend>
-  <input type="date" id="startDate" name="startDate" [(ngModel)]="startDate" (ngModelChange)="notifyValueChange($event)"/>
-  <input type="date" id="endDate" name="endDate" [(ngModel)]="endDate" (ngModelChange)="notifyValueChange($event)"/>
-</fieldset>
+<h3 class="sub-header">Select time interval:</h3>
+<div class="container-fluid">
+    <input class="inputBoxWidth" type="date" id="startDate" name="startDate" [(ngModel)]="startDate"
+           (ngModelChange)="notifyValueChange($event)"/>
+    <input class="inputBoxWidth" type="date" id="endDate" name="endDate" [(ngModel)]="endDate" (ngModelChange)="notifyValueChange($event)"/>
+</div>

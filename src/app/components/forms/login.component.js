@@ -11,7 +11,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var router_1 = require("@angular/router");
-var customValidation_service_1 = require("../../services/customValidation.service");
 var User_model_1 = require("../../models/User.model");
 var login_service_1 = require("../../services/login.service");
 var LoginComponent = (function () {
@@ -52,7 +51,6 @@ LoginComponent = __decorate([
     core_1.Component({
         selector: 'login',
         templateUrl: '../../views/login.component.html',
-        providers: [customValidation_service_1.CustomValidationService]
     })
     /*
      * Temporary login component - runs basic authentication for now - will be set up with tokens eventually

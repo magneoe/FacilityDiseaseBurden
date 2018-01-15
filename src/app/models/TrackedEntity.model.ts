@@ -1,18 +1,19 @@
 import {TrackedEntityAttribute} from "./TrackedEntityAttribute.model";
+import {Enrollment} from "./Enrollment.model";
 
 export class TrackedEntity {
   attributes:TrackedEntityAttribute[];
-  lastUpdated:Date;
+  enrollments:Enrollment[];
 
-  constructor(attributes:TrackedEntityAttribute[], lastUpdated:Date){
+  constructor(attributes:TrackedEntityAttribute[], enrollments:Enrollment[]){
     this.setAttributes(attributes);
-    this.lastUpdated = lastUpdated;
+    this.enrollments = enrollments;
   }
   /*
    * GETTERS AND SETTERS
    */
-  public getLastUpdated():Date {
-    return this.lastUpdated;
+  public getEnrollments():Enrollment[] {
+    return this.enrollments;
   }
 
   private setAttributes(attributes:TrackedEntityAttribute[]){

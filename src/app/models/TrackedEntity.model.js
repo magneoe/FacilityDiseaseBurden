@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var TrackedEntity = (function () {
-    function TrackedEntity(attributes, lastUpdated) {
+    function TrackedEntity(attributes, enrollments) {
         this.setAttributes(attributes);
-        this.lastUpdated = lastUpdated;
+        this.enrollments = enrollments;
     }
     /*
      * GETTERS AND SETTERS
      */
-    TrackedEntity.prototype.getLastUpdated = function () {
-        return this.lastUpdated;
+    TrackedEntity.prototype.getEnrollments = function () {
+        return this.enrollments;
     };
     TrackedEntity.prototype.setAttributes = function (attributes) {
         this.attributes = attributes;

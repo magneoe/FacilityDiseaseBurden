@@ -1,0 +1,10 @@
+<div style="display: block;width: 800px; height: 300px">
+    <canvas baseChart width="800" height="300"
+            [datasets]="lineChartData"
+            [labels]="lineChartLabels"
+            [options]="lineChartOptions"
+            [colors]="lineChartColors"
+            [legend]="lineChartLegend"
+            [chartType]="lineChartType"
+            (chartHover)="chartHovered($event)"></canvas>
+</div>

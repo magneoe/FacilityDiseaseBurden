@@ -1,87 +1,72 @@
 import {Component} from '@angular/core';
-import {InputDataObject} from '../../models/InputDataObject.model';
+import {Dataset} from '../../models/Dataset.model';
 import {MapService} from '../../services/map/map.service';
-import {FilterQuery} from "../../models/FilterQuery.model";
 import {Logger} from "angular2-logger/core";
-import { Observable } from 'rxjs/Observable';
+import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/forkJoin';
 import {TrackedEntity} from "../../models/TrackedEntity.model";
 import {IUpdateableComponent} from "../../services/IUpdateable.component";
+import {OrganizationUnit} from "../../models/OrganizationUnit.model";
 
 
 declare var L: any;
 
 @Component({
-  selector: 'mapComponent',
-  templateUrl: '../../views/map.component.html',
-  providers: [MapService]
+    selector: 'mapComponent',
+    templateUrl: '../../views/map.component.html',
+    providers: [MapService]
 })
 
 /*
  * This component manages the Leaflet map
  */
-export class MapComponent implements IUpdateableComponent{
-
-  private activeMapInputData: InputDataObject;
-  private map: any;
-  private mapControl: any;
-  private mapData:Map<string, any[]>;
-  private trackedEntityQueue:Observable<TrackedEntity[]>[] = [];
-  private trackedEntityAttributes:InputDataObject[] = [];
+export class MapComponent implements IUpdateableComponent {
 
 
-  constructor(private _mapService: MapService, private _logger:Logger) {
-    this.mapData = new Map<string, any[]>();
-    this.activeMapInputData = new InputDataObject(null, null, null, null, new Map<string, FilterQuery[]>());
+    private map: any;
+    private mapControl: any;
+    private activeDatasets: Map<Dataset, any>;
 
-  }
-  ngOnInit(){
-    let  newMapContainerId:string = 'leafletMapId';
-    // Initiates the map with a given id and the controls
-    this.map = this._mapService.initMap(L, newMapContainerId);
-    this.mapControl = L.control.layers().addTo(this.map);
-  }
-  /*
-   * This runs when the input data has been changed and must be rendered.
-   */
-  public update(inputDataObject: InputDataObject, stackData:boolean, callOnFinish:any): void {
-    if(!stackData)
-      this.clearMap();
-    this.activeMapInputData = inputDataObject;
+    //private activeDatasets: Dataset[] = [];
 
+    constructor(private _mapService: MapService, private _logger: Logger) {
+        this.activeDatasets = new Map<Dataset, any>();
+    }
 
+    ngOnInit() {
+        let newMapContainerId: string = 'leafletMapId';
+        // Initiates the map with a given id and the controls
+        this.map = this._mapService.initMap(L, newMapContainerId);
+        this.mapControl = L.control.layers().addTo(this.map);
+    }
 
-    Observable.forkJoin(this.trackedEntityQueue).subscribe((entityArray:any[]) => {
-      this._logger.debug("Update map trackedEntitiy observables:", entityArray);
-      for(let i = 0; i < entityArray.length; i++){
-        this._logger.debug("Entities on program:", entityArray[i]);
+    /*
+     * This runs when the input data has been changed and must be rendered.
+     */
+    public update(dataset: Dataset, stackData: boolean, callOnFinish: any): void {
+        //Clears data on the map
+        if (!stackData) {
+            this.removeAll();
+        }
+        let newLayerGroup = this._mapService.loadLayerGroup(dataset,
+            this.mapControl, L, this.map);
+        this.setView(dataset);
+        this.activeDatasets.set(dataset, newLayerGroup);
+        callOnFinish(this);
+    }
 
-        let trackedEntitiesArray: TrackedEntity[] = [];
-        entityArray[i].trackedEntityInstances.forEach((unit: TrackedEntity) => {
-          trackedEntitiesArray.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
-        });
+    public delete(dataset:Dataset, callOnFinish:any):void {
+        this._mapService.removeDataset(this.mapControl, this.map, dataset, this.activeDatasets);
+        this.activeDatasets.delete(dataset);
+        callOnFinish(this);
+    }
 
-        this._mapService.loadLayerGroup(this.trackedEntityAttributes[i].getSelectedOrgUnit(),
-          this.trackedEntityAttributes[i].getSelectedPrograms()[0],
-          trackedEntitiesArray, this.mapControl, this.mapData, L, this.map);
+    private removeAll(): void {
+        this._mapService.removeAll(this.mapControl, this.map, this.activeDatasets);
+        this.activeDatasets.clear();
+    }
 
-      };
-      this.trackedEntityAttributes = [];
-      this.trackedEntityQueue = [];
-      callOnFinish(this);
-    });
-  }
-
-  public addData(inputDataObject:InputDataObject, trackedEntities:Observable<TrackedEntity[]>) {
-    this.trackedEntityQueue.push(trackedEntities);
-    this.trackedEntityAttributes.push(inputDataObject);
-  }
-
-  public clearMap():void {
-      this._mapService.clearMap(this.mapControl, this.mapData);
-  }
-
-  public setView():void {
-    this._mapService.setView(this.map, this.activeMapInputData.getSelectedOrgUnit());
-  }
+    private setView(dataset:Dataset): void {
+        this._mapService.setView(this.map, dataset.getSelectedOrgUnit());
+    }
 }

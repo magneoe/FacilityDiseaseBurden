@@ -37,7 +37,7 @@ var OrganizationUnitLoaderService = (function (_super) {
         return _super.call(this, _http, JSON.parse(sessionStorage.getItem("user"))) || this;
     }
     OrganizationUnitLoaderService.prototype.getOrgUnits = function (query) {
-        return this.get(query).do(function (data) { return console.log(JSON.stringify(data)); }).catch(this.handleError);
+        return this.get(query).do(function (data) { return JSON.stringify(data); }).catch(this.handleError);
     };
     /*
       * Implements the HttpWrapper methods

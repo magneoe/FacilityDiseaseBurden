@@ -10,12 +10,16 @@ var MapObjectType_enum_1 = require("../enums/MapObjectType.enum");
 var MapObjectFactory = (function () {
     function MapObjectFactory() {
     }
-    MapObjectFactory.getNextAvailableColor = function (progId) {
-        if (MapObjectFactory.programColorMap.has(progId))
-            return this.colors[MapObjectFactory.programColorMap.get(progId)].toLowerCase();
-        else
-            MapObjectFactory.programColorMap.set(progId, this.pointer);
-        return this.colors[this.pointer++].toLowerCase();
+    MapObjectFactory.getNewColor = function () {
+        if (MapObjectFactory.takenColors.size >= MapObjectFactory.colors.length)
+            return null;
+        for (var i = 0; i < MapObjectFactory.colors.length; i++) {
+            var color = MapObjectFactory.colors[i].toLowerCase();
+            if (!MapObjectFactory.takenColors.has(color)) {
+                MapObjectFactory.takenColors.add(color);
+                return color;
+            }
+        }
     };
     MapObjectFactory.getMapObject = function (type, color, L) {
         var mapObject = new MapObject_model_1.MapObject(L.Icon.extend({
@@ -40,13 +44,14 @@ var MapObjectFactory = (function () {
         return mapObject;
     };
     MapObjectFactory.reset = function () {
-        this.pointer = 0;
-        this.programColorMap.clear();
+        this.takenColors.clear();
+    };
+    MapObjectFactory.releaseColor = function (color) {
+        MapObjectFactory.takenColors.delete(color);
     };
     return MapObjectFactory;
 }());
 MapObjectFactory.colors = ["RED", "BLUE", "YELLOW", "BROWN", "PURPLE", "GREEN"];
-MapObjectFactory.pointer = 0;
-MapObjectFactory.programColorMap = new Map();
+MapObjectFactory.takenColors = new Set();
 exports.MapObjectFactory = MapObjectFactory;
 //# sourceMappingURL=MapObjectFactory.util.js.map

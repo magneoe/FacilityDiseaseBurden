@@ -33,7 +33,7 @@ var ProgramsService = (function (_super) {
         return _super.call(this, _http, JSON.parse(sessionStorage.getItem("user"))) || this;
     }
     ProgramsService.prototype.loadPrograms = function (query) {
-        return this.get(query).do(function (data) { return console.log(JSON.stringify(data)); }).catch(this.handleError);
+        return this.get(query).do(function (data) { return JSON.stringify(data); }).catch(this.handleError);
     };
     /*
      * Implements the HttpWrapper service methods
@@ -44,15 +44,6 @@ var ProgramsService = (function (_super) {
     ProgramsService.prototype.handleError = function (error) {
         console.error(error);
         return Observable_1.Observable.throw(error.json().error());
-    };
-    ProgramsService.prototype.setSelectedProgram = function (event, programs) {
-        if (event == null || event === undefined)
-            return programs;
-        for (var i = 0; i < programs.length; i++) {
-            if (programs[i].id == event.target.value)
-                programs[i].isSelected = event.target.checked;
-        }
-        return programs;
     };
     return ProgramsService;
 }(HttpWrapper_service_1.HttpWrapperService));

@@ -1,7 +1,16 @@
 "use strict";
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var InputDataObject_model_1 = require("../models/InputDataObject.model");
 var FilterOperation_enum_1 = require("../enums/FilterOperation.enum");
+var MapObjectFactory_util_1 = require("./MapObjectFactory.util");
+var Dataset_model_1 = require("../models/Dataset.model");
 /*
  * What: This is a builder class for constructing InputDataObjects for
  * mapcomponent and temporal component
@@ -80,10 +89,44 @@ var DataInputBuilderUtil = (function () {
         this.setFilterQueryMap(this.filterQueryMap.set(programId, updatedFilterQueryList));
         this._logger.info('Query List after removing:', this.filterQueryMap);
     };
+    DataInputBuilderUtil.prototype.validateInputObject = function () {
+        var errorMessages = [];
+        if (this.selectedOrgUnit === null || this.selectedOrgUnit === undefined)
+            errorMessages.push('Selected organisation unit not set');
+        if (this.startDate === null || this.startDate === undefined)
+            errorMessages.push('Start date not set');
+        if (this.endDate === null || this.endDate === undefined)
+            errorMessages.push('End date not set');
+        if (this.selectedPrograms === null || this.selectedPrograms === undefined ||
+            this.selectedPrograms.length === 0 || this.selectedPrograms[0] === null ||
+            this.selectedPrograms[0] === undefined)
+            errorMessages.push('Program not set');
+        return errorMessages;
+    };
     DataInputBuilderUtil.prototype.createDataInputObject = function () {
-        return new InputDataObject_model_1.InputDataObject(this.selectedPrograms, this.selectedOrgUnit, this.startDate, this.endDate, this.filterQueryMap);
+        var newColor = MapObjectFactory_util_1.MapObjectFactory.getNewColor();
+        if (newColor === null)
+            return null;
+        var datasetId = DataInputBuilderUtil.datasetId++;
+        var programsClone = this.selectedPrograms.concat([]);
+        var orgUnitClone = __assign({}, this.selectedOrgUnit);
+        var startDateClone = this.startDate + '';
+        var endDateClone = this.endDate + '';
+        var filterQueryMapClone = new Map();
+        this.filterQueryMap.forEach(function (filterQueries, key) {
+            var filterQueryClones = [];
+            filterQueries.forEach(function (filterQuery) {
+                filterQueryClones.push(filterQuery.clone());
+            });
+            filterQueryMapClone.set('' + key, filterQueryClones);
+        });
+        return new Dataset_model_1.Dataset(datasetId, newColor, programsClone, orgUnitClone, startDateClone, endDateClone, filterQueryMapClone);
+    };
+    DataInputBuilderUtil.resetDatasetId = function () {
+        DataInputBuilderUtil.datasetId = 0;
     };
     return DataInputBuilderUtil;
 }());
+DataInputBuilderUtil.datasetId = 0;
 exports.DataInputBuilderUtil = DataInputBuilderUtil;
 //# sourceMappingURL=DataInputBuilder.util.js.map

@@ -1,14 +1,62 @@
+<div class="container-fluid">
+    <div class="clearfix visible"></div>
+    <div class="row">
+        <div class=" col-sm-12 col-md-12 col-lg-2 sidebar ">
+            <div class="sidebarStyle">
+            <p>
+            <organisationPicker></organisationPicker>
+            </p>
+            <p>
+            <datePicker></datePicker>
+            </p>
 
+            <div class="errorMessageStyle" *ngFor='let errorMessage of errorMessages'>{{errorMessage}}</div>
 
-<organisationPicker></organisationPicker>
-<datePicker></datePicker>
-<div class="errorMessageStyle" *ngFor='let errorMessage of getErrorMessages()'>{{errorMessage.errorMessage}}</div>
-<button type="button" [disabled]="!formIsValid" (click)="select(false)">Clear and update</button>
-<button type="button" [disabled]="!formIsValid" (click)="select(true)">Add and update</button>
+            <p>
+            <span>
+            <button type="button" class="btn btn-primary" [disabled]="errorMessages.length > 0" (click)="select(false)">
+                Clear
+                and update
+            </button>
+            </span>
+                <span>
+            <button type="button" class="btn btn-primary" [disabled]="errorMessages.length > 0" (click)="select(true)">
+                Add and
+                update
+            </button>
+            </span>
+            </p>
+            </div>
+        </div>
 
-<selectedDatasetManager></selectedDatasetManager>
-<mapComponent></mapComponent>
-<temporalComponent></temporalComponent>
+        <div class=" col-sm-12 col-md-12 col-lg-10 main">
+            <div class="row placeholders">
+                <h2 class="sub-header">Active datasets</h2>
+                <div class="col-sm-11 col-md-8 col-lg-6">
+                    <selectedDatasetManager></selectedDatasetManager>
+                </div>
+                <div class="col-sm-1 col-md-4 col-lg-6"></div>
+            </div>
+            <div class="row placeholders">
+                <h2 class="sub-header">Analytics</h2>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Map analytics</div>
+                        <div class="panel-body"><mapComponent></mapComponent></div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Graph analytics</div>
+                        <div class="panel-body"><temporalComponent></temporalComponent></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
 <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"
              [speed]="200" [showSpinner]="true" [direction]="'leftToRightIncreased'"
              [color]="'red'" [trickleSpeed]="250" [thick]="true" [ease]="'linear'"

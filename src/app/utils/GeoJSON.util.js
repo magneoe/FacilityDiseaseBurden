@@ -6,7 +6,7 @@ var GeoJSONUtil = (function () {
     GeoJSONUtil.exportPointToGeo = function (coordinates, popupContent) {
         var lat = this.getLat(coordinates);
         var lng = this.getLng(coordinates);
-        if (lat === null || lng === null)
+        if (lat === null || lng === null || lat === undefined || lng === undefined)
             return null;
         else {
             var geoJSONFeature = {
@@ -25,36 +25,36 @@ var GeoJSONUtil = (function () {
     GeoJSONUtil.exportPolyLineToGeo = function (coordinates) {
         var _this = this;
         var coordList = [];
+        if (coordinates.length !== 2 || coordinates[0] === null || coordinates[1] === null) {
+            console.log('Invalid coordinates:', coordinates);
+            return null;
+        }
         coordinates.forEach(function (coordinate) {
             var lat = parseFloat(_this.getLat(coordinate));
             var lng = parseFloat(_this.getLng(coordinate));
+            if (lat === null || lng === null || lat === undefined || lng === undefined) {
+                console.log('Invalid coordinates:', lat);
+                console.log('Invalid coordinates:', lng);
+                return null;
+            }
             coordList.push([lat, lng]);
         });
-        if (coordList.length < 2 || coordList[0].length < 2 || coordList[1].length < 2)
-            return null;
-        else {
-            console.log('Exporting to poly line coords:', coordList);
-            var geoJSONFeature = {
-                "type": "LineString",
-                "coordinates": coordList,
-            };
-            return geoJSONFeature;
-        }
+        var geoJSONFeature = {
+            "type": "LineString",
+            "coordinates": coordList,
+        };
+        return geoJSONFeature;
     };
     GeoJSONUtil.getLat = function (coordinates) {
-        if (coordinates === null || coordinates === undefined || (coordinates.split('[').length - 1) > 2)
+        if (coordinates === null || coordinates === undefined)
             return null;
         coordinates = coordinates.trim();
-        if (coordinates.startsWith('['))
-            coordinates = coordinates.slice(1, coordinates.length - 1);
         return coordinates.split(',')[0];
     };
     GeoJSONUtil.getLng = function (coordinates) {
-        if (coordinates === null || coordinates === undefined || (coordinates.split('[').length - 1) > 2)
+        if (coordinates === null || coordinates === undefined)
             return null;
         coordinates = coordinates.trim();
-        if (coordinates.startsWith('['))
-            coordinates = coordinates.slice(1, coordinates.length - 1);
         return coordinates.split(',')[1];
     };
     return GeoJSONUtil;

@@ -76,6 +76,10 @@ export class FilterQuery {
         output += '"' + this.getValue() + '"';
         return output;
     }
+
+    public clone():FilterQuery {
+        return new FilterQuery({...this.trackedEntityAttributes}, this.operator, this.value, this.filterOperation);
+    }
 }
 
 

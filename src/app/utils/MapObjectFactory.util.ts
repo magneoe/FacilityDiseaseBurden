@@ -8,16 +8,20 @@ import {MapObjectType} from "../enums/MapObjectType.enum";
  * Why: To make to code more reuseable.
  */
 export class MapObjectFactory {
-  private static readonly colors:string[] = ["RED", "BLUE", "YELLOW", "BROWN", "PURPLE", "GREEN"];
-  private static pointer:number = 0;
-  private static programColorMap:Map<string, number> = new Map<string, number>();
+  static readonly colors:string[] = ["RED", "BLUE", "YELLOW", "BROWN", "PURPLE", "GREEN"];
+  private static takenColors:Set<string> = new Set<string>();
 
-  public static getNextAvailableColor(progId:string):string {
-    if(MapObjectFactory.programColorMap.has(progId))
-      return this.colors[MapObjectFactory.programColorMap.get(progId)].toLowerCase();
-    else
-      MapObjectFactory.programColorMap.set(progId, this.pointer);
-    return this.colors[this.pointer++].toLowerCase();
+  public static getNewColor():string {
+    if(MapObjectFactory.takenColors.size >= MapObjectFactory.colors.length)
+      return null;
+
+    for(let i = 0; i < MapObjectFactory.colors.length; i++){
+      let color = MapObjectFactory.colors[i].toLowerCase();
+      if(!MapObjectFactory.takenColors.has(color)) {
+          MapObjectFactory.takenColors.add(color);
+          return color;
+      }
+    }
   }
   public static getMapObject(type:MapObjectType, color:string, L:any):MapObject {
 
@@ -44,9 +48,11 @@ export class MapObjectFactory {
     return mapObject;
   }
 
-  public static reset(){
-    this.pointer = 0;
-    this.programColorMap.clear();
+  public static reset():void{
+    this.takenColors.clear();
+  }
+  public static releaseColor(color:string):void {
+      MapObjectFactory.takenColors.delete(color);
   }
 }
 

@@ -20,10 +20,12 @@ var ProgramFilterAttributeComponent = (function () {
     function ProgramFilterAttributeComponent(_mapInputDataService) {
         this._mapInputDataService = _mapInputDataService;
         this.selectedAttribute = null;
+        this.message = '';
         this.lastCommitedFilters = [];
     }
     ProgramFilterAttributeComponent.prototype.ngOnInit = function () {
         this.resetFormModel();
+        this.message = '';
     };
     ProgramFilterAttributeComponent.prototype.ngOnDestroy = function () {
         if (this.lastCommitedFilters.length > 0) {
@@ -42,20 +44,22 @@ var ProgramFilterAttributeComponent = (function () {
         if (this.lastCommitedFilters.length > 0)
             this.ngOnDestroy();
         var filterQueries = [];
-        console.log('Attribute filter:', this.selectedAttribute);
         //Text search
         if (this.formModel.fromNumberRange === 0 && this.formModel.toNumberRange === 0) {
             var operatorTypeString = this.formModel.searchType;
+            if (operatorTypeString === undefined || operatorTypeString === null || operatorTypeString.length === 0) {
+                this.message = 'No operator selected';
+                return;
+            }
             filterQueries.push(new FilterQuery_model_1.FilterQuery(this.selectedAttribute, OperatorType_enum_1.OperatorType[operatorTypeString], this.formModel.searchTextString, FilterOperation_enum_1.FilterOperation.ADD));
         }
         else {
             filterQueries.push(new FilterQuery_model_1.FilterQuery(this.selectedAttribute, OperatorType_enum_1.OperatorType.GREATER_THAN, this.formModel.fromNumberRange, FilterOperation_enum_1.FilterOperation.ADD));
             filterQueries.push(new FilterQuery_model_1.FilterQuery(this.selectedAttribute, OperatorType_enum_1.OperatorType.LESS_THAN, this.formModel.toNumberRange, FilterOperation_enum_1.FilterOperation.ADD)); //was null attribute
-            console.log('Formatted:', filterQueries[0].convertToFormattedQuery());
-            console.log('Formatted:', filterQueries[1].convertToFormattedQuery());
         }
         this.lastCommitedFilters = filterQueries;
         this.sendInputDataMessage(filterQueries);
+        this.message = 'Filter is set';
     };
     ProgramFilterAttributeComponent.prototype.selectAttribute = function (selectedAttributeId) {
         if (selectedAttributeId === "null") {
@@ -69,7 +73,6 @@ var ProgramFilterAttributeComponent = (function () {
         this.resetFormModel();
     };
     ProgramFilterAttributeComponent.prototype.setEntityAttributes = function (trackedEntityAttributes) {
-        console.log('Recieving:', trackedEntityAttributes);
         //Removes all attributes that are not numbers or text datatypes
         this.entityAttributes = trackedEntityAttributes.filter(function (entityAttribute) {
             if (entityAttribute.valueType !== "TEXT" && entityAttribute.valueType !== "NUMBER")

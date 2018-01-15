@@ -11,16 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var programs_service_1 = require("../../../services/dataLoading/programs.service");
-var customValidation_service_1 = require("../../../services/customValidation.service");
-var ValidationMessage_model_1 = require("../../../models/ValidationMessage.model");
 var mapInputData_service_1 = require("../../../services/dataInput/mapInputData.service");
 var programFilter_component_1 = require("./programFilter.component");
 var InputDataMessage_model_1 = require("../../../models/InputDataMessage.model");
 var InputDataContent_enum_1 = require("../../../enums/InputDataContent.enum");
 var ProgramsComponent = (function () {
-    function ProgramsComponent(_progService, _customValidationService, _mapInputDataService, _cfr) {
+    function ProgramsComponent(_progService, _mapInputDataService, _cfr) {
         this._progService = _progService;
-        this._customValidationService = _customValidationService;
         this._mapInputDataService = _mapInputDataService;
         this._cfr = _cfr;
         this.programs = [];
@@ -33,7 +30,6 @@ var ProgramsComponent = (function () {
         this.showPrograms(this.selectedOrgUnit);
     };
     ProgramsComponent.prototype.ngOnInit = function () {
-        this.notifyValueChange(null);
     };
     /*
      * Loads the programs thats connected to a given org.unit
@@ -48,53 +44,26 @@ var ProgramsComponent = (function () {
         this._progService.loadPrograms(this.query)
             .subscribe(function (units) {
             _this.programs = units.organisationUnits[0].programs;
-            _this.notifyValueChange(null);
+            _this.selectedProgram = null;
+            _this.sendInputDataMessage();
         });
     };
     /*
      * Send a ValidationMessage upon changes in the checkbox selection
      */
-    ProgramsComponent.prototype.notifyValueChange = function (event) {
+    ProgramsComponent.prototype.selectProgram = function (event) {
         this.container.clear();
-        this.programs = this._progService.setSelectedProgram(event, this.programs);
-        var validationMessage = new ValidationMessage_model_1.ValidationMessage();
-        validationMessage.senderId = this.senderId;
-        validationMessage.errorMessage = this.getErrors().toString();
-        validationMessage.formIsValid = (this.getErrors().length > 0 ? false : true);
-        this._customValidationService.sendMessage(validationMessage);
-        for (var i = 0; i < this.getSelectedPrograms().length; i++) {
-            var comp = this._cfr.resolveComponentFactory(programFilter_component_1.ProgramFilterComponent);
-            var filterComp = this.container.createComponent(comp);
-            filterComp.instance._ref = filterComp;
-            filterComp.instance.program = this.getSelectedPrograms()[i];
-            filterComp.instance.selectedOrgUnit = this.selectedOrgUnit;
-        }
-        //Send datamessage to CommonResourceDistpatcher service.
-        var inputDataMessage = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.PROGRAMS, this.programs.filter(function (prog) { return prog.isSelected; }));
+        var comp = this._cfr.resolveComponentFactory(programFilter_component_1.ProgramFilterComponent);
+        var filterComp = this.container.createComponent(comp);
+        filterComp.instance._ref = filterComp;
+        filterComp.instance.program = this.selectedProgram;
+        filterComp.instance.selectedOrgUnit = this.selectedOrgUnit;
+        this.sendInputDataMessage();
+    };
+    ProgramsComponent.prototype.sendInputDataMessage = function () {
+        //Send datamessage to the appMainContainer.
+        var inputDataMessage = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.PROGRAMS, [this.selectedProgram]);
         this._mapInputDataService.sendInputDataMessage(inputDataMessage);
-    };
-    /*
-     * Composes error messages
-     */
-    ProgramsComponent.prototype.getErrors = function () {
-        var errors = new Array();
-        for (var i = 0; i < this.programs.length; i++) {
-            if (this.programs[i].isSelected)
-                return errors;
-        }
-        errors.push("No programs selected");
-        return errors;
-    };
-    /*
-     * Helper method
-     */
-    ProgramsComponent.prototype.getSelectedPrograms = function () {
-        var selectedProgs = new Array();
-        this.programs.forEach(function (prog) {
-            if (prog.isSelected)
-                selectedProgs.push(prog);
-        });
-        return selectedProgs;
     };
     return ProgramsComponent;
 }());
@@ -117,8 +86,9 @@ ProgramsComponent = __decorate([
      *
      */
     ,
-    __metadata("design:paramtypes", [programs_service_1.ProgramsService, customValidation_service_1.CustomValidationService,
-        mapInputData_service_1.MapInputDataService, core_1.ComponentFactoryResolver])
+    __metadata("design:paramtypes", [programs_service_1.ProgramsService,
+        mapInputData_service_1.MapInputDataService,
+        core_1.ComponentFactoryResolver])
 ], ProgramsComponent);
 exports.ProgramsComponent = ProgramsComponent;
 //# sourceMappingURL=program.component.js.map

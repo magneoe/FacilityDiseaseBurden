@@ -21,7 +21,6 @@ var datePicker_component_1 = require("./components/forms/date/datePicker.compone
 var organizationLoader_pipe_1 = require("./pipes/organizationLoader.pipe");
 var program_component_1 = require("./components/forms/program/program.component");
 var programs_service_1 = require("./services/dataLoading/programs.service");
-var customValidation_service_1 = require("./services/customValidation.service");
 var appMainContainer_component_1 = require("./components/forms/appMainContainer.component");
 var map_component_1 = require("./components/map/map.component");
 var mapInputData_service_1 = require("./services/dataInput/mapInputData.service");
@@ -29,10 +28,13 @@ var programFilter_component_1 = require("./components/forms/program/programFilte
 var programFilterAttribute_component_1 = require("./components/forms/program/programFilterAttribute.component");
 var TrackedEntityLoaderService_service_1 = require("./services/dataLoading/TrackedEntityLoaderService.service");
 var core_2 = require("angular2-logger/core");
-var TemporalDimension_component_1 = require("./components/temporal/TemporalDimension.component");
+var temporalDimension_component_1 = require("./components/temporal/temporalDimension.component");
 var organizationUnitLoader_service_1 = require("./services/dataLoading/organizationUnitLoader.service");
 var ngx_progressbar_1 = require("ngx-progressbar");
 var selectedDatasetManager_component_1 = require("./components/forms/selectedDatasetManager.component");
+var ng2_charts_1 = require("ng2-charts");
+var linechart_component_1 = require("./components/temporal/linechart.component");
+var CommonResourceDispatcher_service_1 = require("./services/dataInput/CommonResourceDispatcher.service");
 var appRoutes = [
     { path: '', component: login_component_1.LoginComponent },
     { path: 'login', component: login_component_1.LoginComponent },
@@ -48,16 +50,17 @@ var AppModule = (function () {
 AppModule = __decorate([
     core_1.NgModule({
         imports: [platform_browser_1.BrowserModule, http_1.HttpModule, router_1.RouterModule.forRoot(appRoutes),
-            forms_1.FormsModule, forms_2.ReactiveFormsModule, ngx_progressbar_1.NgProgressModule],
+            forms_1.FormsModule, forms_2.ReactiveFormsModule, ngx_progressbar_1.NgProgressModule, ng2_charts_1.ChartsModule],
         declarations: [app_component_1.AppComponent, organizationLoader_component_1.OrganizationLoaderComponent, notfound_component_1.PageNotFoundComponent, login_component_1.LoginComponent,
             organizationLoader_pipe_1.OrderByDisplayNamePipe, datePicker_component_1.DatePickerComponent,
             appMainContainer_component_1.AppMainContainerComponent, program_component_1.ProgramsComponent, map_component_1.MapComponent,
-            programFilter_component_1.ProgramFilterComponent, programFilterAttribute_component_1.ProgramFilterAttributeComponent, TemporalDimension_component_1.TemporalDimensionComponent,
-            selectedDatasetManager_component_1.SelectedDatasetManager],
+            programFilter_component_1.ProgramFilterComponent, programFilterAttribute_component_1.ProgramFilterAttributeComponent, temporalDimension_component_1.TemporalDimensionComponent,
+            selectedDatasetManager_component_1.SelectedDatasetManager, linechart_component_1.LinechartComponent],
         bootstrap: [app_component_1.AppComponent],
-        providers: [login_service_1.AuthorizationService, programs_service_1.ProgramsService, customValidation_service_1.CustomValidationService,
+        providers: [login_service_1.AuthorizationService, programs_service_1.ProgramsService,
             mapInputData_service_1.MapInputDataService, TrackedEntityLoaderService_service_1.TrackedEntityLoaderService,
             organizationUnitLoader_service_1.OrganizationUnitLoaderService, core_2.LOG_LOGGER_PROVIDERS,
+            CommonResourceDispatcher_service_1.CommonResourceDispatcherService,
         ],
         entryComponents: [programFilter_component_1.ProgramFilterComponent, programFilterAttribute_component_1.ProgramFilterAttributeComponent]
     })

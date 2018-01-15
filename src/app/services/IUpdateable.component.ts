@@ -1,10 +1,7 @@
 
-
-import {TrackedEntity} from "../models/TrackedEntity.model";
-import {Observable} from "rxjs/Observable";
-import {InputDataObject} from "../models/InputDataObject.model";
+import {Dataset} from "../models/Dataset.model";
 
 export interface IUpdateableComponent {
-  addData(inputDataObject:InputDataObject, trackedEntities:Observable<TrackedEntity[]>):any;
-  update(inputDataObject:InputDataObject, stackData:boolean, callOnFinish:any):any;
+  update(dataset:Dataset, stackData:boolean, callOnFinish:any):any;
+  delete(dataset:Dataset, callOnFinish:any):void;
 }

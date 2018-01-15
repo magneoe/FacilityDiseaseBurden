@@ -1,9 +1,10 @@
-<!-- Programs -->
-<fieldset>
-<legend>Programs: </legend>
-
-<li *ngFor="let prog of programs">
-  <input type="checkbox" [value]="prog.id" (change)="notifyValueChange($event)"> {{prog.displayName}}
-</li>
-  <div #programFilterContainer></div>
-</fieldset>
+<h3 class="sub-header">Select program:</h3>
+<div class="container-fluid">
+    <form action="">
+        <li *ngFor="let prog of programs">
+            <input type="radio" [value]="prog" (change)="selectProgram($event)"
+                   [(ngModel)]="selectedProgram" name="prog"> {{prog.displayName}}
+        </li>
+    </form>
+</div>
+<div class="container-fluid" #programFilterContainer></div>

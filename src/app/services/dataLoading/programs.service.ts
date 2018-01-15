@@ -19,7 +19,7 @@ export class ProgramsService extends HttpWrapperService<OrganizationUnit>{
   }
 
   loadPrograms(query: string): Observable<OrganizationUnit[]> {
-    return this.get(query).do(data => console.log(JSON.stringify(data))).catch(this.handleError);
+    return this.get(query).do(data => JSON.stringify(data)).catch(this.handleError);
   }
   /*
    * Implements the HttpWrapper service methods
@@ -31,17 +31,4 @@ export class ProgramsService extends HttpWrapperService<OrganizationUnit>{
     console.error(error);
     return Observable.throw(error.json().error());
   }
-
-
-  setSelectedProgram(event:any, programs:Program[]): Program[] {
-    if(event == null || event === undefined)
-      return programs;
-
-    for (let i = 0; i < programs.length; i++) {
-      if (programs[i].id == event.target.value)
-        programs[i].isSelected = event.target.checked;
-    }
-    return programs;
-  }
-
 }

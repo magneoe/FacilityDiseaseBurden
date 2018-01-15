@@ -1,18 +1,15 @@
-<fieldset>
-<legend>Select Organisation units:</legend>
-
-<div [class.loader]="isLoading"></div>
-
-<div>
+<h3 class="sub-header">Select organisation units:</h3>
+<div class="container-fluid">
   <div *ngFor="let lvl of levels">
-
-    <select (change)='loadLevel($event.target.value, lvl)' [disabled]="isLoading" >
-      <option>Choose level {{lvl}}</option>
-      <option *ngFor='let org of findChildrenOfSelectedOrgUnit(lvl) | orderByDisplayNamePipe' [value]="org.id">
+<p style="clear: both">
+    <select (change)='loadLevel($event.target.value, lvl)' [disabled]="isLoading" class="inputBoxWidth">
+      <option class="orgOptionStyle">Choose level {{lvl}}</option>
+      <option class="orgOptionStyle" *ngFor='let org of findChildrenOfSelectedOrgUnit(lvl) | orderByDisplayNamePipe' [value]="org.id">
         {{org.displayName}}
       </option>
     </select>
+</p>
   </div>
 </div>
-</fieldset>
+
 <programPicker [selectedOrgUnit]="selectedOrgUnit"></programPicker>

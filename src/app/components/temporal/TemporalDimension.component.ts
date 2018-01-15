@@ -1,58 +1,35 @@
-import {Component} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {Logger} from "angular2-logger/core";
-import {InputDataObject} from "../../models/InputDataObject.model";
 import {Observable} from "rxjs/Observable";
 import {TrackedEntity} from "../../models/TrackedEntity.model";
 import {NgProgress} from "ngx-progressbar";
 import {IUpdateableComponent} from "../../services/IUpdateable.component";
+import {Dataset} from "../../models/Dataset.model";
+import {OrganizationUnit} from "../../models/OrganizationUnit.model";
+import {LinechartComponent} from "./linechart.component";
 
 @Component({
   selector: 'temporalComponent',
-  templateUrl: '../../views/temporal.component.html',
+  templateUrl: '../../views/temporal/temporal.component.html',
 })
 
-export class TemporalDimensionComponent implements IUpdateableComponent{
+export class TemporalDimensionComponent implements IUpdateableComponent {
 
-  private activeInputData: InputDataObject;
-  private trackedEntityQueue:Observable<TrackedEntity[]>[] = [];
-  private trackedEntityAttributes:InputDataObject[] = [];
+
+  private activeDatasets: Dataset[] = [];
+  @ViewChild(LinechartComponent) lineChartComp:LinechartComponent;
 
   constructor(private _logger: Logger, private _ngProgress:NgProgress){}
 
-  public update(inputDataObject:InputDataObject, stackData:boolean, callOnFinish:any){
-      this._logger.log("UpdateTemporalDimension invoked", inputDataObject);
-    this.clear();
-    this.activeInputData = inputDataObject;
-
-    Observable.forkJoin(this.trackedEntityQueue).subscribe((entityArray:any[]) => {
-      this._logger.debug("Update map trackedEntitiy observables:", entityArray);
-      for(let i = 0; i < entityArray.length; i++){
-        this._logger.debug("Entities on program:", entityArray[i]);
-
-        let trackedEntitiesArray: TrackedEntity[] = [];
-        entityArray[i].trackedEntityInstances.forEach((unit: TrackedEntity) => {
-          trackedEntitiesArray.push(new TrackedEntity(unit.attributes, unit.lastUpdated));
-        });
-
-        //Do something with the datas
-
-      };
-      this.trackedEntityAttributes = [];
-      this.trackedEntityQueue = [];
+  public update(dataset:Dataset, stackData:boolean, callOnFinish:any){
+    if(!stackData)
+        this.activeDatasets = [];
+      this.activeDatasets.push(dataset);
+      this.lineChartComp.updateLineChart(this.activeDatasets);
       callOnFinish(this);
-    });
   }
 
-  public addData(inputDataObject:InputDataObject, trackedEntities:Observable<TrackedEntity[]>):void{
-    this._logger.log("Add data in temporalDimension invoked", inputDataObject);
-    this._logger.log("Add data in temporalDimension invoked", trackedEntities);
-
-    this.trackedEntityQueue.push(trackedEntities);
-    this.trackedEntityAttributes.push(inputDataObject);
-  }
-
-
-  private clear():void {
-
-  }
+    public delete(dataset:Dataset, callOnFinish:any):void {
+        callOnFinish(this);
+    }
 }

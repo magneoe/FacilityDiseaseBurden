@@ -3,8 +3,6 @@ import {OrganizationUnitLoaderService} from "../../../services/dataLoading/organ
 import {OrderByDisplayNamePipe} from "../../../pipes/organizationLoader.pipe";
 import {OrganizationUnit} from "../../../models/OrganizationUnit.model";
 import {ProgramsComponent} from "../program/program.component";
-import {ValidationMessage} from "../../../models/ValidationMessage.model";
-import {CustomValidationService} from "../../../services/customValidation.service";
 import {MapInputDataService} from "../../../services/dataInput/mapInputData.service";
 import {InputDataMessage} from "../../../models/InputDataMessage.model";
 import {InputDataContent} from "../../../enums/InputDataContent.enum";
@@ -28,23 +26,14 @@ export class OrganizationLoaderComponent {
   private levels: number[] = [1];
   isLoading:boolean = false;
   selectedOrgUnit: OrganizationUnit;
-  private readonly senderId:string = "organisationPicker";
 
   constructor(private _orgLoaderService: OrganizationUnitLoaderService,
-              private _customValidationService:CustomValidationService,
               private _mapInputDataService:MapInputDataService) { }
 
   /*
    * When ever at change in the picking of organisation units - revalidate the form and notice the master component.
    */
   notifyValueChange(event:any):void {
-    let validationMessage = new ValidationMessage();
-    validationMessage.senderId = this.senderId;
-    validationMessage.errorMessage = this.getErrors().toString();
-    validationMessage.formIsValid = (this.getErrors().length > 0 ? false : true);
-
-    this._customValidationService.sendMessage(validationMessage);
-
     let inputDataMessage = new InputDataMessage(null, InputDataContent.ORG_UNIT, this.selectedOrgUnit);
     this._mapInputDataService.sendInputDataMessage(inputDataMessage);
   }
@@ -95,15 +84,5 @@ export class OrganizationLoaderComponent {
    */
   findChildrenOfSelectedOrgUnit(lvl:number): OrganizationUnit[]{
     return this._orgLoaderService.findChildrenOfSelectedOrgUnit(lvl, this.levels.length, this.organizationUnits);
-  }
-  /*
-   * Used for composing the validation message
-   */
-  getErrors():Array<string> {
-    let errorMessages = new Array();
-    if(this.selectedOrgUnit == null) {
-      errorMessages.push("OrgUnit not set");
-    }
-    return errorMessages;
   }
 }

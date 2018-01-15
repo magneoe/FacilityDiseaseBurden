@@ -1,29 +1,38 @@
-<fieldset>
-    <legend>Active datasets:</legend>
-    <div id="">
-        <table>
-            <tr>
-                <th id="firstColumn">Number</th>
-                <th>Org. unit</th>
-                <th>Programs</th>
-                <th>Time interval</th>
-                <th>Filters</th>
-                <th>Number of entities (TEI)</th>
-            </tr>
-            <tr *ngFor="let dataset of inputDataObjects; let i = index">
-                <td>{{i+1}}</td>
-                <td>{{dataset.selectedOrgUnit.displayName + '(level ' + dataset.selectedOrgUnit.level + ')'}}</td>
-                <td>
-                    <li class="datasetListStyle" *ngFor="let program of dataset.selectedPrograms">
-                        {{program.displayName}}
-                    </li>
-                </td>
-                <td>{{dataset.startDate}}<br/>{{dataset.endDate}}</td>
-                <td>
-                    <li class="datasetListStyle" *ngFor="let filterDisplayString of dataset.filterDisplayStrings">{{filterDisplayString}}</li>
-                </td>
-                <td>{{dataset.numberOfEntities}}</td>
-            </tr>
-        </table>
-    </div>
-</fieldset>
+<table class="table table-striped table-bordered table-hover table-responsive">
+    <tr>
+        <th>Dataset id</th>
+        <th>Color code</th>
+        <th>Org. unit</th>
+        <th>Programs</th>
+        <th>Time interval</th>
+        <th>Filters</th>
+        <th>Number of entities (TEI)</th>
+        <th>Delete</th>
+    </tr>
+    <tr *ngFor="let dataset of activeDatasets">
+        <td>{{dataset.getDatasetId()}}</td>
+        <td>
+            <div [style.background-color]="dataset.getColor()"
+                 style="border: 1px solid black; width:20px; height:20px; margin: 0 auto"></div>
+        </td>
+        <td>{{dataset.selectedOrgUnit.displayName + ' (level ' + dataset.selectedOrgUnit.level + ')'}}</td>
+        <td>
+            <p *ngFor="let program of dataset.selectedPrograms">
+                {{program.displayName}}
+            </p>
+        </td>
+        <td>{{dataset.startDate}}<br/>{{dataset.endDate}}</td>
+        <td>
+            <li class="datasetListStyle"
+                *ngFor="let filterDisplayString of getFilterDisplayString(dataset.getFilterQueryMap())">
+                {{filterDisplayString}}
+            </li>
+        </td>
+        <td>{{dataset.getEntitiesInTotal()}}</td>
+        <td><p>
+            <a (click)="deleteDataset(dataset)" class="btn btn-warning btn-md">
+                <span class="glyphicon glyphicon-trash"></span>
+            </a>
+        </p></td>
+    </tr>
+</table>

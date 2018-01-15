@@ -13,29 +13,20 @@ var core_1 = require("@angular/core");
 var organizationUnitLoader_service_1 = require("../../../services/dataLoading/organizationUnitLoader.service");
 var organizationLoader_pipe_1 = require("../../../pipes/organizationLoader.pipe");
 var program_component_1 = require("../program/program.component");
-var ValidationMessage_model_1 = require("../../../models/ValidationMessage.model");
-var customValidation_service_1 = require("../../../services/customValidation.service");
 var mapInputData_service_1 = require("../../../services/dataInput/mapInputData.service");
 var InputDataMessage_model_1 = require("../../../models/InputDataMessage.model");
 var InputDataContent_enum_1 = require("../../../enums/InputDataContent.enum");
 var OrganizationLoaderComponent = (function () {
-    function OrganizationLoaderComponent(_orgLoaderService, _customValidationService, _mapInputDataService) {
+    function OrganizationLoaderComponent(_orgLoaderService, _mapInputDataService) {
         this._orgLoaderService = _orgLoaderService;
-        this._customValidationService = _customValidationService;
         this._mapInputDataService = _mapInputDataService;
         this.levels = [1];
         this.isLoading = false;
-        this.senderId = "organisationPicker";
     }
     /*
      * When ever at change in the picking of organisation units - revalidate the form and notice the master component.
      */
     OrganizationLoaderComponent.prototype.notifyValueChange = function (event) {
-        var validationMessage = new ValidationMessage_model_1.ValidationMessage();
-        validationMessage.senderId = this.senderId;
-        validationMessage.errorMessage = this.getErrors().toString();
-        validationMessage.formIsValid = (this.getErrors().length > 0 ? false : true);
-        this._customValidationService.sendMessage(validationMessage);
         var inputDataMessage = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.ORG_UNIT, this.selectedOrgUnit);
         this._mapInputDataService.sendInputDataMessage(inputDataMessage);
     };
@@ -86,16 +77,6 @@ var OrganizationLoaderComponent = (function () {
     OrganizationLoaderComponent.prototype.findChildrenOfSelectedOrgUnit = function (lvl) {
         return this._orgLoaderService.findChildrenOfSelectedOrgUnit(lvl, this.levels.length, this.organizationUnits);
     };
-    /*
-     * Used for composing the validation message
-     */
-    OrganizationLoaderComponent.prototype.getErrors = function () {
-        var errorMessages = new Array();
-        if (this.selectedOrgUnit == null) {
-            errorMessages.push("OrgUnit not set");
-        }
-        return errorMessages;
-    };
     return OrganizationLoaderComponent;
 }());
 OrganizationLoaderComponent = __decorate([
@@ -110,7 +91,6 @@ OrganizationLoaderComponent = __decorate([
      */
     ,
     __metadata("design:paramtypes", [organizationUnitLoader_service_1.OrganizationUnitLoaderService,
-        customValidation_service_1.CustomValidationService,
         mapInputData_service_1.MapInputDataService])
 ], OrganizationLoaderComponent);
 exports.OrganizationLoaderComponent = OrganizationLoaderComponent;

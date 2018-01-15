@@ -1,30 +1,41 @@
 <form>
-  Select attribute:
+    <p><span>Select attribute:</span>
+        <p>
+        <span>
+    <select (change)="selectAttribute($event.target.value)" class="inputBoxWidth">
+        <option [value]="null">Select attribute</option>
+        <option *ngFor="let attribute of entityAttributes" [value]="attribute.attribute">{{attribute.displayName}}
+        </option>
+    </select>
+</span>
+</p>
 
-  <select (change)="selectAttribute($event.target.value)">
-    <option [value]="null">Select attribute</option>
-    <option *ngFor="let attribute of entityAttributes" [value]="attribute.attribute">{{attribute.displayName}}</option>
-  </select>
+    <div class="rowStyle" *ngIf="selectedAttribute !== null && selectedAttribute.valueType === 'NUMBER'">
+        <label class="rowStyle" for="NumberFrom">From:</label>
+        <input id="NumberFrom" type="number" [(ngModel)]="formModel.fromNumberRange" name="fromNumberRange">
 
-  <div *ngIf="selectedAttribute !== null && selectedAttribute.valueType === 'NUMBER'">
-    <label for="NumberFrom">From:</label>
-    <input id="NumberFrom" type="number" [(ngModel)]="formModel.fromNumberRange" name="fromNumberRange">
+        <label class="rowStyle" for="NumberTo">To:</label>
+        <input id="NumberTo" type="number" [(ngModel)]="formModel.toNumberRange" name="toNumberRange">
+    </div>
+    <div class="rowStyle" *ngIf="selectedAttribute !== null && selectedAttribute.valueType === 'TEXT'">
 
-    <label for="NumberTo">To:</label>
-    <input id="NumberTo" type="number" [(ngModel)]="formModel.toNumberRange" name="toNumberRange">
-  </div>
-  <div *ngIf="selectedAttribute !== null && selectedAttribute.valueType === 'TEXT'">
+        <input class="rowStyle" type="text" id="textSearchString" [(ngModel)]="formModel.searchTextString" name="searchTextString">
 
-    <input type="text" id="textSearchString" [(ngModel)]="formModel.searchTextString" name="searchTextString">
+        <input type="radio" value="EQUALS" id="equals" [(ngModel)]="formModel.searchType" name="searchType"
+               checked="checked"/>
+        <label for="equals">Equals</label>
 
-    <input type="radio" value="EQUALS" id="equals" [(ngModel)]="formModel.searchType" name="searchType"/>
-    <label for="equals">Equals</label>
+        <input type="radio" value="LIKE" id="like" [(ngModel)]="formModel.searchType" name="searchType"/>
+        <label for="like">Like</label>
 
-    <input type="radio" value="LIKE" id="like" checked="checked" [(ngModel)]="formModel.searchType" name="searchType"/>
-    <label for="like">Like</label>
+    </div>
 
-  </div>
+ <div class="rowStyle">
+     <p>
+        <button type="submit" class="btn btn-success btn-xs" (click)="save()">Set</button>
+        <button type="button" class="btn btn-danger btn-xs" (click)="removeObject()">Remove</button>
+         <span class="bg-info">{{message}}</span>
+     </p>
+ </div>
 
-  <button type="submit" (click)="save()">Set</button>
-  <button type="button" (click)="removeObject()">Remove</button>
 </form>

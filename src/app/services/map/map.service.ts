@@ -6,6 +6,7 @@ import {MapObjectFactory} from "../../utils/MapObjectFactory.util";
 import {TrackedEntity} from "../../models/TrackedEntity.model";
 import {Logger} from "angular2-logger/core";
 import {MapObjectType} from "../../enums/MapObjectType.enum";
+import {Dataset} from "../../models/Dataset.model";
 
 
 @Injectable()
@@ -18,7 +19,12 @@ export class MapService {
      * Initates the map and returns the reference to it
      */
     public initMap(L: any, mapId: string): any {
-        let map = L.map(mapId).setView([18.4272582, 79.1575702], 5);
+        let map = L.map(mapId, {
+            fullscreenControl: true,
+            fullscreenControlOptions: {
+                position: 'topleft'
+            }
+        }).setView([18.4272582, 79.1575702], 5);
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
             maxZoom: 18,
@@ -29,78 +35,107 @@ export class MapService {
     }
 
     public setView(map: any, orgUnit: OrganizationUnit): void {
-        if (orgUnit.coordinates === undefined || orgUnit.coordinates === null)
+        let org = this.convertCoordinates(orgUnit);
+        if(org === null)
             return;
         try {
-            console.log('Set view', orgUnit.coordinates);
-            let lat = orgUnit.coordinates.split(',')[0].slice(orgUnit.coordinates.search(/[0-9]/g), orgUnit.coordinates.length - 1);
-            let lng = orgUnit.coordinates.split(',')[1].slice(0, orgUnit.coordinates.search(/\\]/g));
-            console.log('Set view:' + lat, lng);
+            let lat = org.coordinates.split(',')[0];
+            let lng = org.coordinates.split(',')[1];
             map.panTo([lng, lat]);
         } catch (error) {
             this._logger.log('Error', error);
         }
+    }
+    public removeAll(controls: any, map:any, activeLayerGroups:Map<Dataset, any>) {
+        this._logger.log('Clear map:', map);
+       activeLayerGroups.forEach((activeLayerGroup:any, dataset:Dataset)=> {
+           map.removeLayer(activeLayerGroup);
+           controls.removeLayer(activeLayerGroup);
+       });
+    }
+    public removeDataset(controls: any, map:any, dataset:Dataset, activeLayerGroups:Map<Dataset, any>):void {
+        let datasetLayerGroupToRemove = activeLayerGroups.get(dataset);
+        map.removeLayer(datasetLayerGroupToRemove);
+        controls.removeLayer(datasetLayerGroupToRemove);
     }
 
     /*
      * Loads one layer group to show on map - each layergroup will contain entities, polylines and a org.Unit
      * if it does not exist.
      */
-    public loadLayerGroup(selOrgUnit: OrganizationUnit, selProg: Program, trackedEntities: TrackedEntity[],
-                          controls: any, mapData: Map<string, any[]>, L: any, map: any) {
-        selOrgUnit = this.convertCoordinates(selOrgUnit);
+    public loadLayerGroup(dataset:Dataset,
+                          controls: any,
+                          L: any,
+                          map: any) {
+        this._logger.log("Selected OrgUnit in loadLayerGroup:", dataset.getSelectedOrgUnit());
+        this._logger.log("SelProg in loadLayerGroup:", dataset.getSelectedPrograms());
 
-        this._logger.log("Selected OrgUnit in loadLayerGroup:", selOrgUnit);
-        this._logger.log("SelProg in loadLayerGroup:", selProg);
-        this._logger.log("TrackedEntities in loadLayerGroup:", trackedEntities);
+        let color = dataset.getColor();
+        let layerGroupToMap = L.layerGroup().addTo(map);
+        //let layerGroupPolyLines = L.layerGroup().addTo(map);
+        dataset.getTrackedEntityResults().forEach((trackedEntities:TrackedEntity[], orgUnit:OrganizationUnit) => {
+            orgUnit = this.convertCoordinates(orgUnit);
+            //Adds all the data to map and returns the overlays to pass to the map control.
 
-        let programId = selProg.id;
-        //Get next available color
-        let color = MapObjectFactory.getNextAvailableColor(programId);
+            let trackedEntityLayer = this.getEntities(trackedEntities, L, color);
+            let clusterLayer = this.getCluster(L, color);
+            let orgUnitLayer = this.getOrgUnitLayer(orgUnit, L);
 
-        //Adds all the data to map and returns the overlays to pass to the map control.
-        let overlayLayers = this.addDataToMap(selOrgUnit, this.getCluster(L, color), this.getEntities(trackedEntities, L, color),
-            L, map, mapData, color);
-
-        //Sets up the map overlay
-        this.addControlMapOverlay(selOrgUnit, selProg, overlayLayers, controls, color);
-    }
-
-    public convertCoordinates(selOrgUnit: OrganizationUnit): OrganizationUnit {
-        this._logger.log('Converting selOrg coords:', selOrgUnit);
-        try {
-            if((selOrgUnit.coordinates.substring(0, 4).match(/\[/g) || []).length >= 2) {
-                selOrgUnit.coordinates = null;
-                return selOrgUnit;
-            }
-            if (selOrgUnit.coordinates.split('"').length >= 4)
-                selOrgUnit.coordinates = selOrgUnit.coordinates.split('"')[1] + ',' +
-                    selOrgUnit.coordinates.split('"')[3];
-        }
-        catch (error) {
-            selOrgUnit.coordinates = null;
-        }
-        this._logger.log('Converted coords:', selOrgUnit.coordinates);
-        return selOrgUnit;
-    }
-
-    public clearMap(controls: any, mapData: Map<string, any[]>) {
-        mapData.forEach(item => {
-            for (let i = 0; i < item.length; i++) {
-                let layerGroup = item[i];
-                controls.removeLayer(layerGroup);
-                layerGroup.clearLayers();
-            }
+            //The polylines needs to be added last
+            let polylineLayer = this.addDataToMap(layerGroupToMap, orgUnit, clusterLayer, trackedEntityLayer, orgUnitLayer,
+                L, color);
+            //layerGroupPolyLines.addLayer(polylineLayer);
         });
-        MapObjectFactory.reset();
-        mapData.clear();
+
+        this.addControlMapOverlay(layerGroupToMap, dataset, controls, color);
+        return layerGroupToMap;
     }
 
+    private addDataToMap(layerGroupToMap:any, selectedOrgUnit: OrganizationUnit, clusterGroup: any, entityLayer: any, orgUnitLayer:any,
+                         L: any, color: string): any {
+        clusterGroup.addLayer(entityLayer);
+        layerGroupToMap.addLayer(clusterGroup);
+        layerGroupToMap.addLayer(orgUnitLayer);
+
+        let polylineLayer = this.getPolylines(entityLayer, clusterGroup, L, color, selectedOrgUnit);
+        layerGroupToMap.addLayer(polylineLayer);
+
+
+        //On zoom - remove poly lines, calculate new ones between facility and either cluster or markers.
+        clusterGroup.on('animationend', function (target: any) {
+            console.log('Rendering clusters');
+            let uniqueEndPoints = new Set<string>();
+            for (var key in entityLayer._layers) {
+                if (clusterGroup.getVisibleParent(entityLayer._layers[key]) == null)
+                    continue;
+                let lat: string = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lat;
+                let lng: string = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lng;
+                uniqueEndPoints.add(lng + "," + lat);
+            }
+            if(polylineLayer !== null)
+                layerGroupToMap.removeLayer(polylineLayer);
+            polylineLayer = L.geoJSON(null, {
+                style: {
+                    "color": color,
+                }
+            });
+            uniqueEndPoints.forEach(endPoint => {
+                let geoJSON = GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.coordinates]);
+                if (geoJSON != null)
+                    polylineLayer.addData(geoJSON);
+                else
+                    this._logger.log('Not a valid polyline element', endPoint);
+            });
+            layerGroupToMap.addLayer(polylineLayer); //New calculated polylines
+        });
+
+        return polylineLayer;
+    }
 
     //Makes markers based on the entities with a given color and returns them as a layer reference
     private getEntities(trackedEntities: TrackedEntity[], L: any, color: string): any {
         var entityIcon = MapObjectFactory.getMapObject(MapObjectType.ENTITY, color, L).getIcon();
-        let newLayer = L.geoJSON(null, {
+        let entityLayer = L.geoJSON(null, {
             pointToLayer: function (feature: any, latlng: any) {
                 return L.marker(latlng, {icon: entityIcon});
             }
@@ -110,11 +145,11 @@ export class MapService {
         trackedEntities.forEach((entity: TrackedEntity) => {
             let geoJSON = GeoJSONUtil.exportPointToGeo(entity.getCoords(), entity.toString());
             if (geoJSON != null)
-                newLayer.addData(geoJSON);
+                entityLayer.addData(geoJSON);
             else
                 this._logger.log('Not a valid entity:', entity);
         });
-        return newLayer;
+        return entityLayer;
     }
 
     private getCluster(L: any, color: string): any {
@@ -143,34 +178,24 @@ export class MapService {
         return clusterGroup;
     }
 
-    private getOrgUnitLayer(orgUnit: OrganizationUnit, L: any, map: any) {
+    private getOrgUnitLayer(orgUnit: OrganizationUnit, L: any) {
         var facilityIcon = MapObjectFactory.getMapObject(MapObjectType.FACILITY, null, L).getIcon();
-        let layer = L.geoJSON(null, {
+        let orgUnitLayer = L.geoJSON(null, {
             pointToLayer: function (feature: any, latlng: any) {
                 return L.marker(latlng, {icon: facilityIcon});
             }
         }).bindPopup(function (layer: any) {
             return layer.feature.properties.popupContent;
-        }).addTo(map);
+        });
 
         let geoJSON = GeoJSONUtil.exportPointToGeo(orgUnit.coordinates, orgUnit.displayName);
         if (geoJSON != null)
-            layer.addData(geoJSON);
+            orgUnitLayer.addData(geoJSON);
         else
             this._logger.log('Not a valid org unit', orgUnit);
-        return layer;
+        return orgUnitLayer;
     }
-
-    private addDataToMap(selectedOrgUnit: OrganizationUnit, clusterGroup: any, entityLayer: any,
-                         L: any, map: any, mapData: Map<string, any[]>, color: string): Map<string, any> {
-        let polyLineLayer: any = null;
-        let overlayLayers = new Map<string, any>();
-        clusterGroup.addLayer(entityLayer);
-
-        let layerGroup = L.layerGroup().addTo(map);
-        layerGroup.addLayer(clusterGroup);
-
-///////////////////////Initialization of polylines////////////////////////////////////////
+    private getPolylines(entityLayer:any, clusterGroup:any, L:any, color:string, selectedOrgUnit:OrganizationUnit):any{
         let uniqueEndPoints = new Set<string>();
         for (var key in entityLayer._layers) {
             if (clusterGroup.getVisibleParent(entityLayer._layers[key]) == null)
@@ -179,9 +204,7 @@ export class MapService {
             let lng: string = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lng;
             uniqueEndPoints.add(lng + "," + lat);
         }
-        if (polyLineLayer != null)
-            layerGroup.removeLayer(polyLineLayer);
-        polyLineLayer = L.geoJSON(null, {
+        let polyLineLayer = L.geoJSON(null, {
             style: {
                 "color": color,
             }
@@ -193,64 +216,33 @@ export class MapService {
             else
                 this._logger.log('Not a valid polyline element', endPoint);
         });
-
-        layerGroup.addLayer(polyLineLayer); //New calculated polylines
-///////////////////////END INIT POLYLINES///////////////////////////////////////
-
-        //On zoom - remove poly lines, calculate new ones between facility and either cluster or markers.
-        clusterGroup.on('animationend', function (target: any) {
-            console.log('Rendering clusters');
-            let uniqueEndPoints = new Set<string>();
-            for (var key in entityLayer._layers) {
-                if (clusterGroup.getVisibleParent(entityLayer._layers[key]) == null)
-                    continue;
-                let lat: string = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lat;
-                let lng: string = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lng;
-                uniqueEndPoints.add(lng + "," + lat);
-            }
-            layerGroup.removeLayer(polyLineLayer);
-            polyLineLayer = L.geoJSON(null, {
-                style: {
-                    "color": color,
-                }
-            });
-            uniqueEndPoints.forEach(endPoint => {
-                let geoJSON = GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.coordinates]);
-                if (geoJSON != null)
-                    polyLineLayer.addData(geoJSON);
-                else
-                    this._logger.log('Not a valid polyline element', endPoint);
-            });
-
-            layerGroup.addLayer(polyLineLayer); //New calculated polylines
-        });
-
-        if (mapData.has(selectedOrgUnit.id)) {
-            mapData.get(selectedOrgUnit.id).push(layerGroup);
-        }
-        else {
-            let orgUnitLayer = this.getOrgUnitLayer(selectedOrgUnit, L, map);
-            overlayLayers.set(selectedOrgUnit.id, orgUnitLayer);
-            mapData.set(selectedOrgUnit.id, [layerGroup, orgUnitLayer]);
-        }
-        overlayLayers.set("layerGroup", layerGroup);
-        return overlayLayers;
+        this._logger.log('Returning:', polyLineLayer);
+        return polyLineLayer;
     }
 
-    private addControlMapOverlay(selectedOrgUnit: OrganizationUnit, selectedProgram: Program,
-                                 layerGroup: Map<string, any>, controls: any, color: string) {
-        let iterator = layerGroup.keys();
-        layerGroup.forEach(item => {
-            let title = "";
-            let key = iterator.next().value;
-            if (selectedOrgUnit.id == key) {
-                title = selectedOrgUnit.displayName;
-                controls.addOverlay(layerGroup.get(key), title);
+    private addControlMapOverlay(layerGroup:any, dataset:Dataset, controls: any, color: string) {
+        let title = "Dataset: " + dataset.getDatasetId() + "<div style=\'border: 1px solid black; background-color:" + color + ";width:10px;height:10px\'></div>";
+        controls.addOverlay(layerGroup, title);
+        //controls.addOverlay(layerGroupPolyLines, "Add polylines");
+    }
+
+    private convertCoordinates(selOrgUnit: OrganizationUnit): OrganizationUnit {
+        this._logger.log('Converting selOrg coords:', selOrgUnit);
+        if(selOrgUnit === null || selOrgUnit === undefined)
+            return null;
+        try {
+            if((selOrgUnit.coordinates.substring(0, 4).match(/\[/g) || []).length >= 2) {
+                selOrgUnit.coordinates = null;
+                return selOrgUnit;
             }
-            else {
-                title = selectedOrgUnit.displayName + ", " + selectedProgram.displayName + "<div style='border: 1px solid black; background-color:" + color + ";width:5px;height:5px'></div>";
-                controls.addOverlay(layerGroup.get(key), title);
-            }
-        });
+            if (selOrgUnit.coordinates.split('"').length >= 4)
+                selOrgUnit.coordinates = selOrgUnit.coordinates.split('"')[1] + ',' +
+                    selOrgUnit.coordinates.split('"')[3];
+        }
+        catch (error) {
+            selOrgUnit.coordinates = null;
+        }
+        this._logger.log('Converted coords:', selOrgUnit.coordinates);
+        return selOrgUnit;
     }
 }

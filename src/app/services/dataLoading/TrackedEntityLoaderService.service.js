@@ -61,7 +61,7 @@ var TrackedEntityLoaderService = (function (_super) {
         }
         return this.getTrackedEntityInstances('api/trackedEntityInstances?ou=' + orgUnitId + '&' +
             'program=' + programId + '&programStartDate=' + selStartDate + '&programEndDate=' + selEndDate + '&' +
-            'paging=0&fields=[attributes,lastUpdated]' + filterQueryString);
+            'paging=0&fields=[attributes,enrollments]' + filterQueryString);
     };
     return TrackedEntityLoaderService;
 }(HttpWrapper_service_1.HttpWrapperService));
