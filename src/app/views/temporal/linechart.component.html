@@ -1,4 +1,12 @@
-<div style="display: block;width: 800px; height: 300px">
+<div class="panel panel-default" id="linegraph">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <h4>Enrollment incidents</h4>
+        </div>
+    </div>
+    <div class="panel-body">
+
+<div style="display: block;">
     <canvas baseChart width="800" height="300"
             [datasets]="lineChartData"
             [labels]="lineChartLabels"
@@ -7,4 +15,6 @@
             [legend]="lineChartLegend"
             [chartType]="lineChartType"
             (chartHover)="chartHovered($event)"></canvas>
+</div>
+    </div>
 </div>

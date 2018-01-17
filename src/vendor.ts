@@ -23,3 +23,8 @@ import '../assets/styles/styles.css';
 import '../assets/styles/Control.FullScreen.css';
 import '../assets/js/Control.FullScreen.js';
 
+import '../assets/styles/jquery-ui.min.css';
+import '../assets/styles/lobipanel.min.css';
+
+
+

@@ -9,27 +9,34 @@ import {OrganizationUnit} from "../../models/OrganizationUnit.model";
 import {LinechartComponent} from "./linechart.component";
 
 @Component({
-  selector: 'temporalComponent',
-  templateUrl: '../../views/temporal/temporal.component.html',
+    selector: 'temporalComponent',
+    templateUrl: '../../views/temporal/temporal.component.html',
 })
 
 export class TemporalDimensionComponent implements IUpdateableComponent {
 
 
-  private activeDatasets: Dataset[] = [];
-  @ViewChild(LinechartComponent) lineChartComp:LinechartComponent;
+    private activeDatasets:Dataset[] = []
+    @ViewChild(LinechartComponent) lineChartComp: LinechartComponent;
 
-  constructor(private _logger: Logger, private _ngProgress:NgProgress){}
+    constructor(private _logger: Logger, private _ngProgress: NgProgress) {
+    }
 
-  public update(dataset:Dataset, stackData:boolean, callOnFinish:any){
-    if(!stackData)
-        this.activeDatasets = [];
-      this.activeDatasets.push(dataset);
-      this.lineChartComp.updateLineChart(this.activeDatasets);
-      callOnFinish(this);
-  }
+    public update(dataset: Dataset, stackData: boolean, callOnFinish: any) {
+        if (!stackData) {
+            this.activeDatasets = [];
+            this.lineChartComp.clearAll();
+        }
+        this.lineChartComp.updateLineChart(dataset);
+        this.activeDatasets.push(dataset);
+        callOnFinish(this);
+    }
 
-    public delete(dataset:Dataset, callOnFinish:any):void {
+    public delete(dataset: Dataset, callOnFinish: any): void {
+        this.activeDatasets = this.activeDatasets.filter(ds => {
+            return ds.getDatasetId() !== dataset.getDatasetId()
+        });
+        this.lineChartComp.deleteDataset(dataset);
         callOnFinish(this);
     }
 }
