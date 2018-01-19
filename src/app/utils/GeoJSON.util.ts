@@ -1,62 +1,83 @@
 export class GeoJSONUtil {
 
-    public static exportPointToGeo(coordinates: string, popupContent: string): any {
-        let lat = this.getLat(coordinates);
-        let lng = this.getLng(coordinates);
+    public static exportPointToGeo(coordinates: any, popupContent: string): any {
+        try {
+            let lat = coordinates.lat;
+            let lng = coordinates.lng;
+            console.log('Lat ln export point:' + lat, lng);
+            if (lat === null || lng === null || lat === undefined || lng === undefined)
+                return null;
+            else {
+                let geoJSONFeature = {
+                    "type": "Feature",
+                    "properties": {
+                        "popupContent": popupContent
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [lat, lng]
+                    }
+                };
+                return geoJSONFeature;
+            }
+        }
+        catch (error){ console.log(error); }
+        return null;
+    }
 
-        if (lat === null || lng === null || lat === undefined || lng === undefined)
-            return null;
-        else {
-            let geoJSONFeature = {
-                "type": "Feature",
-                "properties": {
-                    "popupContent": popupContent
-                },
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [lat, lng]
+    public static exportPolyLineToGeo(coordinates: any[]): any {
+        console.log('Lat ln export geo line:', coordinates);
+        try {
+            let coordList: number[][] = [];
+            coordinates.forEach(coordinate => {
+                let lat: number = coordinate.lat;
+                let lng: number = coordinate.lng;
+                if (lat === null || lng === null || lat === undefined || lng === undefined) {
+                    return null;
                 }
+                coordList.push([lat, lng]);
+            });
+
+            let geoJSONFeature = {
+                "type": "LineString",
+                "coordinates": coordList,
             };
             return geoJSONFeature;
         }
-    }
-
-    public static exportPolyLineToGeo(coordinates: string[]): any {
-        let coordList: number[][] = [];
-        if (coordinates.length !== 2 || coordinates[0] === null || coordinates[1] === null) {
-            console.log('Invalid coordinates:', coordinates);
-            return null;
+        catch(error){
+            console.log(error);
         }
-
-        coordinates.forEach(coordinate => {
-            let lat: number = parseFloat(this.getLat(coordinate));
-            let lng: number = parseFloat(this.getLng(coordinate));
-            if (lat === null || lng === null || lat === undefined || lng === undefined) {
-                console.log('Invalid coordinates:', lat);
-                console.log('Invalid coordinates:', lng);
+        return null;
+    }
+    public static convertCoordinates(coordinateString: string, L: any): any {
+        console.log('Converting coords:', coordinateString);
+        let lngLatObj = null;
+        if (coordinateString === null || coordinateString === undefined || coordinateString.length === 0 || coordinateString.indexOf(',') === -1)
+            return null;
+        try {
+            //Check if its a polygon - does not support this.
+            if ((coordinateString.substring(0, 4).match(/\[/g) || []).length >= 2) {
+                console.log('Converting polygon return null');
                 return null;
             }
-            coordList.push([lat, lng]);
-        });
-
-        let geoJSONFeature = {
-            "type": "LineString",
-            "coordinates": coordList,
-        };
-        return geoJSONFeature;
-    }
-
-    private static getLat(coordinates: string): string {
-        if (coordinates === null || coordinates === undefined) //We do not support polygons, if more than one coordinate occurs, we assume its a polygon
+            //Not polygon coordinate #test 1
+            if (coordinateString.split('"').length >= 4)
+                lngLatObj = L.latLng(parseFloat(coordinateString.split('"')[1]),
+                    parseFloat(coordinateString.split('"')[3]));
+            //Not polygon coordinate #test 2
+            else {
+                if (coordinateString.startsWith('[') && coordinateString.endsWith(']')) {
+                    coordinateString = coordinateString.substring(1, coordinateString.length - 1);
+                    console.log('Starts and ends with [ ]', coordinateString);
+                }
+                lngLatObj = L.latLng(parseFloat(coordinateString.split(',')[0]), parseFloat(coordinateString.split(',')[1]));
+            }
+        }
+        catch (error) {
+            console.log(error);
             return null;
-        coordinates = coordinates.trim();
-        return coordinates.split(',')[0];
-    }
-
-    private static getLng(coordinates: string): string {
-        if (coordinates === null || coordinates === undefined)  //We do not support polygons, if more than one coordinate occurs, we assume its a polygon
-            return null;
-        coordinates = coordinates.trim();
-        return coordinates.split(',')[1];
+        }
+        console.log('Return method returns:', lngLatObj);
+        return lngLatObj;
     }
 }

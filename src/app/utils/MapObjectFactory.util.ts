@@ -8,7 +8,8 @@ import {MapObjectType} from "../enums/MapObjectType.enum";
  * Why: To make to code more reuseable.
  */
 export class MapObjectFactory {
-  static readonly colors:string[] = ["RED", "BLUE", "YELLOW", "BROWN", "PURPLE", "GREEN"];
+  static readonly trendLineColors:string[] = ["darkred", "cornflowerblue", "gold", "peru", "violet", "darkolivegreen "];
+  static readonly colors:string[] = ["red", "blue", "yellow", "brown", "purple", "green"];
   private static takenColors:Set<string> = new Set<string>();
 
   public static getNewColor():string {

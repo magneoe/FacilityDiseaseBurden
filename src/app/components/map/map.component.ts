@@ -67,6 +67,6 @@ export class MapComponent implements IUpdateableComponent {
     }
 
     private setView(dataset:Dataset): void {
-        this._mapService.setView(this.map, dataset.getSelectedOrgUnit());
+        this._mapService.setView(this.map, dataset.getSelectedOrgUnit(), L);
     }
 }

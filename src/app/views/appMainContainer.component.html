@@ -9,7 +9,9 @@
             <p>
             <datePicker></datePicker>
             </p>
-
+                <p>Include all historic enrollments of TEI's (larger dataset)
+                    <input type="checkbox" [(ngModel)]="addHistoricEnrollments" name="addHistoricEnrollments">
+                </p>
             <div class="errorMessageStyle" *ngFor='let errorMessage of errorMessages'>{{errorMessage}}</div>
 
             <p>

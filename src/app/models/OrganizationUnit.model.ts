@@ -10,6 +10,6 @@ export interface OrganizationUnit {
   level: number,
   coordinates:string,
   programs: Program[],
-
+  convertedCoord:any,
 }
 

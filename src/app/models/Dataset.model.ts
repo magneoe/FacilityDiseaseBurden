@@ -9,6 +9,7 @@ export class Dataset {
     private trackedEntitiyQueries: Map<OrganizationUnit, Observable<TrackedEntity[]>> = new Map<OrganizationUnit, Observable<TrackedEntity[]>>();
     private trackedEntitiyResults: Map<OrganizationUnit, TrackedEntity[]> = new Map<OrganizationUnit, TrackedEntity[]>();
     private entitiesInTotal: number = 0;
+    private addHistoricEnrollments:boolean;
 
     constructor(private datasetId: number,
                 private color: string,
@@ -87,6 +88,12 @@ export class Dataset {
 
     public setFilterQueriesMap(filterQueries: Map<string, FilterQuery[]>) {
         this.filterQueryMap = filterQueries;
+    }
+    public setAddHistoricEnrollments(addHistoricEnrollments:boolean):void {
+        this.addHistoricEnrollments = addHistoricEnrollments;
+    }
+    public getAddHistoricEnrollments():boolean {
+        return this.addHistoricEnrollments;
     }
 
     public equals(dataset: Dataset): boolean {

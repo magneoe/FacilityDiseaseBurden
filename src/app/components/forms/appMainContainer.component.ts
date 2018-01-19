@@ -29,6 +29,8 @@ export class AppMainContainerComponent implements OnDestroy {
     private subscriptionInputData: Subscription;
     private dataInputBuilder: DataInputBuilderUtil;
 
+    addHistoricEnrollments:boolean = false;
+
     @ViewChild(MapComponent) mapComponent: MapComponent;
     @ViewChild(TemporalDimensionComponent) temporalComponent: TemporalDimensionComponent;
     @ViewChild(SelectedDatasetManager) selectedDatasetManager: SelectedDatasetManager;
@@ -58,8 +60,11 @@ export class AppMainContainerComponent implements OnDestroy {
         this.cleanUp(stackData);
         //This also generates color and dataset id in the 'createDataInputObject' function
         let dataset: Dataset = this.dataInputBuilder.createDataInputObject();
-        if(dataset === null)
+        if(dataset === null) {
             alert('Unable to add another dataset');
+            return;
+        }
+        dataset.setAddHistoricEnrollments(this.addHistoricEnrollments);
         this._commonResourceDispatcher.handleUpdate(dataset, stackData);
     }
 

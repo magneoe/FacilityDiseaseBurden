@@ -54,10 +54,6 @@ export class CommonResourceDispatcherService {
                         dataset.addTrackedEntityQuery(orgUnitsToLoad[selOrgIndex], trackedEntities);
                     }
                 }
-                /*this.updateableComponents.forEach(comp => {
-                    if (comp !== null)
-                        comp.update(dataset, stackData, callOnFinish);
-                });*/
                 this.loadTracedEntitiesAsync(dataset, stackData, callOnFinish);
             });
         }

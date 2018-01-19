@@ -4,6 +4,7 @@ import {Enrollment} from "./Enrollment.model";
 export class TrackedEntity {
   attributes:TrackedEntityAttribute[];
   enrollments:Enrollment[];
+  convertedCoords:any;
 
   constructor(attributes:TrackedEntityAttribute[], enrollments:Enrollment[]){
     this.setAttributes(attributes);

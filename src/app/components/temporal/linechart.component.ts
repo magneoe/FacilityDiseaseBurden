@@ -1,11 +1,11 @@
-import {Component, OnInit, ViewChild, ElementRef} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {TrackedEntity} from "../../models/TrackedEntity.model";
 import {Logger} from "angular2-logger/core";
 import {Dataset} from "../../models/Dataset.model";
 import {OrganizationUnit} from "../../models/OrganizationUnit.model";
 import {BaseChartDirective} from "ng2-charts";
-import {Enrollment} from "../../models/Enrollment.model";
 import * as moment from 'moment';
+import {MapObjectFactory} from "../../utils/MapObjectFactory.util";
 
 declare var jQuery: any;
 
@@ -105,13 +105,20 @@ export class LinechartComponent {
                 let startDateParsed = this.getStartDateParsed(dataset.getStartDate());
                 let endDateParsed = this.getEndDateParsed(dataset.getEndDate());
 
-                let data: Array<any> = this.getLineChartDate(startDateParsed, endDateParsed, dataset.getTrackedEntityResults());
+                let data: Array<any> = this.getLineChartData(startDateParsed, endDateParsed, dataset.getTrackedEntityResults(), dataset.getAddHistoricEnrollments());
                 this.lineChartColors.push(this.getLineChartColor(dataset.getColor()));
                 this.chart.datasets.push({
                     id: dataset.getDatasetId(),
                     data,
                     label: 'Dataset ' + dataset.getDatasetId()
                 });
+                this.chart.datasets.push({
+                    id: dataset.getDatasetId(),
+                    data: this.getTrendLineData(data),
+                    label: 'Dataset ' + dataset.getDatasetId() + ' trendline',
+                    hidden: true,
+                });
+                this.lineChartColors.push(this.getTrendlineChartColor(dataset.getColor()));
 
                 this.renderMinMaxUnits(startDateParsed, endDateParsed);
                 //Setting data
@@ -143,7 +150,7 @@ export class LinechartComponent {
                 //Remove color
                 this.chart.colors.splice(removeIndex, 1);
                 //Ensure there are some basic data if empty
-                if(this.chart.datasets.length === 0){
+                if (this.chart.datasets.length === 0) {
                     this.chart.datasets = [{}];
                     this.chart.colors = [{}];
                 }
@@ -160,14 +167,18 @@ export class LinechartComponent {
     }
 
     public clearAll(): void {
-        //Resetting
+        //Resettingn
         this.chart.datasets = [];
         this.lineChartColors = [];
         this.currMinDate = moment();
         this.currMaxDate = moment();
     }
 
-    private getLineChartDate(startDateParsed: any, endDateParsed: any, trackedEntitiesResult: Map<OrganizationUnit, TrackedEntity[]>): Array<any> {
+    private getLineChartData(startDateParsed: any,
+                             endDateParsed: any,
+                             trackedEntitiesResult: Map<OrganizationUnit, TrackedEntity[]>,
+                             addHistoricEnrollments: boolean): Array<any> {
+
         let startDateToIterate = moment(startDateParsed);
         let frequencyArray: Array<any> = new Array<any>(endDateParsed.diff(startDateParsed, 'days') + 1);
 
@@ -177,17 +188,97 @@ export class LinechartComponent {
         }
         trackedEntitiesResult.forEach((trackedEntities: TrackedEntity[], orgUnit: OrganizationUnit) => {
             trackedEntities.forEach((trackedEntity: TrackedEntity) => {
-                trackedEntity.getEnrollments().forEach((enrollment: Enrollment) => {
-                    let enrollmentDateParsed = moment(enrollment.enrollmentDate);
+                for (let i = 0; i < trackedEntity.getEnrollments().length; i++) {
+                    if (!addHistoricEnrollments && i > 0) //Assume that the first element is the most recent enrollment
+                        continue;
+                    let enrollmentDateParsed = moment(trackedEntity.getEnrollments()[i].enrollmentDate);
                     if (enrollmentDateParsed.diff(startDateParsed, 'days') > 0 && enrollmentDateParsed.diff(endDateParsed, 'days') <= 0) {
                         let frequencyArrayIndex = enrollmentDateParsed.diff(startDateParsed, 'days');
                         frequencyArray[frequencyArrayIndex].y = frequencyArray[frequencyArrayIndex].y + 1;
                     }
-                });
+                }
             });
         });
         this._logger.log('Frequency array:', frequencyArray);
         return frequencyArray;
+    }
+
+    private getTrendLineData(data: any[]): any[] {
+        let xyCoords: any[] = new Array<any>(data.length);
+
+        //Calculate the xyCoord list - converting dates into numbers on x axis
+        let firstDateInDataset = moment(data[0].x);
+        for (let i = 0; i < data.length; i++) {
+            let relativeXValue = moment(data[i].x).diff(firstDateInDataset, 'days');
+            xyCoords[i] = {x: relativeXValue, y: data[i].y};
+        }
+
+        //Calculation the slope of the trendline
+        let a = 0, b = 0, c = 0, d = 0, slope = 0;
+
+        //Calculation of A value
+        for (let i = 0; i < xyCoords.length; i++)
+            a += xyCoords[i].x * xyCoords[i].y;
+        a = a * xyCoords.length;
+
+        //Calculation B value
+        let sumXValues = 0, sumYValues = 0;
+        for (let i = 0; i < xyCoords.length; i++) {
+            sumXValues += xyCoords[i].x;
+            sumYValues += xyCoords[i].y;
+        }
+        b = sumXValues * sumYValues;
+
+        //Calculation of C
+        let sumSuareRoot = 0;
+        for (let i = 0; i < xyCoords.length; i++) {
+            sumSuareRoot += Math.sqrt(xyCoords[i].x);
+        }
+        c = sumSuareRoot * xyCoords.length;
+
+        //Calculation of D
+        d = Math.sqrt(sumXValues);
+
+        //Calculation of slope
+        slope = (a - b) / (c - d);
+
+        //Calculation of y interception on trendline
+        let f = 0, intercept = 0;
+
+        //Calculation of F
+        f = slope * sumXValues;
+
+        //Calculation of y intercept
+        intercept = (sumYValues - f) / xyCoords.length;
+
+        //Trendline equation is y = slope*X + intercept;
+        let trendlineData: any[] = Array<any>(data.length);
+        for (let i = 0; i < trendlineData.length; i++) {
+            trendlineData[i] = {x: data[i].x, y: slope * xyCoords[i].x + intercept};
+        }
+        this._logger.log('Returning dataset trendline', trendlineData);
+        return trendlineData;
+    }
+
+    private getTrendlineChartColor(color: string): any {
+        let index = MapObjectFactory.colors.indexOf(color);
+
+        if (index === -1) {
+            return {
+                backgroundColor: 'rgba(255,255,255, 0.0)',
+                borderColor: 'gray',
+                pointBackgroundColor: 'gray',
+            }
+        }
+        else {
+            let trendLineColor = MapObjectFactory.trendLineColors[index];
+            this._logger.log('Trendline color', trendLineColor);
+            return {
+                backgroundColor: 'rgba(255,255,255, 0.0)',
+                borderColor: trendLineColor,
+                pointBackgroundColor: trendLineColor,
+            };
+        }
     }
 
     private getLineChartColor(color: string): any {

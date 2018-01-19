@@ -6,6 +6,7 @@
         <th>Programs</th>
         <th>Time interval</th>
         <th>Filters</th>
+        <th>Include historic prev enrollments</th>
         <th>Number of entities (TEI)</th>
         <th>Delete</th>
     </tr>
@@ -28,6 +29,7 @@
                 {{filterDisplayString}}
             </li>
         </td>
+        <td>{{dataset.getAddHistoricEnrollments()}}</td>
         <td>{{dataset.getEntitiesInTotal()}}</td>
         <td><p>
             <a (click)="deleteDataset(dataset)" class="btn btn-warning btn-md">

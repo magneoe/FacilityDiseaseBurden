@@ -34,26 +34,27 @@ export class MapService {
         return map;
     }
 
-    public setView(map: any, orgUnit: OrganizationUnit): void {
-        let org = this.convertCoordinates(orgUnit);
-        if(org === null)
+    public setView(map: any, orgUnit: OrganizationUnit, L: any): void {
+        let convertedCoord: any = GeoJSONUtil.convertCoordinates(orgUnit.coordinates, L);
+        orgUnit.convertedCoord = convertedCoord;
+        if (convertedCoord === null)
             return;
         try {
-            let lat = org.coordinates.split(',')[0];
-            let lng = org.coordinates.split(',')[1];
-            map.panTo([lng, lat]);
+            map.panTo([convertedCoord.lng, convertedCoord.lat]);
         } catch (error) {
             this._logger.log('Error', error);
         }
     }
-    public removeAll(controls: any, map:any, activeLayerGroups:Map<Dataset, any>) {
+
+    public removeAll(controls: any, map: any, activeLayerGroups: Map<Dataset, any>) {
         this._logger.log('Clear map:', map);
-       activeLayerGroups.forEach((activeLayerGroup:any, dataset:Dataset)=> {
-           map.removeLayer(activeLayerGroup);
-           controls.removeLayer(activeLayerGroup);
-       });
+        activeLayerGroups.forEach((activeLayerGroup: any, dataset: Dataset) => {
+            map.removeLayer(activeLayerGroup);
+            controls.removeLayer(activeLayerGroup);
+        });
     }
-    public removeDataset(controls: any, map:any, dataset:Dataset, activeLayerGroups:Map<Dataset, any>):void {
+
+    public removeDataset(controls: any, map: any, dataset: Dataset, activeLayerGroups: Map<Dataset, any>): void {
         let datasetLayerGroupToRemove = activeLayerGroups.get(dataset);
         map.removeLayer(datasetLayerGroupToRemove);
         controls.removeLayer(datasetLayerGroupToRemove);
@@ -63,7 +64,7 @@ export class MapService {
      * Loads one layer group to show on map - each layergroup will contain entities, polylines and a org.Unit
      * if it does not exist.
      */
-    public loadLayerGroup(dataset:Dataset,
+    public loadLayerGroup(dataset: Dataset,
                           controls: any,
                           L: any,
                           map: any) {
@@ -72,26 +73,25 @@ export class MapService {
 
         let color = dataset.getColor();
         let layerGroupToMap = L.layerGroup().addTo(map);
-        //let layerGroupPolyLines = L.layerGroup().addTo(map);
-        dataset.getTrackedEntityResults().forEach((trackedEntities:TrackedEntity[], orgUnit:OrganizationUnit) => {
-            orgUnit = this.convertCoordinates(orgUnit);
+        dataset.getTrackedEntityResults().forEach((trackedEntities: TrackedEntity[], orgUnit: OrganizationUnit) => {
+            orgUnit.convertedCoord = GeoJSONUtil.convertCoordinates(orgUnit.coordinates, L);
+            this._logger.log('Loading data set convert coords', orgUnit.convertedCoord);
             //Adds all the data to map and returns the overlays to pass to the map control.
 
-            let trackedEntityLayer = this.getEntities(trackedEntities, L, color);
+            let trackedEntityLayer = this.getEntities(trackedEntities, dataset.getAddHistoricEnrollments(), L, color);
             let clusterLayer = this.getCluster(L, color);
             let orgUnitLayer = this.getOrgUnitLayer(orgUnit, L);
 
             //The polylines needs to be added last
             let polylineLayer = this.addDataToMap(layerGroupToMap, orgUnit, clusterLayer, trackedEntityLayer, orgUnitLayer,
                 L, color);
-            //layerGroupPolyLines.addLayer(polylineLayer);
         });
 
         this.addControlMapOverlay(layerGroupToMap, dataset, controls, color);
         return layerGroupToMap;
     }
 
-    private addDataToMap(layerGroupToMap:any, selectedOrgUnit: OrganizationUnit, clusterGroup: any, entityLayer: any, orgUnitLayer:any,
+    private addDataToMap(layerGroupToMap: any, selectedOrgUnit: OrganizationUnit, clusterGroup: any, entityLayer: any, orgUnitLayer: any,
                          L: any, color: string): any {
         clusterGroup.addLayer(entityLayer);
         layerGroupToMap.addLayer(clusterGroup);
@@ -104,15 +104,15 @@ export class MapService {
         //On zoom - remove poly lines, calculate new ones between facility and either cluster or markers.
         clusterGroup.on('animationend', function (target: any) {
             console.log('Rendering clusters');
-            let uniqueEndPoints = new Set<string>();
+            let uniqueEndPoints = new Set<any>();
             for (var key in entityLayer._layers) {
                 if (clusterGroup.getVisibleParent(entityLayer._layers[key]) == null)
                     continue;
                 let lat: string = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lat;
                 let lng: string = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lng;
-                uniqueEndPoints.add(lng + "," + lat);
+                uniqueEndPoints.add(GeoJSONUtil.convertCoordinates(lng + "," + lat, L));
             }
-            if(polylineLayer !== null)
+            if (polylineLayer !== null)
                 layerGroupToMap.removeLayer(polylineLayer);
             polylineLayer = L.geoJSON(null, {
                 style: {
@@ -120,7 +120,7 @@ export class MapService {
                 }
             });
             uniqueEndPoints.forEach(endPoint => {
-                let geoJSON = GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.coordinates]);
+                let geoJSON = GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.convertedCoord]);
                 if (geoJSON != null)
                     polylineLayer.addData(geoJSON);
                 else
@@ -133,7 +133,7 @@ export class MapService {
     }
 
     //Makes markers based on the entities with a given color and returns them as a layer reference
-    private getEntities(trackedEntities: TrackedEntity[], L: any, color: string): any {
+    private getEntities(trackedEntities: TrackedEntity[], addHistoricEnrollments:boolean, L: any, color: string): any {
         var entityIcon = MapObjectFactory.getMapObject(MapObjectType.ENTITY, color, L).getIcon();
         let entityLayer = L.geoJSON(null, {
             pointToLayer: function (feature: any, latlng: any) {
@@ -143,11 +143,16 @@ export class MapService {
             return layer.feature.properties.popupContent;
         });
         trackedEntities.forEach((entity: TrackedEntity) => {
-            let geoJSON = GeoJSONUtil.exportPointToGeo(entity.getCoords(), entity.toString());
-            if (geoJSON != null)
-                entityLayer.addData(geoJSON);
-            else
-                this._logger.log('Not a valid entity:', entity);
+            for(let i = 0; i < entity.getEnrollments().length; i++) {
+                if (!addHistoricEnrollments && i > 0) //Assume that the first element is the most recent enrollment
+                    continue;
+                entity.convertedCoords = GeoJSONUtil.convertCoordinates(entity.getCoords(), L);
+                let geoJSON = GeoJSONUtil.exportPointToGeo(entity.convertedCoords, entity.toString());
+                if (geoJSON != null)
+                    entityLayer.addData(geoJSON);
+                else
+                    this._logger.log('Not a valid entity:', entity);
+            }
         });
         return entityLayer;
     }
@@ -188,21 +193,22 @@ export class MapService {
             return layer.feature.properties.popupContent;
         });
 
-        let geoJSON = GeoJSONUtil.exportPointToGeo(orgUnit.coordinates, orgUnit.displayName);
+        let geoJSON = GeoJSONUtil.exportPointToGeo(orgUnit.convertedCoord, orgUnit.displayName);
         if (geoJSON != null)
             orgUnitLayer.addData(geoJSON);
         else
             this._logger.log('Not a valid org unit', orgUnit);
         return orgUnitLayer;
     }
-    private getPolylines(entityLayer:any, clusterGroup:any, L:any, color:string, selectedOrgUnit:OrganizationUnit):any{
-        let uniqueEndPoints = new Set<string>();
+
+    private getPolylines(entityLayer: any, clusterGroup: any, L: any, color: string, selectedOrgUnit: OrganizationUnit): any {
+        let uniqueEndPoints = new Set<any>();
         for (var key in entityLayer._layers) {
             if (clusterGroup.getVisibleParent(entityLayer._layers[key]) == null)
                 continue;
             let lat: string = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lat;
             let lng: string = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lng;
-            uniqueEndPoints.add(lng + "," + lat);
+            uniqueEndPoints.add(GeoJSONUtil.convertCoordinates(lng + "," + lat, L));
         }
         let polyLineLayer = L.geoJSON(null, {
             style: {
@@ -210,7 +216,7 @@ export class MapService {
             }
         });
         uniqueEndPoints.forEach(endPoint => {
-            let geoJSON = GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.coordinates]);
+            let geoJSON = GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.convertedCoord]);
             if (geoJSON != null)
                 polyLineLayer.addData(geoJSON);
             else
@@ -220,29 +226,10 @@ export class MapService {
         return polyLineLayer;
     }
 
-    private addControlMapOverlay(layerGroup:any, dataset:Dataset, controls: any, color: string) {
+    private addControlMapOverlay(layerGroup: any, dataset: Dataset, controls: any, color: string) {
         let title = "Dataset: " + dataset.getDatasetId() + "<div style=\'border: 1px solid black; background-color:" + color + ";width:10px;height:10px\'></div>";
         controls.addOverlay(layerGroup, title);
-        //controls.addOverlay(layerGroupPolyLines, "Add polylines");
     }
 
-    private convertCoordinates(selOrgUnit: OrganizationUnit): OrganizationUnit {
-        this._logger.log('Converting selOrg coords:', selOrgUnit);
-        if(selOrgUnit === null || selOrgUnit === undefined)
-            return null;
-        try {
-            if((selOrgUnit.coordinates.substring(0, 4).match(/\[/g) || []).length >= 2) {
-                selOrgUnit.coordinates = null;
-                return selOrgUnit;
-            }
-            if (selOrgUnit.coordinates.split('"').length >= 4)
-                selOrgUnit.coordinates = selOrgUnit.coordinates.split('"')[1] + ',' +
-                    selOrgUnit.coordinates.split('"')[3];
-        }
-        catch (error) {
-            selOrgUnit.coordinates = null;
-        }
-        this._logger.log('Converted coords:', selOrgUnit.coordinates);
-        return selOrgUnit;
-    }
+
 }
