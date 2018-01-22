@@ -13,19 +13,13 @@ declare var jQuery: any;
     selector: 'linechart',
     templateUrl: '../../views/temporal/linechart.component.html',
 })
-/*
 
- */
 
 export class LinechartComponent {
     @ViewChild(BaseChartDirective) chart: BaseChartDirective;
     private currMinDate = moment();
     private currMaxDate = moment();
-    // lineChart
-    public lineChartData: Array<any> = [
-        {}
-    ];
-    public lineChartLabels: Array<any> = [];
+
     public lineChartOptions: any = {
         responsive: true,
         scales: {
@@ -63,9 +57,14 @@ export class LinechartComponent {
             text: 'Enrollment frequency over time'
         },
     };
-    public lineChartColors: Array<any> = [
-        {}
-    ];
+    // lineChart
+    public lineChartData: Array<any> = [{data:[], label:''}];
+    public lineChartLabels: Array<any> = [];
+    public lineChartColors: Array<any> = [{
+        backgroundColor: 'rgba(255,255,255, 0.0)',
+        borderColor: 'rgba(255,255,255, 0.0)',
+        pointBackgroundColor: 'rgba(255,255,255, 0.0)',
+    }];
     public lineChartLegend: boolean = true;
     public lineChartType: string = 'line';
 
@@ -85,19 +84,26 @@ export class LinechartComponent {
 
     ngOnInit() {
         jQuery(function () {
-            jQuery('#linegraph').lobiPanel({
+            jQuery('#lineGraphPanelId').lobiPanel({
                 reload: false,
                 close: false,
-                unpin: false,
-                maxWidth: jQuery(window).width(),
-                maxHeight: jQuery(window).height(),
+                unpin: {
+                    icon : 'glyphicon glyphicon-move',
+                    tooltip : 'Unpin'
+                },
+                draggable: true,
+                resize: 'both',
+                maxWidth: jQuery(window).width()-100,
+                maxHeight: jQuery(window).height()-100,
+                minWidth: 100,
+                minHeight: 100,
                 expandAnimation: 700,
                 collapseAnimation: 700,
             });
         });
     }
 
-    updateLineChart(dataset: Dataset): void {
+    updateLineChart(dataset: Dataset, activeDatasets:Dataset[]): void {
         try {
             if (this.chart !== undefined) {
                 this.chart.ngOnDestroy();
@@ -105,8 +111,10 @@ export class LinechartComponent {
                 let startDateParsed = this.getStartDateParsed(dataset.getStartDate());
                 let endDateParsed = this.getEndDateParsed(dataset.getEndDate());
 
-                let data: Array<any> = this.getLineChartData(startDateParsed, endDateParsed, dataset.getTrackedEntityResults(), dataset.getAddHistoricEnrollments());
+                let data: Array<any> = this.getLineChartData(startDateParsed, endDateParsed, dataset.getTrackedEntityResults(),
+                    dataset.getAddHistoricEnrollments());
                 this.lineChartColors.push(this.getLineChartColor(dataset.getColor()));
+
                 this.chart.datasets.push({
                     id: dataset.getDatasetId(),
                     data,
@@ -120,7 +128,7 @@ export class LinechartComponent {
                 });
                 this.lineChartColors.push(this.getTrendlineChartColor(dataset.getColor()));
 
-                this.renderMinMaxUnits(startDateParsed, endDateParsed);
+                this.renderMinMaxUnits(this.getMinDate(activeDatasets), this.getMaxDate(activeDatasets));
                 //Setting data
                 this.lineChartData = this.chart.datasets;
                 this.chart.colors = this.lineChartColors;
@@ -133,12 +141,10 @@ export class LinechartComponent {
         }
     }
 
-    public deleteDataset(dataset: Dataset): void {
+    public deleteDataset(dataset: Dataset, activeDatasets:Dataset[]): void {
         try {
             if (this.chart !== undefined) {
                 this.chart.ngOnDestroy();
-                let startDateParsed = this.getStartDateParsed(dataset.getStartDate());
-                let endDateParsed = this.getEndDateParsed(dataset.getEndDate());
 
                 let removeIndex = this.chart.datasets.findIndex(element => {
                     return element.id === dataset.getDatasetId()
@@ -148,14 +154,16 @@ export class LinechartComponent {
                     return element.id !== dataset.getDatasetId()
                 });
                 //Remove color
-                this.chart.colors.splice(removeIndex, 1);
+                this.chart.colors.splice(removeIndex, 2);
+
                 //Ensure there are some basic data if empty
                 if (this.chart.datasets.length === 0) {
                     this.chart.datasets = [{}];
                     this.chart.colors = [{}];
                 }
                 //Update x-axis max/min
-                this.renderMinMaxUnits(startDateParsed, endDateParsed);
+
+                this.renderMinMaxUnits(this.getMinDate(activeDatasets), this.getMaxDate(activeDatasets));
                 this.lineChartData = this.chart.datasets;
                 this.lineChartColors = this.chart.colors;
                 this.chart.chart = this.chart.getChartBuilder(this.chart.ctx);
@@ -190,7 +198,7 @@ export class LinechartComponent {
             trackedEntities.forEach((trackedEntity: TrackedEntity) => {
                 for (let i = 0; i < trackedEntity.getEnrollments().length; i++) {
                     if (!addHistoricEnrollments && i > 0) //Assume that the first element is the most recent enrollment
-                        continue;
+                        break;
                     let enrollmentDateParsed = moment(trackedEntity.getEnrollments()[i].enrollmentDate);
                     if (enrollmentDateParsed.diff(startDateParsed, 'days') > 0 && enrollmentDateParsed.diff(endDateParsed, 'days') <= 0) {
                         let frequencyArrayIndex = enrollmentDateParsed.diff(startDateParsed, 'days');
@@ -291,18 +299,31 @@ export class LinechartComponent {
 
     private getStartDateParsed(startDate: string): any {
         let startDateParsed = moment(startDate);
-        if (startDateParsed.diff(this.currMinDate, 'days') < 0)
-            this.currMinDate = startDateParsed;
         return startDateParsed;
     }
 
     private getEndDateParsed(endDate: string): any {
         let endDateParsed = moment(endDate);
-        if (endDateParsed.diff(this.currMaxDate, 'days') > 0)
-            this.currMaxDate = endDateParsed;
         return endDateParsed;
     }
-
+    private getMinDate(activeDatesets:Dataset[]):any {
+        let currMinDate:any = null;
+        activeDatesets.forEach(dataset => {
+            let startDateParsed = this.getEndDateParsed(dataset.getStartDate());
+            if (startDateParsed.diff(this.currMinDate, 'days') < 0 || currMinDate === null)
+                currMinDate = startDateParsed;
+        });
+        return currMinDate;
+    }
+    private getMaxDate(activeDatasets:Dataset[]):any {
+        let currMaxDate:any = null;
+        activeDatasets.forEach(dataset => {
+            let endDateParsed = this.getEndDateParsed(dataset.getEndDate());
+            if (endDateParsed.diff(this.currMaxDate, 'days') > 0 || currMaxDate === null)
+                currMaxDate = endDateParsed;
+        });
+        return currMaxDate;
+    }
     private renderMinMaxUnits(startDateParsed: any, endDateParsed: any): void {
 
         //Setting min/max date

@@ -28,6 +28,7 @@ import {SelectedDatasetManager} from "./components/forms/selectedDatasetManager.
 import {ChartsModule} from "ng2-charts";
 import {LinechartComponent} from "./components/temporal/linechart.component";
 import {CommonResourceDispatcherService} from "./services/dataInput/CommonResourceDispatcher.service";
+import {PiechartComponent} from "./components/temporal/piechart.component";
 
 
 const appRoutes: Routes = [
@@ -45,7 +46,7 @@ const appRoutes: Routes = [
     OrderByDisplayNamePipe, DatePickerComponent,
     AppMainContainerComponent, ProgramsComponent, MapComponent,
       ProgramFilterComponent, ProgramFilterAttributeComponent, TemporalDimensionComponent,
-      SelectedDatasetManager, LinechartComponent],
+      SelectedDatasetManager, LinechartComponent, PiechartComponent],
   bootstrap:    [ AppComponent ],
   providers: [AuthorizationService, ProgramsService,
       MapInputDataService, TrackedEntityLoaderService,

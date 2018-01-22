@@ -1,12 +1,9 @@
 import {Component, ViewChild} from "@angular/core";
 import {Logger} from "angular2-logger/core";
-import {Observable} from "rxjs/Observable";
-import {TrackedEntity} from "../../models/TrackedEntity.model";
-import {NgProgress} from "ngx-progressbar";
 import {IUpdateableComponent} from "../../services/IUpdateable.component";
 import {Dataset} from "../../models/Dataset.model";
-import {OrganizationUnit} from "../../models/OrganizationUnit.model";
 import {LinechartComponent} from "./linechart.component";
+import {PiechartComponent} from "./piechart.component";
 
 @Component({
     selector: 'temporalComponent',
@@ -16,19 +13,25 @@ import {LinechartComponent} from "./linechart.component";
 export class TemporalDimensionComponent implements IUpdateableComponent {
 
 
-    private activeDatasets:Dataset[] = []
+    private activeDatasets:Dataset[] = [];
     @ViewChild(LinechartComponent) lineChartComp: LinechartComponent;
+    @ViewChild(PiechartComponent) pieChartComp:PiechartComponent;
 
-    constructor(private _logger: Logger, private _ngProgress: NgProgress) {
+    constructor(private _logger: Logger) {
+    }
+    ngOnInit() {
     }
 
     public update(dataset: Dataset, stackData: boolean, callOnFinish: any) {
         if (!stackData) {
             this.activeDatasets = [];
             this.lineChartComp.clearAll();
+            this.pieChartComp.clearAll();
         }
-        this.lineChartComp.updateLineChart(dataset);
         this.activeDatasets.push(dataset);
+        this.lineChartComp.updateLineChart(dataset, this.activeDatasets);
+        this.pieChartComp.updatePieChart(dataset);
+
         callOnFinish(this);
     }
 
@@ -36,7 +39,8 @@ export class TemporalDimensionComponent implements IUpdateableComponent {
         this.activeDatasets = this.activeDatasets.filter(ds => {
             return ds.getDatasetId() !== dataset.getDatasetId()
         });
-        this.lineChartComp.deleteDataset(dataset);
+        this.lineChartComp.deleteDataset(dataset, this.activeDatasets);
+        this.pieChartComp.deleteDataset(dataset);
         callOnFinish(this);
     }
 }

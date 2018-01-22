@@ -1,0 +1,18 @@
+<div class="panel panel-default" id="pieGraphPanelId">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <h4>Total no. of enrollments by dataset</h4>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div style="display: block">
+            <canvas baseChart width="800" height="300"
+                    [colors]="chartColors"
+                    [data]="doughnutChartData"
+                    [labels]="doughnutChartLabels"
+                    [chartType]="doughnutChartType"
+                    (chartHover)="chartHovered($event)"
+                    (chartClick)="chartClicked($event)"></canvas>
+        </div>
+    </div>
+</div>

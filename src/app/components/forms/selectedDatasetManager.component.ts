@@ -24,7 +24,13 @@ export class SelectedDatasetManager implements IUpdateableComponent {
             this.activeDatasets = [];
         let numberOfEntitiesInDataset: number = 0;
         dataset.getTrackedEntityResults().forEach((trackedEntities: TrackedEntity[], orgUnit: OrganizationUnit) => {
-            numberOfEntitiesInDataset += trackedEntities.length;
+            trackedEntities.forEach(trackedEntity => {
+                    if (!dataset.getAddHistoricEnrollments()) //Assume that the first element is the most recent enrollment
+                        numberOfEntitiesInDataset++;
+                    else
+                        numberOfEntitiesInDataset += trackedEntity.getEnrollments().length; 
+
+            });
         });
         dataset.setEntitiesInTotal(numberOfEntitiesInDataset);
         this.activeDatasets.push(dataset);

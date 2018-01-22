@@ -10,6 +10,7 @@ import {OrganizationUnit} from "../../models/OrganizationUnit.model";
 
 
 declare var L: any;
+declare var jQuery: any;
 
 @Component({
     selector: 'mapComponent',
@@ -27,8 +28,6 @@ export class MapComponent implements IUpdateableComponent {
     private mapControl: any;
     private activeDatasets: Map<Dataset, any>;
 
-    //private activeDatasets: Dataset[] = [];
-
     constructor(private _mapService: MapService, private _logger: Logger) {
         this.activeDatasets = new Map<Dataset, any>();
     }
@@ -38,6 +37,26 @@ export class MapComponent implements IUpdateableComponent {
         // Initiates the map with a given id and the controls
         this.map = this._mapService.initMap(L, newMapContainerId);
         this.mapControl = L.control.layers().addTo(this.map);
+
+
+            jQuery(function () {
+                jQuery('#mapPanelId').lobiPanel({
+                    reload: false,
+                    close: false,
+                    unpin: {
+                        icon : 'glyphicon glyphicon-move',
+                        tooltip : 'Unpin'
+                    },
+                    draggable: true,
+                    resize: 'both',
+                    maxWidth: jQuery(window).width()-100,
+                    maxHeight: jQuery(window).height()-100,
+                    minWidth: 100,
+                    minHeight: 100,
+                    expandAnimation: 700,
+                    collapseAnimation: 700,
+                });
+            });
     }
 
     /*
