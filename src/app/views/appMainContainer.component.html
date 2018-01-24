@@ -4,16 +4,15 @@
         <div class=" col-sm-12 col-md-12 col-lg-2 sidebar ">
             <div class="sidebarStyle">
             <p>
-            <organisationPicker></organisationPicker>
+            <organisationPicker [RECIEVER_ADDRESS]="RECIEVER_ADDRESS"></organisationPicker>
             </p>
             <p>
-            <datePicker></datePicker>
+            <datePicker [RECIEVER_ADDRESS]="RECIEVER_ADDRESS"></datePicker>
             </p>
                 <p>Include all historic enrollments of TEI's (larger dataset)
                     <input type="checkbox" [(ngModel)]="addHistoricEnrollments" name="addHistoricEnrollments">
                 </p>
             <div class="errorMessageStyle" *ngFor='let errorMessage of errorMessages'>{{errorMessage}}</div>
-
             <p>
             <span>
             <button type="button" class="btn btn-primary" [disabled]="errorMessages.length > 0" (click)="select(false)">
@@ -50,7 +49,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <ng-progress [positionUsing]="'marginLeft'" [minimum]="0.15" [maximum]="1"

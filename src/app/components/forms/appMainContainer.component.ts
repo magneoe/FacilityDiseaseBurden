@@ -30,6 +30,7 @@ export class AppMainContainerComponent implements OnDestroy {
     private dataInputBuilder: DataInputBuilderUtil;
 
     addHistoricEnrollments:boolean = false;
+    RECIEVER_ADDRESS:number = MapInputDataService.RECEIVER_ADDRESS_APP_MAIN;
 
     @ViewChild(MapComponent) mapComponent: MapComponent;
     @ViewChild(TemporalDimensionComponent) temporalComponent: TemporalDimensionComponent;
@@ -38,10 +39,10 @@ export class AppMainContainerComponent implements OnDestroy {
     constructor(private _commonResourceDispatcher: CommonResourceDispatcherService,
                 private _mapInputDataService: MapInputDataService,
                 private _logger:Logger) {
-        this._logger.log('Running contructor of app main comp');
         this.dataInputBuilder = new DataInputBuilderUtil(_logger);
         this.subscriptionInputData = this._mapInputDataService.getInputDataMessage().subscribe((inputDataMessage: InputDataMessage) => {
-            this.handleInputDataMessage(inputDataMessage);
+            if(inputDataMessage.getReciever() === this.RECIEVER_ADDRESS)
+                this.handleInputDataMessage(inputDataMessage);
         });
     }
     ngOnInit(){

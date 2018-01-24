@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {OrganizationUnitLoaderService} from "../../../services/dataLoading/organizationUnitLoader.service";
 import {OrderByDisplayNamePipe} from "../../../pipes/organizationLoader.pipe";
 import {OrganizationUnit} from "../../../models/OrganizationUnit.model";
@@ -26,6 +26,8 @@ export class OrganizationLoaderComponent {
   private levels: number[] = [1];
   isLoading:boolean = false;
   selectedOrgUnit: OrganizationUnit;
+  @Input()
+  private RECIEVER_ADDRESS:number;
 
   constructor(private _orgLoaderService: OrganizationUnitLoaderService,
               private _mapInputDataService:MapInputDataService) { }
@@ -34,7 +36,7 @@ export class OrganizationLoaderComponent {
    * When ever at change in the picking of organisation units - revalidate the form and notice the master component.
    */
   notifyValueChange(event:any):void {
-    let inputDataMessage = new InputDataMessage(null, InputDataContent.ORG_UNIT, this.selectedOrgUnit);
+    let inputDataMessage = new InputDataMessage(null, InputDataContent.ORG_UNIT, this.selectedOrgUnit, this.RECIEVER_ADDRESS);
     this._mapInputDataService.sendInputDataMessage(inputDataMessage);
   }
   /*

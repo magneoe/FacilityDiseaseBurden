@@ -1,0 +1,32 @@
+<div class="panel panel-default" id="prevTableId">
+    <div class="panel-heading">
+        <div class="panel-title">
+            <h4>Calculate prevalence of attribute</h4>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped table-bordered table-hover table-responsive">
+            <tr>
+                <th>Select dataset by id:</th>
+                <td>
+                    <select (change)='loadFilter($event.target.value)'>
+                        <option [value]="-1">Select dataset</option>
+                        <option *ngFor="let dataset of activeDatasets" [style.background-color]="dataset.getColor()"
+                        [value]="dataset.getDatasetId()">
+                            {{dataset.getDatasetId()}}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th>Set filter:</th>
+                <td>
+                    <div class="container-fluid" #prevalenceFilterContainer></div>
+                </td>
+            </tr>
+            <tr>
+                <th>Prevalence:</th>
+                <td>{{prevalence}}</td>
+            </tr>
+        </table>
+    </div>
+</div>

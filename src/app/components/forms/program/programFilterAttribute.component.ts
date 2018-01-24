@@ -1,6 +1,6 @@
 
 
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from "@angular/core";
 import {TrackedEntityAttribute} from "../../../models/TrackedEntityAttribute.model";
 import {MapInputDataService} from "../../../services/dataInput/mapInputData.service";
 import {FilterQuery} from "../../../models/FilterQuery.model";
@@ -16,10 +16,11 @@ import {InputDataContent} from "../../../enums/InputDataContent.enum";
 })
 
 
-export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
+export class ProgramFilterAttributeComponent implements OnInit, OnDestroy {
   _ref:any;
   entityAttributes: TrackedEntityAttribute[];
   selectedAttribute:TrackedEntityAttribute = null;
+  RECIEVER_ADDRESS:number = -1; //Default
   message:string = '';
 
   selectedProgram: Program;
@@ -95,6 +96,9 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
   setSelectedProgram(selectedProgram:Program){
     this.selectedProgram = selectedProgram;
   }
+  setRecieverAddress(RECIEVER_ADDRESS:number):void {
+    this.RECIEVER_ADDRESS = RECIEVER_ADDRESS;
+  }
 
   private resetFormModel(){
     this.formModel = {
@@ -104,11 +108,12 @@ export class ProgramFilterAttributeComponent implements OnInit, OnDestroy{
       toNumberRange:0
     };
   }
-  private sendInputDataMessage(filterQueries:FilterQuery[]){
+  private sendInputDataMessage(filterQueries:FilterQuery[]) {
     let filterQueriesMap:Map<string, FilterQuery[]> = new Map<string, FilterQuery[]>();
     filterQueriesMap.set(this.selectedProgram.id ,filterQueries);
 
-    let inputDataMessage = new InputDataMessage(null, InputDataContent.FILTER_QUERY_MAP, filterQueriesMap);
+    let inputDataMessage = new InputDataMessage(null, InputDataContent.FILTER_QUERY_MAP, filterQueriesMap, this.RECIEVER_ADDRESS);
     this._mapInputDataService.sendInputDataMessage(inputDataMessage);
+
   }
 }

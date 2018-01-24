@@ -14,7 +14,7 @@
         <td>{{dataset.getDatasetId()}}</td>
         <td>
             <div [style.background-color]="dataset.getColor()"
-                 style="border: 1px solid black; width:20px; height:20px; margin: 0 auto"></div>
+                 class="datasetColorCodeBlock"></div>
         </td>
         <td>{{dataset.selectedOrgUnit.displayName + ' (level ' + dataset.selectedOrgUnit.level + ')'}}</td>
         <td>

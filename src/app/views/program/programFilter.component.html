@@ -2,6 +2,6 @@
     <div class="panel-heading">{{program.displayName}} filters</div>
     <div class="panel-body">
         <div class="container-fluid" #filterAttributes></div>
-        <button type="button" class="btn btn-default" (click)="addAttribute()">Add new filter</button>
+        <button *ngIf="container.length < MAX_FILTERS" type="button" class="btn btn-default" (click)="addAttribute()">Add new filter</button>
     </div>
 </div>

@@ -1,5 +1,5 @@
 
-import {Component, ComponentFactoryResolver, OnInit, ViewChild, ViewContainerRef} from "@angular/core";
+import {Component, ComponentFactoryResolver, Input, OnInit, ViewChild, ViewContainerRef} from "@angular/core";
 import {Program} from "../../../models/Program.model";
 import {ProgramFilterAttributeComponent} from "./programFilterAttribute.component";
 import {OrganizationUnit} from "../../../models/OrganizationUnit.model";
@@ -14,13 +14,16 @@ export class ProgramFilterComponent implements OnInit {
   _ref:any;
   program:Program;
   selectedOrgUnit:OrganizationUnit;
+  RECIEVER_ADDRESS:number;
+  MAX_FILTERS:number = 1;
 
   @ViewChild('filterAttributes', {read: ViewContainerRef}) container: ViewContainerRef;
 
   constructor(private _cfr: ComponentFactoryResolver,
               private _trackedEntityLoaderServiceService:TrackedEntityLoaderService){}
 
-  ngOnInit(){}
+  ngOnInit(){
+  }
 
   addAttribute(){
     this._trackedEntityLoaderServiceService.getTrackedEntityInstances('api/trackedEntityInstances?ou=' + this.selectedOrgUnit.id +
@@ -35,6 +38,21 @@ export class ProgramFilterComponent implements OnInit {
       filterAttributeComp.instance._ref = filterAttributeComp;
       filterAttributeComp.instance.setEntityAttributes(attributes);
       filterAttributeComp.instance.setSelectedProgram(this.program);
+      filterAttributeComp.instance.setRecieverAddress(this.RECIEVER_ADDRESS);
     });
   }
+
+    setRecieverAddress(RECIEVER_ADDRESS:number):void {
+        this.RECIEVER_ADDRESS = RECIEVER_ADDRESS;
+    }
+    setProgram(program:Program):void {
+      console.log('Setting program', program);
+      this.program = program;
+    }
+    setSelectedOrgUnit(selOrgUnit:OrganizationUnit):void {
+      this.selectedOrgUnit = selOrgUnit;
+    }
+    setMaxFilters(MAX_FILTERS:number):void {
+      this.MAX_FILTERS = MAX_FILTERS;
+    }
 }

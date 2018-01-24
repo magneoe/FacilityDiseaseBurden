@@ -12,6 +12,9 @@ import {InputDataMessage} from "../../models/InputDataMessage.model";
 @Injectable()
 export class MapInputDataService {
 
+  public static readonly RECEIVER_ADDRESS_APP_MAIN:number = 1;
+  public static readonly REVIEVER_ADDRESS_PREV_TABLE:number = 2;
+
   private inputDataMessage = new Subject<InputDataMessage>();
 
   constructor(){}

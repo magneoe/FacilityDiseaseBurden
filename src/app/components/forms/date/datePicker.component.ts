@@ -1,4 +1,4 @@
-import {Component} from "@angular/core";
+import {Component, Input} from "@angular/core";
 import {MapInputDataService} from "../../../services/dataInput/mapInputData.service";
 import {InputDataMessage} from "../../../models/InputDataMessage.model";
 import {InputDataContent} from "../../../enums/InputDataContent.enum";
@@ -16,6 +16,8 @@ export class DatePickerComponent{
   private readonly senderId:string = "datePicker";
   startDate: string;
   endDate: string;
+  @Input()
+  private RECIEVER_ADDRESS:number;
 
   constructor(private _mapInputDataService:MapInputDataService){}
 
@@ -27,8 +29,8 @@ export class DatePickerComponent{
    * Upon any event in the view (picking dates) this methods is called
    */
   notifyValueChange(event:any):void {
-    let inputDataMessageStartDate = new InputDataMessage(null, InputDataContent.START_DATE, this.startDate);
-    let inputDataMessageEndDate = new InputDataMessage(null, InputDataContent.END_DATE, this.endDate);
+    let inputDataMessageStartDate = new InputDataMessage(null, InputDataContent.START_DATE, this.startDate, this.RECIEVER_ADDRESS);
+    let inputDataMessageEndDate = new InputDataMessage(null, InputDataContent.END_DATE, this.endDate, this.RECIEVER_ADDRESS);
     this._mapInputDataService.sendInputDataMessage(inputDataMessageStartDate);
     this._mapInputDataService.sendInputDataMessage(inputDataMessageEndDate);
   }

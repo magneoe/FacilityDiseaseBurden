@@ -23,11 +23,11 @@ import {InputDataContent} from "../../../enums/InputDataContent.enum";
  */
 export class ProgramsComponent implements OnChanges, OnInit {
     @Input() selectedOrgUnit: OrganizationUnit;
+    @Input() RECIEVER_ADDRESS:number;
     programs: Program[] = [];
     selectedProgram: Program;
 
     private query: string;
-    private readonly senderId: string = "programPicker";
     @ViewChild('programFilterContainer', {read: ViewContainerRef}) container: ViewContainerRef;
 
     constructor(private _progService: ProgramsService,
@@ -71,8 +71,9 @@ export class ProgramsComponent implements OnChanges, OnInit {
         let comp = this._cfr.resolveComponentFactory(ProgramFilterComponent);
         let filterComp = this.container.createComponent(comp);
         filterComp.instance._ref = filterComp;
-        filterComp.instance.program = this.selectedProgram;
-        filterComp.instance.selectedOrgUnit = this.selectedOrgUnit;
+        filterComp.instance.setProgram(this.selectedProgram);
+        filterComp.instance.setSelectedOrgUnit(this.selectedOrgUnit);
+        filterComp.instance.setRecieverAddress(this.RECIEVER_ADDRESS);
 
         this.sendInputDataMessage();
     }
@@ -80,7 +81,7 @@ export class ProgramsComponent implements OnChanges, OnInit {
     private sendInputDataMessage():void {
         //Send datamessage to the appMainContainer.
         let inputDataMessage = new InputDataMessage(null, InputDataContent.PROGRAMS,
-            [this.selectedProgram]);
+            [this.selectedProgram], this.RECIEVER_ADDRESS);
         this._mapInputDataService.sendInputDataMessage(inputDataMessage);
     }
 }
