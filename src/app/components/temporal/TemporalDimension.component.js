@@ -11,22 +11,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
 var core_2 = require("angular2-logger/core");
-var ngx_progressbar_1 = require("ngx-progressbar");
 var linechart_component_1 = require("./linechart.component");
+var piechart_component_1 = require("./piechart.component");
+var prevalenceTable_component_1 = require("./prevalenceTable.component");
 var TemporalDimensionComponent = (function () {
-    function TemporalDimensionComponent(_logger, _ngProgress) {
+    function TemporalDimensionComponent(_logger) {
         this._logger = _logger;
-        this._ngProgress = _ngProgress;
         this.activeDatasets = [];
     }
+    TemporalDimensionComponent.prototype.ngOnInit = function () {
+    };
     TemporalDimensionComponent.prototype.update = function (dataset, stackData, callOnFinish) {
-        if (!stackData)
+        if (!stackData) {
             this.activeDatasets = [];
+            this.lineChartComp.clearAll();
+            this.pieChartComp.clearAll();
+            this.prevTableComp.clearAll();
+        }
         this.activeDatasets.push(dataset);
-        this.lineChartComp.updateLineChart(this.activeDatasets);
+        this.lineChartComp.updateLineChart(dataset, this.activeDatasets);
+        this.pieChartComp.updatePieChart(dataset);
+        this.prevTableComp.updatePrevTable(dataset);
         callOnFinish(this);
     };
     TemporalDimensionComponent.prototype.delete = function (dataset, callOnFinish) {
+        this.activeDatasets = this.activeDatasets.filter(function (ds) {
+            return ds.getDatasetId() !== dataset.getDatasetId();
+        });
+        this.lineChartComp.deleteDataset(dataset, this.activeDatasets);
+        this.pieChartComp.deleteDataset(dataset);
+        this.prevTableComp.deleteDataset(dataset);
         callOnFinish(this);
     };
     return TemporalDimensionComponent;
@@ -35,12 +49,20 @@ __decorate([
     core_1.ViewChild(linechart_component_1.LinechartComponent),
     __metadata("design:type", linechart_component_1.LinechartComponent)
 ], TemporalDimensionComponent.prototype, "lineChartComp", void 0);
+__decorate([
+    core_1.ViewChild(piechart_component_1.PiechartComponent),
+    __metadata("design:type", piechart_component_1.PiechartComponent)
+], TemporalDimensionComponent.prototype, "pieChartComp", void 0);
+__decorate([
+    core_1.ViewChild(prevalenceTable_component_1.PrevalenceTableComponent),
+    __metadata("design:type", prevalenceTable_component_1.PrevalenceTableComponent)
+], TemporalDimensionComponent.prototype, "prevTableComp", void 0);
 TemporalDimensionComponent = __decorate([
     core_1.Component({
         selector: 'temporalComponent',
         templateUrl: '../../views/temporal/temporal.component.html',
     }),
-    __metadata("design:paramtypes", [core_2.Logger, ngx_progressbar_1.NgProgress])
+    __metadata("design:paramtypes", [core_2.Logger])
 ], TemporalDimensionComponent);
 exports.TemporalDimensionComponent = TemporalDimensionComponent;
 //# sourceMappingURL=temporalDimension.component.js.map

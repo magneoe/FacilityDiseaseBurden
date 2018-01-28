@@ -1,20 +1,22 @@
 {
-    "version": "0.1",
-    "name": "Facility-Disease-burden",
-    "description": "A disease surveillance app, monitoring disease patterns linked to facilities",
+    "version": "0.1",    
+    "name": "The facility burden app",
+    "description": "A tool for decision making regarding resource planning, surveillance and planning of public health control measures",
     "launch_path": "/index.html",
     "appType": "APP",
     "icons": {
-        "48": "facility.png",
+        "16": "/assets/images/facility.png",
+        "48": "/assets/images/facility.png",
+        "128": "/assets/images/facility.png"
     },
     "developer": {
-        "name": "Magnus Østeng, Nirujah Kipu",
-        "url": "http://dhis2.org"
+        "name": "Magnus Østeng & Nirujah Kipu",
+        "url": "https://github.com/magneoe/FacilityDiseaseBurden"
     },
     "default_locale": "en",
     "activities": {
         "dhis": {
-            "href": "*" 
+            "href": "*"
         }
     }
 }

@@ -14,7 +14,6 @@ var map_service_1 = require("../../services/map/map.service");
 var core_2 = require("angular2-logger/core");
 require("rxjs/add/observable/forkJoin");
 var MapComponent = (function () {
-    //private activeDatasets: Dataset[] = [];
     function MapComponent(_mapService, _logger) {
         this._mapService = _mapService;
         this._logger = _logger;
@@ -25,6 +24,24 @@ var MapComponent = (function () {
         // Initiates the map with a given id and the controls
         this.map = this._mapService.initMap(L, newMapContainerId);
         this.mapControl = L.control.layers().addTo(this.map);
+        jQuery(function () {
+            jQuery('#mapPanelId').lobiPanel({
+                reload: false,
+                close: false,
+                unpin: {
+                    icon: 'glyphicon glyphicon-move',
+                    tooltip: 'Unpin'
+                },
+                draggable: true,
+                resize: 'both',
+                maxWidth: jQuery(window).width() - 100,
+                maxHeight: jQuery(window).height() - 100,
+                minWidth: 100,
+                minHeight: 100,
+                expandAnimation: 700,
+                collapseAnimation: 700,
+            });
+        });
     };
     /*
      * This runs when the input data has been changed and must be rendered.
@@ -49,7 +66,7 @@ var MapComponent = (function () {
         this.activeDatasets.clear();
     };
     MapComponent.prototype.setView = function (dataset) {
-        this._mapService.setView(this.map, dataset.getSelectedOrgUnit());
+        this._mapService.setView(this.map, dataset.getSelectedOrgUnit(), L);
     };
     return MapComponent;
 }());

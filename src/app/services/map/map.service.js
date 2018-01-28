@@ -36,14 +36,13 @@ var MapService = (function () {
         }).addTo(map);
         return map;
     };
-    MapService.prototype.setView = function (map, orgUnit) {
-        var org = this.convertCoordinates(orgUnit);
-        if (org === null)
+    MapService.prototype.setView = function (map, orgUnit, L) {
+        var convertedCoord = GeoJSON_util_1.GeoJSONUtil.convertCoordinates(orgUnit.coordinates, L);
+        orgUnit.convertedCoord = convertedCoord;
+        if (convertedCoord === null)
             return;
         try {
-            var lat = org.coordinates.split(',')[0];
-            var lng = org.coordinates.split(',')[1];
-            map.panTo([lng, lat]);
+            map.panTo([convertedCoord.lng, convertedCoord.lat]);
         }
         catch (error) {
             this._logger.log('Error', error);
@@ -67,20 +66,16 @@ var MapService = (function () {
      */
     MapService.prototype.loadLayerGroup = function (dataset, controls, L, map) {
         var _this = this;
-        this._logger.log("Selected OrgUnit in loadLayerGroup:", dataset.getSelectedOrgUnit());
-        this._logger.log("SelProg in loadLayerGroup:", dataset.getSelectedPrograms());
         var color = dataset.getColor();
         var layerGroupToMap = L.layerGroup().addTo(map);
-        //let layerGroupPolyLines = L.layerGroup().addTo(map);
         dataset.getTrackedEntityResults().forEach(function (trackedEntities, orgUnit) {
-            orgUnit = _this.convertCoordinates(orgUnit);
+            orgUnit.convertedCoord = GeoJSON_util_1.GeoJSONUtil.convertCoordinates(orgUnit.coordinates, L);
             //Adds all the data to map and returns the overlays to pass to the map control.
-            var trackedEntityLayer = _this.getEntities(trackedEntities, L, color);
+            var trackedEntityLayer = _this.getEntities(trackedEntities, dataset.getAddHistoricEnrollments(), L, color);
             var clusterLayer = _this.getCluster(L, color);
             var orgUnitLayer = _this.getOrgUnitLayer(orgUnit, L);
             //The polylines needs to be added last
             var polylineLayer = _this.addDataToMap(layerGroupToMap, orgUnit, clusterLayer, trackedEntityLayer, orgUnitLayer, L, color);
-            //layerGroupPolyLines.addLayer(polylineLayer);
         });
         this.addControlMapOverlay(layerGroupToMap, dataset, controls, color);
         return layerGroupToMap;
@@ -101,7 +96,7 @@ var MapService = (function () {
                     continue;
                 var lat = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lat;
                 var lng = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lng;
-                uniqueEndPoints.add(lng + "," + lat);
+                uniqueEndPoints.add(GeoJSON_util_1.GeoJSONUtil.convertCoordinates(lng + "," + lat, L));
             }
             if (polylineLayer !== null)
                 layerGroupToMap.removeLayer(polylineLayer);
@@ -111,7 +106,7 @@ var MapService = (function () {
                 }
             });
             uniqueEndPoints.forEach(function (endPoint) {
-                var geoJSON = GeoJSON_util_1.GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.coordinates]);
+                var geoJSON = GeoJSON_util_1.GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.convertedCoord]);
                 if (geoJSON != null)
                     polylineLayer.addData(geoJSON);
                 else
@@ -122,7 +117,7 @@ var MapService = (function () {
         return polylineLayer;
     };
     //Makes markers based on the entities with a given color and returns them as a layer reference
-    MapService.prototype.getEntities = function (trackedEntities, L, color) {
+    MapService.prototype.getEntities = function (trackedEntities, addHistoricEnrollments, L, color) {
         var _this = this;
         var entityIcon = MapObjectFactory_util_1.MapObjectFactory.getMapObject(MapObjectType_enum_1.MapObjectType.ENTITY, color, L).getIcon();
         var entityLayer = L.geoJSON(null, {
@@ -133,11 +128,16 @@ var MapService = (function () {
             return layer.feature.properties.popupContent;
         });
         trackedEntities.forEach(function (entity) {
-            var geoJSON = GeoJSON_util_1.GeoJSONUtil.exportPointToGeo(entity.getCoords(), entity.toString());
-            if (geoJSON != null)
-                entityLayer.addData(geoJSON);
-            else
-                _this._logger.log('Not a valid entity:', entity);
+            for (var i = 0; i < entity.getEnrollments().length; i++) {
+                if (!addHistoricEnrollments && i > 0)
+                    continue;
+                entity.convertedCoords = GeoJSON_util_1.GeoJSONUtil.convertCoordinates(entity.getCoords(), L);
+                var geoJSON = GeoJSON_util_1.GeoJSONUtil.exportPointToGeo(entity.convertedCoords, entity.toString());
+                if (geoJSON != null)
+                    entityLayer.addData(geoJSON);
+                else
+                    _this._logger.log('Not a valid entity:', entity);
+            }
         });
         return entityLayer;
     };
@@ -176,7 +176,7 @@ var MapService = (function () {
         }).bindPopup(function (layer) {
             return layer.feature.properties.popupContent;
         });
-        var geoJSON = GeoJSON_util_1.GeoJSONUtil.exportPointToGeo(orgUnit.coordinates, orgUnit.displayName);
+        var geoJSON = GeoJSON_util_1.GeoJSONUtil.exportPointToGeo(orgUnit.convertedCoord, orgUnit.displayName);
         if (geoJSON != null)
             orgUnitLayer.addData(geoJSON);
         else
@@ -191,7 +191,7 @@ var MapService = (function () {
                 continue;
             var lat = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lat;
             var lng = clusterGroup.getVisibleParent(entityLayer._layers[key]).getLatLng().lng;
-            uniqueEndPoints.add(lng + "," + lat);
+            uniqueEndPoints.add(GeoJSON_util_1.GeoJSONUtil.convertCoordinates(lng + "," + lat, L));
         }
         var polyLineLayer = L.geoJSON(null, {
             style: {
@@ -199,7 +199,7 @@ var MapService = (function () {
             }
         });
         uniqueEndPoints.forEach(function (endPoint) {
-            var geoJSON = GeoJSON_util_1.GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.coordinates]);
+            var geoJSON = GeoJSON_util_1.GeoJSONUtil.exportPolyLineToGeo([endPoint, selectedOrgUnit.convertedCoord]);
             if (geoJSON != null)
                 polyLineLayer.addData(geoJSON);
             else
@@ -211,26 +211,6 @@ var MapService = (function () {
     MapService.prototype.addControlMapOverlay = function (layerGroup, dataset, controls, color) {
         var title = "Dataset: " + dataset.getDatasetId() + "<div style=\'border: 1px solid black; background-color:" + color + ";width:10px;height:10px\'></div>";
         controls.addOverlay(layerGroup, title);
-        //controls.addOverlay(layerGroupPolyLines, "Add polylines");
-    };
-    MapService.prototype.convertCoordinates = function (selOrgUnit) {
-        this._logger.log('Converting selOrg coords:', selOrgUnit);
-        if (selOrgUnit === null || selOrgUnit === undefined)
-            return null;
-        try {
-            if ((selOrgUnit.coordinates.substring(0, 4).match(/\[/g) || []).length >= 2) {
-                selOrgUnit.coordinates = null;
-                return selOrgUnit;
-            }
-            if (selOrgUnit.coordinates.split('"').length >= 4)
-                selOrgUnit.coordinates = selOrgUnit.coordinates.split('"')[1] + ',' +
-                    selOrgUnit.coordinates.split('"')[3];
-        }
-        catch (error) {
-            selOrgUnit.coordinates = null;
-        }
-        this._logger.log('Converted coords:', selOrgUnit.coordinates);
-        return selOrgUnit;
     };
     return MapService;
 }());

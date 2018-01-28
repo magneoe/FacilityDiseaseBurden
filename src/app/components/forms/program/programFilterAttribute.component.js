@@ -20,6 +20,7 @@ var ProgramFilterAttributeComponent = (function () {
     function ProgramFilterAttributeComponent(_mapInputDataService) {
         this._mapInputDataService = _mapInputDataService;
         this.selectedAttribute = null;
+        this.RECIEVER_ADDRESS = -1; //Default
         this.message = '';
         this.lastCommitedFilters = [];
     }
@@ -83,6 +84,9 @@ var ProgramFilterAttributeComponent = (function () {
     ProgramFilterAttributeComponent.prototype.setSelectedProgram = function (selectedProgram) {
         this.selectedProgram = selectedProgram;
     };
+    ProgramFilterAttributeComponent.prototype.setRecieverAddress = function (RECIEVER_ADDRESS) {
+        this.RECIEVER_ADDRESS = RECIEVER_ADDRESS;
+    };
     ProgramFilterAttributeComponent.prototype.resetFormModel = function () {
         this.formModel = {
             searchTextString: '',
@@ -94,7 +98,7 @@ var ProgramFilterAttributeComponent = (function () {
     ProgramFilterAttributeComponent.prototype.sendInputDataMessage = function (filterQueries) {
         var filterQueriesMap = new Map();
         filterQueriesMap.set(this.selectedProgram.id, filterQueries);
-        var inputDataMessage = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.FILTER_QUERY_MAP, filterQueriesMap);
+        var inputDataMessage = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.FILTER_QUERY_MAP, filterQueriesMap, this.RECIEVER_ADDRESS);
         this._mapInputDataService.sendInputDataMessage(inputDataMessage);
     };
     return ProgramFilterAttributeComponent;

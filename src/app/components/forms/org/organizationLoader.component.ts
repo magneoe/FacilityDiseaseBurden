@@ -44,7 +44,7 @@ export class OrganizationLoaderComponent {
    */
   ngOnInit(): void {
     this.isLoading = true;
-    this._orgLoaderService.getOrgUnits('api/organisationUnits?level=1&paging=0&fields=id,displayName,level')
+    this._orgLoaderService.getOrgUnits('/organisationUnits?level=1&paging=0&fields=id,displayName,level')
       .subscribe((units:any) => {
         this.organizationUnits = units.organisationUnits});
     this.isLoading = false;
@@ -63,7 +63,7 @@ export class OrganizationLoaderComponent {
 
     //Loading children of the ancestor - if there is one or if its been loaded previously.
     if(this.selectedOrgUnit != null) {
-      this.query = 'api/organisationUnits?filter=id:eq:' + ancestorId + '&fields=children[id,displayName,level,coordinates]&paging=0';
+      this.query = '/organisationUnits?filter=id:eq:' + ancestorId + '&fields=children[id,displayName,level,coordinates]&paging=0';
       this._orgLoaderService.getOrgUnits(this.query)
         .subscribe((units: any) => {
         //Loads the children of the ancestor

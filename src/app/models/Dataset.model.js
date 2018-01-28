@@ -67,6 +67,12 @@ var Dataset = (function () {
     Dataset.prototype.setFilterQueriesMap = function (filterQueries) {
         this.filterQueryMap = filterQueries;
     };
+    Dataset.prototype.setAddHistoricEnrollments = function (addHistoricEnrollments) {
+        this.addHistoricEnrollments = addHistoricEnrollments;
+    };
+    Dataset.prototype.getAddHistoricEnrollments = function () {
+        return this.addHistoricEnrollments;
+    };
     Dataset.prototype.equals = function (dataset) {
         if (dataset.getDatasetId() !== this.datasetId)
             return false;

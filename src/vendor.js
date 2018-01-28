@@ -18,6 +18,17 @@ require("../assets/styles/MarkerCluster.Default.css");
 require("../assets/js/leaflet.markercluster-src.js");
 require("../node_modules/chart.js/dist/Chart.bundle.js");
 require("../assets/styles/styles.css");
+//Bootstrap style
+//import '../assets/styles/bootstrap.min.css';
+//Jquery UI
+//import '../assets/js/jquery-ui.min.js';
+//Bootstrap js
+//import '../assets/js/bootstrap.min.js';
+//Plugin -fullscreen map
 require("../assets/styles/Control.FullScreen.css");
 require("../assets/js/Control.FullScreen.js");
+//Jquery ui style
+require("../assets/styles/jquery-ui.min.css");
+//Lobipanel css
+require("../assets/styles/lobipanel.min.css");
 //# sourceMappingURL=vendor.js.map

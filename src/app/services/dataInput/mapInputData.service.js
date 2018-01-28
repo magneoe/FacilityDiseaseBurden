@@ -30,6 +30,8 @@ var MapInputDataService = (function () {
     };
     return MapInputDataService;
 }());
+MapInputDataService.RECEIVER_ADDRESS_APP_MAIN = 1;
+MapInputDataService.REVIEVER_ADDRESS_PREV_TABLE = 2;
 MapInputDataService = __decorate([
     core_1.Injectable(),
     __metadata("design:paramtypes", [])

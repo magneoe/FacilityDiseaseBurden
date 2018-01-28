@@ -26,10 +26,12 @@ var AppMainContainerComponent = (function () {
         this._mapInputDataService = _mapInputDataService;
         this._logger = _logger;
         this.errorMessages = [];
-        this._logger.log('Running contructor of app main comp');
+        this.addHistoricEnrollments = false;
+        this.RECIEVER_ADDRESS = mapInputData_service_1.MapInputDataService.RECEIVER_ADDRESS_APP_MAIN;
         this.dataInputBuilder = new DataInputBuilder_util_1.DataInputBuilderUtil(_logger);
         this.subscriptionInputData = this._mapInputDataService.getInputDataMessage().subscribe(function (inputDataMessage) {
-            _this.handleInputDataMessage(inputDataMessage);
+            if (inputDataMessage.getReciever() === _this.RECIEVER_ADDRESS)
+                _this.handleInputDataMessage(inputDataMessage);
         });
     }
     AppMainContainerComponent.prototype.ngOnInit = function () {
@@ -47,8 +49,11 @@ var AppMainContainerComponent = (function () {
         this.cleanUp(stackData);
         //This also generates color and dataset id in the 'createDataInputObject' function
         var dataset = this.dataInputBuilder.createDataInputObject();
-        if (dataset === null)
+        if (dataset === null) {
             alert('Unable to add another dataset');
+            return;
+        }
+        dataset.setAddHistoricEnrollments(this.addHistoricEnrollments);
         this._commonResourceDispatcher.handleUpdate(dataset, stackData);
     };
     AppMainContainerComponent.prototype.ngOnDestroy = function () {

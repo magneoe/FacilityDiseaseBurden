@@ -47,10 +47,6 @@ var CommonResourceDispatcherService = (function () {
                         dataset.addTrackedEntityQuery(orgUnitsToLoad[selOrgIndex], trackedEntities);
                     }
                 }
-                /*this.updateableComponents.forEach(comp => {
-                    if (comp !== null)
-                        comp.update(dataset, stackData, callOnFinish);
-                });*/
                 _this.loadTracedEntitiesAsync(dataset, stackData, callOnFinish);
             });
         }
@@ -144,7 +140,7 @@ var CommonResourceDispatcherService = (function () {
             //Do some errorHandling
             return;
         }
-        return this._organisationLoaderService.getOrgUnits('api/organisationUnits?fields=[id,displayName,level,coordinates,' +
+        return this._organisationLoaderService.getOrgUnits('/organisationUnits?fields=[id,displayName,level,coordinates,' +
             'children::size~rename(ChildCount)]&paging=0&filter=ancestors.id:eq:' + dataset.getSelectedOrgUnit().id);
     };
     return CommonResourceDispatcherService;

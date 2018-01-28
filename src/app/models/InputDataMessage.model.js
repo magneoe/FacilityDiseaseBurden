@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var InputDataMessage = (function () {
-    function InputDataMessage(broadCastGroup, dataContent, payLoad) {
+    function InputDataMessage(broadCastGroup, dataContent, payLoad, reciever) {
         this.broadCastGroup = broadCastGroup;
         this.dataContent = dataContent;
         this.payLoad = payLoad;
+        this.reciever = reciever;
     }
     InputDataMessage.prototype.getBroadCaseGroup = function () {
         return this.broadCastGroup;
@@ -14,6 +15,9 @@ var InputDataMessage = (function () {
     };
     InputDataMessage.prototype.getPayload = function () {
         return this.payLoad;
+    };
+    InputDataMessage.prototype.getReciever = function () {
+        return this.reciever;
     };
     return InputDataMessage;
 }());

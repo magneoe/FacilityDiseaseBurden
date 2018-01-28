@@ -29,18 +29,22 @@ var AuthorizationService = (function () {
     AuthorizationService.prototype.testConnectivity = function (user) {
         this.options.headers.set('Authorization', 'Basic ' + btoa(user.getUsername() + ':' + user.getPassword()));
         console.log("Header", this.options.headers);
-        return this._http.get(user.getConnectionLink() + "/api", this.options).map(function (response) { return response.json(); }).catch(this.handleError);
+        return this._http.get(user.getConnectionLink(), this.options).map(function (response) { return response.json(); }).catch(this.handleError);
     };
     AuthorizationService.prototype.login = function (user) {
         var _this = this;
-        this.testConnectivity(user).subscribe(function (isSuccess) {
-            //Setting user info in session storage
-            sessionStorage.setItem("user", JSON.stringify(user));
-            //Directing to orgLoader whenever logged in
-            _this._router.navigate(['/app']);
-            _this.authorizationMessage = "Success";
-        }, function (error) {
-            _this.authorizationMessage = "Wrong username/password";
+        this.getServerUrl("manifest.webapp").subscribe(function (data) {
+            var apiBaseUrl = data.activities.dhis.href + '/api';
+            user.setConnectionLink(apiBaseUrl);
+            _this.testConnectivity(user).subscribe(function (isSuccess) {
+                //Setting user info in session storage
+                sessionStorage.setItem("user", JSON.stringify(user));
+                //Directing to orgLoader whenever logged in
+                _this._router.navigate(['/app']);
+                _this.authorizationMessage = "Success";
+            }, function (error) {
+                _this.authorizationMessage = "Wrong username/password";
+            });
         });
     };
     //Authorization service function
@@ -58,6 +62,10 @@ var AuthorizationService = (function () {
     AuthorizationService.prototype.handleError = function (error) {
         console.error('Catch:', error);
         return Observable_1.Observable.throw(error.json().error());
+    };
+    AuthorizationService.prototype.getServerUrl = function (filePath) {
+        var _this = this;
+        return this._http.get(filePath).map(function (res) { return res.json(); }).catch(function (error) { return _this.handleError(error); });
     };
     return AuthorizationService;
 }());

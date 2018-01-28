@@ -27,7 +27,7 @@ var OrganizationLoaderComponent = (function () {
      * When ever at change in the picking of organisation units - revalidate the form and notice the master component.
      */
     OrganizationLoaderComponent.prototype.notifyValueChange = function (event) {
-        var inputDataMessage = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.ORG_UNIT, this.selectedOrgUnit);
+        var inputDataMessage = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.ORG_UNIT, this.selectedOrgUnit, this.RECIEVER_ADDRESS);
         this._mapInputDataService.sendInputDataMessage(inputDataMessage);
     };
     /*
@@ -36,7 +36,7 @@ var OrganizationLoaderComponent = (function () {
     OrganizationLoaderComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.isLoading = true;
-        this._orgLoaderService.getOrgUnits('api/organisationUnits?level=1&paging=0&fields=id,displayName,level')
+        this._orgLoaderService.getOrgUnits('/organisationUnits?level=1&paging=0&fields=id,displayName,level')
             .subscribe(function (units) {
             _this.organizationUnits = units.organisationUnits;
         });
@@ -55,7 +55,7 @@ var OrganizationLoaderComponent = (function () {
         this.levels = this._orgLoaderService.setLevel(this.selectedOrgUnit, lvl, this.levels, this.organizationUnits);
         //Loading children of the ancestor - if there is one or if its been loaded previously.
         if (this.selectedOrgUnit != null) {
-            this.query = 'api/organisationUnits?filter=id:eq:' + ancestorId + '&fields=children[id,displayName,level,coordinates]&paging=0';
+            this.query = '/organisationUnits?filter=id:eq:' + ancestorId + '&fields=children[id,displayName,level,coordinates]&paging=0';
             this._orgLoaderService.getOrgUnits(this.query)
                 .subscribe(function (units) {
                 //Loads the children of the ancestor
@@ -79,6 +79,10 @@ var OrganizationLoaderComponent = (function () {
     };
     return OrganizationLoaderComponent;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number)
+], OrganizationLoaderComponent.prototype, "RECIEVER_ADDRESS", void 0);
 OrganizationLoaderComponent = __decorate([
     core_1.Component({
         selector: 'organisationPicker',

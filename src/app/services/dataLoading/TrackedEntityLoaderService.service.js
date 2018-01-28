@@ -34,7 +34,6 @@ var TrackedEntityLoaderService = (function (_super) {
     }
     // Loads the tracked entity instances from the server
     TrackedEntityLoaderService.prototype.getTrackedEntityInstances = function (query) {
-        this._logger.log('Get tracked entity instances query:', query);
         return this.get(query).do(function (data) { return console.log(JSON.stringify(data)); }).catch(this.handleError);
     };
     /*
@@ -59,7 +58,7 @@ var TrackedEntityLoaderService = (function (_super) {
                 filterQueryString += programQueries[i].convertToFormattedQuery();
             }
         }
-        return this.getTrackedEntityInstances('api/trackedEntityInstances?ou=' + orgUnitId + '&' +
+        return this.getTrackedEntityInstances('/trackedEntityInstances?ou=' + orgUnitId + '&' +
             'program=' + programId + '&programStartDate=' + selStartDate + '&programEndDate=' + selEndDate + '&' +
             'paging=0&fields=[attributes,enrollments]' + filterQueryString);
     };

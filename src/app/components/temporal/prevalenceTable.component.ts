@@ -1,5 +1,5 @@
 
-import {Component, ComponentFactoryResolver, ViewChild, ViewContainerRef} from "@angular/core";
+import {Component, ComponentFactoryResolver, ComponentRef, ViewChild, ViewContainerRef} from "@angular/core";
 import {Logger} from "angular2-logger/core";
 import {Dataset} from "../../models/Dataset.model";
 import {MapInputDataService} from "../../services/dataInput/mapInputData.service";
@@ -28,6 +28,7 @@ export class PrevalenceTableComponent {
 
     private selectedDataset:Dataset = null;
     private subscriptionInputData: Subscription;
+    private filterComp:ComponentRef<ProgramFilterComponent>;
 
     @ViewChild('prevalenceFilterContainer', {read: ViewContainerRef}) container: ViewContainerRef;
 
@@ -59,19 +60,26 @@ export class PrevalenceTableComponent {
         });
     }
     public loadFilter(datasetId:any):void {
-        this.selectedDataset = this.activeDatasets.find(curr => {return curr.getDatasetId() == datasetId});
         this.container.clear();
-        let comp = this._cfr.resolveComponentFactory(ProgramFilterComponent);
-        let filterComp = this.container.createComponent(comp);
-        filterComp.instance._ref = filterComp;
-        filterComp.instance.setSelectedOrgUnit(this.selectedDataset.getSelectedOrgUnit());
-        filterComp.instance.setProgram(this.selectedDataset.getSelectedPrograms()[0]);
-        filterComp.instance.setRecieverAddress(this.RECIEVER_ADDRESS);
-        filterComp.instance.setMaxFilters(1);
+        if(datasetId == -1 && this.filterComp !== undefined) {
+            this.filterComp.destroy();
+        }
+        else {
+            this.selectedDataset = this.activeDatasets.find(curr => {return curr.getDatasetId() == datasetId});
+            let comp = this._cfr.resolveComponentFactory(ProgramFilterComponent);
+            this.filterComp = this.container.createComponent(comp);
+            this.filterComp.instance._ref = this.filterComp;
+            this.filterComp.instance.setSelectedOrgUnit(this.selectedDataset.getSelectedOrgUnit());
+            this.filterComp.instance.setProgram(this.selectedDataset.getSelectedPrograms()[0]);
+            this.filterComp.instance.setRecieverAddress(this.RECIEVER_ADDRESS);
+            this.filterComp.instance.setMaxFilters(1);
+
+        }
     }
 
     public clearAll():void {
         this.activeDatasets = [];
+        this.destroyComponent(this.filterComp);
     }
     public updatePrevTable(dataset:Dataset):void {
         this.activeDatasets.push(dataset);
@@ -79,10 +87,10 @@ export class PrevalenceTableComponent {
     public deleteDataset(dataset:Dataset):void {
         this.activeDatasets = this.activeDatasets.filter(curr =>
         {return curr.getDatasetId() !== dataset.getDatasetId()});
+        this.destroyComponent(this.filterComp);
     }
     public handleInputDataMessage(inputDataMessage:InputDataMessage):void {
         if(inputDataMessage.getDataContent() === InputDataContent.FILTER_QUERY_MAP){
-            console.log('Inputdata message in prevalence table:', inputDataMessage.getPayload());
             this.prevalence = this.getPrevalence(inputDataMessage.getPayload(), this.selectedDataset.getTrackedEntityResults());
         }
     }
@@ -102,10 +110,8 @@ export class PrevalenceTableComponent {
     }
     private matchFilter(payLoad:any, trackedEntity:TrackedEntity):boolean {
         let filterQuery = payLoad.get(this.selectedDataset.getSelectedPrograms()[0].id)[0];
-        console.log('FilterQuery', filterQuery);
         if(filterQuery !== undefined)
         {
-            console.log('Operator:', );
             switch (filterQuery.getOperator()) {
 
                 case OperatorType.GREATER_THAN:
@@ -125,7 +131,6 @@ export class PrevalenceTableComponent {
             {return attribute.code == filterQuery.getTrackedEntityAttributes().code});
 
         if(selectedAttribute.value == filterQuery.getValue()){
-            console.log('Match equals true!', selectedAttribute);
             return true;
         }
         return false;
@@ -135,7 +140,6 @@ export class PrevalenceTableComponent {
         {return attribute.code == filterQuery.getTrackedEntityAttributes().code});
 
         if(selectedAttribute.value.includes(filterQuery.getValue())){
-            console.log('Like match')
             return true;
         }
         return false;
@@ -154,5 +158,11 @@ export class PrevalenceTableComponent {
             return true;
         }
         return false;
+    }
+    private destroyComponent(comp:any):void {
+        this.container.clear();
+        if(comp !== undefined) {
+            comp.destroy();
+        }
     }
 }

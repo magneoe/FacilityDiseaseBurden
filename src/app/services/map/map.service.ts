@@ -68,14 +68,11 @@ export class MapService {
                           controls: any,
                           L: any,
                           map: any) {
-        this._logger.log("Selected OrgUnit in loadLayerGroup:", dataset.getSelectedOrgUnit());
-        this._logger.log("SelProg in loadLayerGroup:", dataset.getSelectedPrograms());
 
         let color = dataset.getColor();
         let layerGroupToMap = L.layerGroup().addTo(map);
         dataset.getTrackedEntityResults().forEach((trackedEntities: TrackedEntity[], orgUnit: OrganizationUnit) => {
             orgUnit.convertedCoord = GeoJSONUtil.convertCoordinates(orgUnit.coordinates, L);
-            this._logger.log('Loading data set convert coords', orgUnit.convertedCoord);
             //Adds all the data to map and returns the overlays to pass to the map control.
 
             let trackedEntityLayer = this.getEntities(trackedEntities, dataset.getAddHistoricEnrollments(), L, color);

@@ -35,6 +35,8 @@ var selectedDatasetManager_component_1 = require("./components/forms/selectedDat
 var ng2_charts_1 = require("ng2-charts");
 var linechart_component_1 = require("./components/temporal/linechart.component");
 var CommonResourceDispatcher_service_1 = require("./services/dataInput/CommonResourceDispatcher.service");
+var piechart_component_1 = require("./components/temporal/piechart.component");
+var prevalenceTable_component_1 = require("./components/temporal/prevalenceTable.component");
 var appRoutes = [
     { path: '', component: login_component_1.LoginComponent },
     { path: 'login', component: login_component_1.LoginComponent },
@@ -55,7 +57,7 @@ AppModule = __decorate([
             organizationLoader_pipe_1.OrderByDisplayNamePipe, datePicker_component_1.DatePickerComponent,
             appMainContainer_component_1.AppMainContainerComponent, program_component_1.ProgramsComponent, map_component_1.MapComponent,
             programFilter_component_1.ProgramFilterComponent, programFilterAttribute_component_1.ProgramFilterAttributeComponent, temporalDimension_component_1.TemporalDimensionComponent,
-            selectedDatasetManager_component_1.SelectedDatasetManager, linechart_component_1.LinechartComponent],
+            selectedDatasetManager_component_1.SelectedDatasetManager, linechart_component_1.LinechartComponent, piechart_component_1.PiechartComponent, prevalenceTable_component_1.PrevalenceTableComponent],
         bootstrap: [app_component_1.AppComponent],
         providers: [login_service_1.AuthorizationService, programs_service_1.ProgramsService,
             mapInputData_service_1.MapInputDataService, TrackedEntityLoaderService_service_1.TrackedEntityLoaderService,

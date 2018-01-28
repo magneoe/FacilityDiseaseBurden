@@ -21,7 +21,6 @@ var ProgramsComponent = (function () {
         this._mapInputDataService = _mapInputDataService;
         this._cfr = _cfr;
         this.programs = [];
-        this.senderId = "programPicker";
     }
     /*
      * Upon changes in the input (organisationUnit), then reload the programs
@@ -40,7 +39,7 @@ var ProgramsComponent = (function () {
             this.programs = [];
             return;
         }
-        this.query = 'api/organisationUnits?filter=id:eq:' + orgUnit.id + '&fields=programs[id,displayName]&paging=0';
+        this.query = '/organisationUnits?filter=id:eq:' + orgUnit.id + '&fields=programs[id,displayName]&paging=0';
         this._progService.loadPrograms(this.query)
             .subscribe(function (units) {
             _this.programs = units.organisationUnits[0].programs;
@@ -56,13 +55,14 @@ var ProgramsComponent = (function () {
         var comp = this._cfr.resolveComponentFactory(programFilter_component_1.ProgramFilterComponent);
         var filterComp = this.container.createComponent(comp);
         filterComp.instance._ref = filterComp;
-        filterComp.instance.program = this.selectedProgram;
-        filterComp.instance.selectedOrgUnit = this.selectedOrgUnit;
+        filterComp.instance.setProgram(this.selectedProgram);
+        filterComp.instance.setSelectedOrgUnit(this.selectedOrgUnit);
+        filterComp.instance.setRecieverAddress(this.RECIEVER_ADDRESS);
         this.sendInputDataMessage();
     };
     ProgramsComponent.prototype.sendInputDataMessage = function () {
         //Send datamessage to the appMainContainer.
-        var inputDataMessage = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.PROGRAMS, [this.selectedProgram]);
+        var inputDataMessage = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.PROGRAMS, [this.selectedProgram], this.RECIEVER_ADDRESS);
         this._mapInputDataService.sendInputDataMessage(inputDataMessage);
     };
     return ProgramsComponent;
@@ -71,6 +71,10 @@ __decorate([
     core_1.Input(),
     __metadata("design:type", Object)
 ], ProgramsComponent.prototype, "selectedOrgUnit", void 0);
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number)
+], ProgramsComponent.prototype, "RECIEVER_ADDRESS", void 0);
 __decorate([
     core_1.ViewChild('programFilterContainer', { read: core_1.ViewContainerRef }),
     __metadata("design:type", core_1.ViewContainerRef)

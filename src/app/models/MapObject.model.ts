@@ -10,7 +10,7 @@ export class MapObject {
   public setIcon(icon:any):void {
     this.icon = icon;
   }
-  public setIconShadowUrl(shadowUrl:string){
+  public setIconShadowUrl(shadowUrl:any){
     this.icon.shadowUrl = shadowUrl;
   }
   public setIconAttributes(attributes:any){

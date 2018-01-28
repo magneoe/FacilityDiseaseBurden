@@ -16,11 +16,13 @@ var ProgramFilterComponent = (function () {
     function ProgramFilterComponent(_cfr, _trackedEntityLoaderServiceService) {
         this._cfr = _cfr;
         this._trackedEntityLoaderServiceService = _trackedEntityLoaderServiceService;
+        this.MAX_FILTERS = 1;
     }
-    ProgramFilterComponent.prototype.ngOnInit = function () { };
+    ProgramFilterComponent.prototype.ngOnInit = function () {
+    };
     ProgramFilterComponent.prototype.addAttribute = function () {
         var _this = this;
-        this._trackedEntityLoaderServiceService.getTrackedEntityInstances('api/trackedEntityInstances?ou=' + this.selectedOrgUnit.id +
+        this._trackedEntityLoaderServiceService.getTrackedEntityInstances('/trackedEntityInstances?ou=' + this.selectedOrgUnit.id +
             '&program=' + this.program.id + '&pageSize=1&fields=[lastUpdated,attributes]&ouMode=DESCENDANTS').
             subscribe(function (units) {
             var attributes = [];
@@ -32,7 +34,21 @@ var ProgramFilterComponent = (function () {
             filterAttributeComp.instance._ref = filterAttributeComp;
             filterAttributeComp.instance.setEntityAttributes(attributes);
             filterAttributeComp.instance.setSelectedProgram(_this.program);
+            filterAttributeComp.instance.setRecieverAddress(_this.RECIEVER_ADDRESS);
         });
+    };
+    ProgramFilterComponent.prototype.setRecieverAddress = function (RECIEVER_ADDRESS) {
+        this.RECIEVER_ADDRESS = RECIEVER_ADDRESS;
+    };
+    ProgramFilterComponent.prototype.setProgram = function (program) {
+        console.log('Setting program', program);
+        this.program = program;
+    };
+    ProgramFilterComponent.prototype.setSelectedOrgUnit = function (selOrgUnit) {
+        this.selectedOrgUnit = selOrgUnit;
+    };
+    ProgramFilterComponent.prototype.setMaxFilters = function (MAX_FILTERS) {
+        this.MAX_FILTERS = MAX_FILTERS;
     };
     return ProgramFilterComponent;
 }());

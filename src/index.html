@@ -2,27 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>The facility disease burden app</title>
-	<!-- base url -->
-   <base href="/" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The facility disease burden app</title>
+    <!-- base url -->
+    <script type="text/javascript">
+        document.write("<base href='" + (window.location.pathname.startsWith(':') ?
+            window.location.pathname.split('/').slice(1, window.location.pathname.split('/').length-1).join('/') :
+            window.location.pathname.split('/').slice(0, window.location.pathname.split('/').length-1).join('/')) + "/' />");
+    </script>
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="../assets/js/jquery-ui.min.js"></script>
+    <!--<script src="./assets/js/jquery-ui.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <script src="../assets/js/lobipanel.min.js"></script>
-</head>
+    <!--<script src="./assets/js/lobipanel.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lobipanel/1.0.0/js/lobipanel.min.js"></script>
+
+
+    <link href="./vendor.2993c9cfd1e06844799e.css" rel="stylesheet"></head>
 <body>
 <facilityBurden-app>
     Loading...
-  </facilityBurden-app>
+</facilityBurden-app>
+<script type="text/javascript" src="./polyfills.2993c9cfd1e06844799e.js"></script>
+<script type="text/javascript" src="./vendor.2993c9cfd1e06844799e.js"></script>
+<script type="text/javascript" src="./app.2993c9cfd1e06844799e.js"></script>
 </body>
 </html>

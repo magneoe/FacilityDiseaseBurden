@@ -25,13 +25,17 @@ var DatePickerComponent = (function () {
      * Upon any event in the view (picking dates) this methods is called
      */
     DatePickerComponent.prototype.notifyValueChange = function (event) {
-        var inputDataMessageStartDate = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.START_DATE, this.startDate);
-        var inputDataMessageEndDate = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.END_DATE, this.endDate);
+        var inputDataMessageStartDate = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.START_DATE, this.startDate, this.RECIEVER_ADDRESS);
+        var inputDataMessageEndDate = new InputDataMessage_model_1.InputDataMessage(null, InputDataContent_enum_1.InputDataContent.END_DATE, this.endDate, this.RECIEVER_ADDRESS);
         this._mapInputDataService.sendInputDataMessage(inputDataMessageStartDate);
         this._mapInputDataService.sendInputDataMessage(inputDataMessageEndDate);
     };
     return DatePickerComponent;
 }());
+__decorate([
+    core_1.Input(),
+    __metadata("design:type", Number)
+], DatePickerComponent.prototype, "RECIEVER_ADDRESS", void 0);
 DatePickerComponent = __decorate([
     core_1.Component({
         selector: 'datePicker',
