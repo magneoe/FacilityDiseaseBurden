@@ -34,7 +34,11 @@ var AuthorizationService = (function () {
     AuthorizationService.prototype.login = function (user) {
         var _this = this;
         this.getServerUrl("manifest.webapp").subscribe(function (data) {
-            var apiBaseUrl = data.activities.dhis.href + '/api';
+            var apiBaseUrl = data.activities.dhis.href;
+            if (apiBaseUrl.endsWith('/'))
+                apiBaseUrl += 'api';
+            else
+                apiBaseUrl += '/api';
             user.setConnectionLink(apiBaseUrl);
             _this.testConnectivity(user).subscribe(function (isSuccess) {
                 //Setting user info in session storage

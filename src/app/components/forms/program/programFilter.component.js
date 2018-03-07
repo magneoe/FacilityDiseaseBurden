@@ -22,7 +22,7 @@ var ProgramFilterComponent = (function () {
     };
     ProgramFilterComponent.prototype.addAttribute = function () {
         var _this = this;
-        this._trackedEntityLoaderServiceService.getTrackedEntityInstances('/trackedEntityInstances?ou=' + this.selectedOrgUnit.id +
+        this._trackedEntityLoaderServiceService.getTrackedEntityInstances('trackedEntityInstances?ou=' + this.selectedOrgUnit.id +
             '&program=' + this.program.id + '&pageSize=1&fields=[lastUpdated,attributes]&ouMode=DESCENDANTS').
             subscribe(function (units) {
             var attributes = [];

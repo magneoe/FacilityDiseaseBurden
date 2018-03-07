@@ -30,7 +30,11 @@ export class AuthorizationService implements CanActivate {
 
     login(user: User) {
         this.getServerUrl("manifest.webapp").subscribe((data:any) => {
-            let apiBaseUrl = data.activities.dhis.href + '/api';
+            let apiBaseUrl = data.activities.dhis.href;
+            if(apiBaseUrl.endsWith('/'))
+                apiBaseUrl += 'api';
+            else
+                apiBaseUrl += '/api';
             user.setConnectionLink(apiBaseUrl);
             this.testConnectivity(user).subscribe((isSuccess) => {
                     //Setting user info in session storage

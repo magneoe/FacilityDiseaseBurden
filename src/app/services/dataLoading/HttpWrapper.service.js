@@ -24,7 +24,8 @@ var HttpWrapperService = (function () {
     }
     HttpWrapperService.prototype.get = function (query) {
         var _this = this;
-        return this._http.get(this.user.connectionLink + '/' + query, this.options).map(function (res) { return _this.getAsArray(res); }).catch(this.handleError);
+        var link = this.user.connectionLink;
+        return this._http.get((link.endsWith('/') ? link : link + '/') + query, this.options).map(function (res) { return _this.getAsArray(res); }).catch(this.handleError);
     };
     return HttpWrapperService;
 }());

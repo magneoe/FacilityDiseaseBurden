@@ -149,7 +149,7 @@ export class CommonResourceDispatcherService {
             //Do some errorHandling
             return;
         }
-        return this._organisationLoaderService.getOrgUnits('/organisationUnits?fields=[id,displayName,level,coordinates,' +
+        return this._organisationLoaderService.getOrgUnits('organisationUnits?fields=[id,displayName,level,coordinates,' +
             'children::size~rename(ChildCount)]&paging=0&filter=ancestors.id:eq:' + dataset.getSelectedOrgUnit().id);
     }
 }

@@ -19,7 +19,8 @@ export abstract class HttpWrapperService<T> {
   }
 
   public get(query:string): Observable<any> {
-    return this._http.get(this.user.connectionLink + '/' + query, this.options).map((res:Response) => this.getAsArray(res)).catch(this.handleError);
+    let link = this.user.connectionLink;
+    return this._http.get((link.endsWith('/') ? link : link + '/') + query, this.options).map((res:Response) => this.getAsArray(res)).catch(this.handleError);
   }
 
   abstract getAsArray(res: Response): T[];

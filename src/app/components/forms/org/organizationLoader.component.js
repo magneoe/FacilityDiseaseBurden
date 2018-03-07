@@ -36,7 +36,7 @@ var OrganizationLoaderComponent = (function () {
     OrganizationLoaderComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.isLoading = true;
-        this._orgLoaderService.getOrgUnits('/organisationUnits?level=1&paging=0&fields=id,displayName,level')
+        this._orgLoaderService.getOrgUnits('organisationUnits?level=1&paging=0&fields=id,displayName,level')
             .subscribe(function (units) {
             _this.organizationUnits = units.organisationUnits;
         });
@@ -55,7 +55,7 @@ var OrganizationLoaderComponent = (function () {
         this.levels = this._orgLoaderService.setLevel(this.selectedOrgUnit, lvl, this.levels, this.organizationUnits);
         //Loading children of the ancestor - if there is one or if its been loaded previously.
         if (this.selectedOrgUnit != null) {
-            this.query = '/organisationUnits?filter=id:eq:' + ancestorId + '&fields=children[id,displayName,level,coordinates]&paging=0';
+            this.query = 'organisationUnits?filter=id:eq:' + ancestorId + '&fields=children[id,displayName,level,coordinates]&paging=0';
             this._orgLoaderService.getOrgUnits(this.query)
                 .subscribe(function (units) {
                 //Loads the children of the ancestor

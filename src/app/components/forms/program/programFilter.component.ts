@@ -26,7 +26,7 @@ export class ProgramFilterComponent implements OnInit {
   }
 
   addAttribute(){
-    this._trackedEntityLoaderServiceService.getTrackedEntityInstances('/trackedEntityInstances?ou=' + this.selectedOrgUnit.id +
+    this._trackedEntityLoaderServiceService.getTrackedEntityInstances('trackedEntityInstances?ou=' + this.selectedOrgUnit.id +
       '&program=' + this.program.id + '&pageSize=1&fields=[lastUpdated,attributes]&ouMode=DESCENDANTS').
     subscribe((units:any) => {
       let attributes:TrackedEntityAttribute[] = [];

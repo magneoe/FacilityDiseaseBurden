@@ -58,7 +58,7 @@ var TrackedEntityLoaderService = (function (_super) {
                 filterQueryString += programQueries[i].convertToFormattedQuery();
             }
         }
-        return this.getTrackedEntityInstances('/trackedEntityInstances?ou=' + orgUnitId + '&' +
+        return this.getTrackedEntityInstances('trackedEntityInstances?ou=' + orgUnitId + '&' +
             'program=' + programId + '&programStartDate=' + selStartDate + '&programEndDate=' + selEndDate + '&' +
             'paging=0&fields=[attributes,enrollments]' + filterQueryString);
     };

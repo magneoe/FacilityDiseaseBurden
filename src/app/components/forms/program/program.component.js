@@ -39,7 +39,7 @@ var ProgramsComponent = (function () {
             this.programs = [];
             return;
         }
-        this.query = '/organisationUnits?filter=id:eq:' + orgUnit.id + '&fields=programs[id,displayName]&paging=0';
+        this.query = 'organisationUnits?filter=id:eq:' + orgUnit.id + '&fields=programs[id,displayName]&paging=0';
         this._progService.loadPrograms(this.query)
             .subscribe(function (units) {
             _this.programs = units.organisationUnits[0].programs;
